@@ -3,10 +3,11 @@ const gameRec = [];
 let state;
 let animateId;
 let counterAnimateId;
+let globalCollision = "";
 
 // Physics
-const grv = 1;
-let grvAcc = 1;
+const grv = 3;
+let grvAcc = 5;
 
 // Display
 const canvas = document.querySelector(".screen");
@@ -15,10 +16,10 @@ const ctx = canvas.getContext("2d");
 // Player
 
 let playerSpriteCount = 0;
-let playerFacing = 1;
+let playerFacing;
 
 class Player {
-    constructor(x, y, width, height, xSpeed, ySpeed, jumpSpeed) {
+    constructor(x, y, width, height, xSpeed, ySpeed, jumpSpeed, facing) {
         // Pass in vars
         this.x = x;
         this.y = y;
@@ -27,12 +28,7 @@ class Player {
         this.xSpeed = xSpeed;
         this.ySpeed = ySpeed;
         this.jumpSpeed = jumpSpeed;
-
-        // Collision
-        this.left = this.x;
-        this.right = this.x + this.width;
-        this.top = this.y;
-        this.bottom = this.y + this.height;
+        this.facing = facing
 
         // Other
         this.moveRight = false;
@@ -45,8 +41,10 @@ class Player {
         // Arrow
         this.arrowImgDir = [];
         this.arrowFlying = false;
-        this.arrowX = this.x + this.width / 2;
-        this.arrowY = this.y + this.height / 2;
+        this.arrowX; // Defined in spawnArrow()
+        this.arrowY; // Defined in spawnArrow()
+        this.arrowWidth = 74;
+        this.arrowHeight = 20;
         this.arrowSpeed = 5;
         this.arrowDir = 1;
 
@@ -100,20 +98,50 @@ class Player {
         // --- Arrow
         this.arrowImg = new Image();
         this.arrowImgDir.push("../img/Shel/arrow_left.png", "../img/Shel/arrow_right.png")
+
+        playerFacing = this.facing;
     }
 
     checkCollision() {
-        // Collision
-        this.left = this.x;
-        this.right = this.x + this.width;
-        this.top = this.y;
-        this.bottom = this.y + this.height;
 
+        this.collArr = [
+            {x: this.x, y: this.y}, // Top left
+            {x: this.x + this.width / 2, y: this.y}, // Top center
+            {x: this.x + this.width, y: this.y}, // Top right
+            {x: this.x + this.width, y: this.y + this.height / 2}, // Center Right
+            {x: this.x + this.width, y: this.y + this.height}, // Bottom Right
+            {x: this.x + this.width / 2, y: this.y + this.height}, // Bottom Center
+            {x: this.x, y: this.y + this.height}, // Bottom Left
+            {x: this.x, y: this.y + this.height / 2}, // Center Left
+        ];
+
+        // Collision
+        this.left = this.collArr[0].x;
+        this.right = this.collArr[2].x
+        this.top = this.collArr[0].y;
+        this.bottom = this.collArr[6].y;
         for (let i = 0; i < environmentTileArray.length; i++) {
             if (this.left < environmentTileArray[i].right &&
                 this.right > environmentTileArray[i].left &&
                 this.top < environmentTileArray[i].bottom &&
-                this.bottom > environmentTileArray[i].top) {
+                this.bottom > environmentTileArray[i].top) { 
+                    return true;
+                }
+        }
+    }
+
+    checkArrowCollision() {
+        // Collision Arrow
+        this.arrowLeft = this.arrowX;
+        this.arrowRight = this.arrowX + this.arrowWidth;
+        this.arrowTop = this.arrowY;
+        this.arrowBottom = this.arrowY + this.arrowHeight;
+        for (let i = 0; i < environmentTileArray.length; i++) {
+        // Arrow
+            if (this.arrowLeft < environmentTileArray[i].right &&
+                this.arrowRight > environmentTileArray[i].left &&
+                this.arrowTop < environmentTileArray[i].bottom &&
+                this.arrowBottom > environmentTileArray[i].top) {
                     return true;
             }
         }
@@ -137,48 +165,81 @@ class Player {
 
 const environmentTileArray = [];
 class Environment {
-    constructor(x, y, width, height, color) {
+    constructor(x, y, width, height, color, moves) {
         // Pass in vars
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.color = color;
+        this.moves = moves;
 
         // Collision
         this.left = this.x;
         this.right = this.x + this.width;
         this.top = this.y;
         this.bottom = this.y + this.height;
+
+        this.collArr = [
+            {x: this.x, y: this.y}, // Top left
+            {x: this.x + this.width / 2, y: this.y}, // Top center
+            {x: this.x + this.width, y: this.y}, // Top right
+            {x: this.x + this.width, y: this.y + this.height / 2}, // Center Right
+            {x: this.x + this.width, y: this.y + this.height}, // Bottom Right
+            {x: this.x + this.width / 2, y: this.y + this.height}, // Bottom Center
+            {x: this.x, y: this.y + this.height}, // Bottom Left
+            {x: this.x, y: this.y + this.height / 2}, // Center Left
+        ];
+    }
+
+    movePiece() {
+
     }
 }
 
 // Movement
 const xSpeed = 2;
 const ySpeed = 2;
-let xPos = 300;
-let yPos = 300;
-let xDir = 1;
-let yDir = 1;
+let xPos
+let yPos
+let xDir
+let yDir
 
 window.onload = () => {
-    const player = new Player(100, 590, 100, 100, 5, 10, 25);
+    const player = new Player(canvas.width - 100, canvas.height - 140, 64, 64, 3, 2, 10, -1);
     startGame();
 
     function startGame() {
+        // Movement
+        xPos = 76;
+        yPos = canvas.height - 128;
+        xDir = 1;
+        yDir = 1;
+
         state = "NORMAL";
         player.initialize();
 
         // Create environment
-        const tileWidth = canvas.width;
-        const tileHeight = canvas.height;
-        const tileX = 0;
-        const tileY = canvas.height - 64;            
-
-        environmentTileArray.push(new Environment(tileX, tileY, tileWidth, tileHeight, "darkgreen"));
-
+        environmentTileArray.push(new Environment(0, canvas.height - 64, canvas.width, canvas.height, "darkgreen", false)); // Bottom Floor
+        environmentTileArray.push(new Environment(0, 0, 64, canvas.height - 64, "brown", false)); // Left Wall
+        environmentTileArray.push(new Environment(canvas.width - 64, canvas.height / 2 - 176, canvas.width - 256, 256, "brown", false)); // Right Wall
+        environmentTileArray.push(new Environment(256, canvas.height / 2 - 64, canvas.width - 512, 64, "green", false)); // Middle Floor
+        environmentTileArray.push(new Environment(xPos - 5, yPos - 5, 168 + 10, 64 + 10, "black", true)); // Elevator Piece 1
+        environmentTileArray.push(new Environment(xPos, yPos, 168, 64, "orange", true)); // Elevator Piece 2
         checkState();
     }
+
+/*             // Draw
+            ctx.beginPath();
+            ctx.fillStyle = "black"
+            ctx.fillRect(xPos - 5, yPos - 5, 168 + 10, 64 + 10);
+            ctx.closePath();
+    
+            ctx.beginPath();
+            ctx.fillStyle = "orange"
+            ctx.fillRect(xPos, yPos, 168, 64);
+            ctx.closePath(); */
+
     // CHANGE STATE
     document.addEventListener("keydown", e => {
         switch (e.key) {
@@ -223,21 +284,24 @@ window.onload = () => {
     function stateNormal() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBackground();
-        
-        xPos += xDir * xSpeed;
-        yPos += yDir * ySpeed;
 
-        drawObject();
+        // Collision / Movement
+        if (yPos > 100) {
+            yPos--;
+            recordState();
+        }
+        drawElevator();
         drawPlayer();
         drawArrow();
         
-        recordState();
         checkState();
     }
     // STATE STOP
     function stateStop() {
         drawBackground();
-        drawObject();
+        //drawObject();
+        
+        drawElevator();
         drawPlayer();
         checkState();
     }
@@ -256,7 +320,8 @@ window.onload = () => {
             state = "STOP";
         }
 
-        drawObject();
+        //drawObject();
+        drawElevator()
         drawPlayer();
         checkState();
     }
@@ -273,19 +338,20 @@ window.onload = () => {
         // --- Gravity
         if (!player.checkCollision()) {
             player.canJump = false;
-            player.y += grv + grvAcc;
             if (grvAcc < player.ySpeed) grvAcc += .25;
+            player.y += grv + grvAcc;
         } else {
             player.canJump = true;
             grvAcc = 1;
-        }
+        }        
 
         if (player.jump) {
-            player.y -= player.jumpSpeed - grvAcc;
+            if (grvAcc < player.ySpeed) grvAcc += .25;
+            player.y -= player.jumpSpeed + grvAcc;
 
             setTimeout(() => {
                 player.jump = false;
-            }, 100);
+            }, 150);
         }
 
         if (player.shoot) {
@@ -302,7 +368,7 @@ window.onload = () => {
             player.x -= player.xSpeed;
             animateSprite(player.img, player.animWalkLeft, player.x, player.y, player.width, player.height);
         // --- Move Right
-        } else if (player.moveRight && player.x < canvas.width - player.width * 2) {
+        } else if (player.moveRight && player.x < canvas.width - player.width) {
             player.x += player.xSpeed;
             animateSprite(player.img, player.animWalk, player.x, player.y, player.width, player.height);
         // --- Shoot / Idle
@@ -325,8 +391,10 @@ window.onload = () => {
 
     function drawArrow() {
         if (player.arrowFlying) {
-            ctx.drawImage(player.arrowImg, player.arrowX, player.arrowY, 120, 60)
-            player.arrowX += player.arrowSpeed * player.arrowDir;
+            ctx.drawImage(player.arrowImg, player.arrowX, player.arrowY, player.arrowWidth, player.arrowHeight)
+            if (!player.checkArrowCollision()) {
+                player.arrowX += player.arrowSpeed * player.arrowDir;
+            }
         }
     }
 
@@ -346,6 +414,9 @@ window.onload = () => {
             break;
             case "f": // Shoot
                 if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
+            break;
+            case "p": // DEBUG
+                player.y--;
             break;
         }
     });
@@ -391,22 +462,18 @@ window.onload = () => {
         }
 
     }
-    // Draw Object
-    function drawObject() {
+
+    function drawElevator() {
         // Draw
         ctx.beginPath();
         ctx.fillStyle = "black"
-        ctx.fillRect(xPos, yPos, 300, 300);
+        ctx.fillRect(xPos - 5, yPos - 5, 168 + 10, 64 + 10);
         ctx.closePath();
 
-        // Collision / Movement
-
-        if (xPos + 300 > canvas.width || xPos < 0) {
-            xDir *= -1;
-        }
-        if (yPos + 300 > canvas.height || yPos < 0) {
-            yDir *= -1; 
-        }
+        ctx.beginPath();
+        ctx.fillStyle = "orange"
+        ctx.fillRect(xPos, yPos, 168, 64);
+        ctx.closePath();
     }
+        
 };
-
