@@ -1,3 +1,10 @@
-.screen {
-    border: 1px solid black;
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap');
+
+body {
+    font-family: "IBM Plex Mono", serif;
 }
+
+.screen {
+    border: 1px solid rgb(0, 0, 0);
+}
+
