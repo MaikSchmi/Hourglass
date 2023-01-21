@@ -13,8 +13,7 @@ const canvas = document.querySelector(".screen");
 const ctx = canvas.getContext("2d");
 
 // Player
-const playerImg = new Image();
-playerImg.src = "../img/Shel/Shel.png";
+
 let playerSpriteCount = 0;
 let playerFacing = 1;
 
@@ -40,6 +39,16 @@ class Player {
         this.moveLeft = false;
         this.jump = false;
         this.canJump = false;
+        this.shoot = false;
+        this.canShoot = true;
+
+        // Arrow
+        this.arrowImgDir = [];
+        this.arrowFlying = false;
+        this.arrowX = this.x + this.width / 2;
+        this.arrowY = this.y + this.height / 2;
+        this.arrowSpeed = 5;
+        this.arrowDir = 1;
 
         // Images
         // -- Player Image
@@ -77,17 +86,20 @@ class Player {
         for (let i = 0; i < 12; i++) {
             if (i < 10) {
                 this.animJump.push(`../img/Shel/shel_jump/shel_jump_00${i}.png`);
-                this.animJump.push(`../img/Shel/shel_jump_left/shel_jump_00${i}.png`);
+                this.animJumpLeft.push(`../img/Shel/shel_jump_left/shel_jump_00${i}.png`);
             } else {
                 this.animJump.push(`../img/Shel/shel_jump/shel_jump_0${i}.png`);
-                this.animJump.push(`../img/Shel/shel_jump_left/shel_jump_0${i}.png`);
+                this.animJumpLeft.push(`../img/Shel/shel_jump_left/shel_jump_0${i}.png`);
             }
         }
         // --- Shoot
         for (let i = 0; i < 8; i++) {
             this.animShoot.push(`../img/Shel/shel_attackbow/shel_attackbow_00${i}.png`);
-            this.animShoot.push(`../img/Shel/shel_attackbow_left/shel_attackbow_00${i}.png`);
+            this.animShootLeft.push(`../img/Shel/shel_attackbow_left/shel_attackbow_00${i}.png`);
         }
+        // --- Arrow
+        this.arrowImg = new Image();
+        this.arrowImgDir.push("../img/Shel/arrow_left.png", "../img/Shel/arrow_right.png")
     }
 
     checkCollision() {
@@ -105,6 +117,21 @@ class Player {
                     return true;
             }
         }
+    }
+
+    spawnArrow() {
+        // Set arrow values
+        this.arrowDir = playerFacing;
+
+        if (this.arrowDir === -1) {
+            this.arrowImg.src = this.arrowImgDir[0];
+        } else if (this.arrowDir === 1) {
+            this.arrowImg.src = this.arrowImgDir[1];
+        }
+
+        this.arrowX = this.x + 32 * this.arrowDir;
+        this.arrowY = this.y + 32;
+        this.arrowFlying = true;
     }
 }
 
@@ -135,7 +162,7 @@ let xDir = 1;
 let yDir = 1;
 
 window.onload = () => {
-    const player = new Player(100, 100, 100, 100, 5, 10, 25);
+    const player = new Player(100, 590, 100, 100, 5, 10, 25);
     startGame();
 
     function startGame() {
@@ -200,10 +227,9 @@ window.onload = () => {
         xPos += xDir * xSpeed;
         yPos += yDir * ySpeed;
 
-        console.log(gameRec.length)
-
         drawObject();
         drawPlayer();
+        drawArrow();
         
         recordState();
         checkState();
@@ -262,6 +288,14 @@ window.onload = () => {
             }, 100);
         }
 
+        if (player.shoot) {
+            player.spawnArrow();
+            setTimeout(() => {
+                player.arrowFlying = true;
+                player.shoot = false;
+            }, 700);
+        }
+
         // MOVEMENT
         // --- Move Left
         if (player.moveLeft && player.x > 0) {
@@ -271,30 +305,47 @@ window.onload = () => {
         } else if (player.moveRight && player.x < canvas.width - player.width * 2) {
             player.x += player.xSpeed;
             animateSprite(player.img, player.animWalk, player.x, player.y, player.width, player.height);
-        // --- Idle
+        // --- Shoot / Idle
         } else {
             if (playerFacing === 1) {
-                animateSprite(player.img, player.animIdle, player.x, player.y, player.width, player.height);
+                if (player.shoot) {
+                    animateSprite(player.img, player.animShoot, player.x, player.y, player.width, player.height);
+                } else {
+                    animateSprite(player.img, player.animIdle, player.x, player.y, player.width, player.height);
+                }
             } else if (playerFacing === -1) {
-                animateSprite(player.img, player.animIdleLeft, player.x, player.y, player.width, player.height);
+                if (player.shoot) {
+                    animateSprite(player.img, player.animShootLeft, player.x, player.y, player.width, player.height);
+                } else {
+                    animateSprite(player.img, player.animIdleLeft, player.x, player.y, player.width, player.height);
+                }
             }
         }
-        
+    }
+
+    function drawArrow() {
+        if (player.arrowFlying) {
+            ctx.drawImage(player.arrowImg, player.arrowX, player.arrowY, 120, 60)
+            player.arrowX += player.arrowSpeed * player.arrowDir;
+        }
     }
 
     // Player Controls
     document.addEventListener("keydown", (e) => {
         switch (e.key) {
-            case "d":
+            case "d": // Left
                 playerFacing = 1;
                 player.moveRight = true;
             break;
-            case "a":
+            case "a": // Right
                 playerFacing = -1;
                 player.moveLeft = true;
             break;
-            case " ":
+            case " ": // Jump
                 if (player.canJump) player.jump = true;
+            break;
+            case "f": // Shoot
+                if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
             break;
         }
     });
