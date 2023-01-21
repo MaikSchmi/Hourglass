@@ -5,7 +5,8 @@ let animateId;
 let counterAnimateId;
 
 // Physics
-const grv = 5;
+const grv = 1;
+let grvAcc = 1;
 
 // Display
 const canvas = document.querySelector(".screen");
@@ -37,6 +38,8 @@ class Player {
         // Other
         this.moveRight = false;
         this.moveLeft = false;
+        this.jump = false;
+        this.canJump = false;
 
         // Images
         // -- Player Image
@@ -95,7 +98,6 @@ class Player {
         this.bottom = this.y + this.height;
 
         for (let i = 0; i < environmentTileArray.length; i++) {
-            console.log(this.left, environmentTileArray[i].right)
             if (this.left < environmentTileArray[i].right &&
                 this.right > environmentTileArray[i].left &&
                 this.top < environmentTileArray[i].bottom &&
@@ -133,7 +135,7 @@ let xDir = 1;
 let yDir = 1;
 
 window.onload = () => {
-    const player = new Player(100, 100, 100, 100, 5, 5, 20);
+    const player = new Player(100, 100, 100, 100, 5, 10, 25);
     startGame();
 
     function startGame() {
@@ -175,6 +177,7 @@ window.onload = () => {
     });
     // STATE MACHINE
     function checkState() {
+        cancelAnimationFrame(animateId); // Cancel every frame and choose again to avoid speed leak
         switch (state) {
             case "NORMAL":
                 animateId = requestAnimationFrame(stateNormal);
@@ -186,7 +189,6 @@ window.onload = () => {
                 animateId = requestAnimationFrame(stateRewind);
                 break;
             default:
-                animateId = requestAnimationFrame(stateNormal);
                 break;
         }
     }     
@@ -194,19 +196,24 @@ window.onload = () => {
     function stateNormal() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBackground();
-        drawPlayer();
-    
+        
         xPos += xDir * xSpeed;
         yPos += yDir * ySpeed;
 
+        console.log(gameRec.length)
+
         drawObject();
+        drawPlayer();
         
         recordState();
         checkState();
     }
     // STATE STOP
     function stateStop() {
-        
+        drawBackground();
+        drawObject();
+        drawPlayer();
+        checkState();
     }
     // STATE REWIND
     function stateRewind() {
@@ -224,6 +231,7 @@ window.onload = () => {
         }
 
         drawObject();
+        drawPlayer();
         checkState();
     }
     // RECORD
@@ -237,9 +245,21 @@ window.onload = () => {
     function drawPlayer() {
         // PHYSICS
         // --- Gravity
-        
         if (!player.checkCollision()) {
-            player.y += grv;
+            player.canJump = false;
+            player.y += grv + grvAcc;
+            if (grvAcc < player.ySpeed) grvAcc += .25;
+        } else {
+            player.canJump = true;
+            grvAcc = 1;
+        }
+
+        if (player.jump) {
+            player.y -= player.jumpSpeed - grvAcc;
+
+            setTimeout(() => {
+                player.jump = false;
+            }, 100);
         }
 
         // MOVEMENT
@@ -272,6 +292,9 @@ window.onload = () => {
             case "a":
                 playerFacing = -1;
                 player.moveLeft = true;
+            break;
+            case " ":
+                if (player.canJump) player.jump = true;
             break;
         }
     });
