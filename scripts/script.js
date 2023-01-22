@@ -147,6 +147,7 @@ class Player {
                 this.arrowRight > arr[i].left &&
                 this.arrowTop < arr[i].bottom &&
                 this.arrowBottom > arr[i].top) {
+                    arr[i].hit();
                     return true;
             }
         }
@@ -178,9 +179,9 @@ class Player {
 // Enemies
 const enemyArray = [];
 class Enemy {
-    constructor(name, x, y, width, height, xSpeed, ySpeed, facing, movesX, movesY, distX, distY, dirX, dirY) {
+    constructor(id, name, x, y, width, height, xSpeed, ySpeed, facing, movesX, movesY, distX, distY, dirX, dirY) {
         // Main
-        this.id = name;
+        this.id = id;
 
         // Pass in vars
         this.name = name;
@@ -223,16 +224,20 @@ class Enemy {
         // --- Idle
         for (let i = 0; i < 62; i++) {
             if (i < 10) {
+                this.lzardAnimIdle.push(`../img/Lzard/lzard_idle_right/lzard_idle_00_00${i}.png`);
                 this.lzardAnimIdleLeft.push(`../img/Lzard/lzard_idle_left/lzard_idle_00_00${i}.png`);
             } else {
+                this.lzardAnimIdle.push(`../img/Lzard/lzard_idle_right/lzard_idle_00_0${i}.png`);
                 this.lzardAnimIdleLeft.push(`../img/Lzard/lzard_idle_left/lzard_idle_00_0${i}.png`);
             }
         }
         // --- Walking
         for (let i = 0; i < 60; i++) {
             if (i < 10) {
+                this.lzardAnimWalk.push(`../img/Lzard/lzard_walking_right/Lzard_Animation_Walking_00${i}.png`);
                 this.lzardAnimWalkLeft.push(`../img/Lzard/lzard_walking_left/Lzard_Animation_Walking_00${i}.png`);
             } else {
+                this.lzardAnimWalk.push(`../img/Lzard/lzard_walking_right/Lzard_Animation_Walking_0${i}.png`);
                 this.lzardAnimWalkLeft.push(`../img/Lzard/lzard_walking_left/Lzard_Animation_Walking_0${i}.png`);
             }
         }
@@ -281,6 +286,18 @@ class Enemy {
             this.y += this.speedY * this.dirY;
         }
     }
+
+    hit() {
+        for (let i = 0; i < enemyArray.length; i++) {
+            if (enemyArray[i].getId() === this.getId()) {
+                enemyArray.splice(i, 1);
+            }
+        }
+    }
+
+    getId() {
+        return this.id;
+    }
 }
 
 // Environment
@@ -314,6 +331,7 @@ class Environment {
     }
 
     movePiece(xPos, yPos) {
+        this.x = xPos;
         this.y = yPos;
     }
 
@@ -334,6 +352,10 @@ class Environment {
             {x: this.x, y: this.y + this.height}, // Bottom Left
             {x: this.x, y: this.y + this.height / 2}, // Center Left
         ];
+    }
+
+    hit() {
+        return null;
     }
 }
 
@@ -489,8 +511,8 @@ window.onload = () => {
         environmentTileArray.push(new Environment(xPos - 5, yPos - 5, 168 + 10, 64 + 10, "black", true)); // Elevator Piece 1
         environmentTileArray.push(new Environment(xPos, yPos, 168, 64, "orange", true)); // Elevator Piece 2
         
-        enemyArray.push(new Enemy("Lzard", 1000, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
-        enemyArray.push(new Enemy("Lzard", 500, 600, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
+        enemyArray.push(new Enemy(0, "Lzard", 1000, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(1, "Lzard", 500, 600, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
         
         for (let i = 0; i < enemyArray.length; i++) {
             enemyArray[i].initialize();
@@ -604,7 +626,6 @@ window.onload = () => {
             if (player.checkArrowCollision(environmentTileArray)) {
                 player.destroyArrow();
             } else if (player.checkArrowCollision(enemyArray)) {
-                enemyArray.pop()
                 player.destroyArrow();
             } else if (player.arrowX > canvas.width + player.arrowWidth || player.arrowY < 0) {
                 player.destroyArrow();
@@ -626,8 +647,10 @@ window.onload = () => {
                 enemyArray[i].updateCollision();
                 
                 let sprite = enemyArray[i].lzardAnimIdleLeft;
-                if (enemyArray[i].movesX) {
+                if (enemyArray[i].movesX && enemyArray[i].dirX === -1) {
                     sprite = enemyArray[i].lzardAnimWalkLeft;
+                } else if (enemyArray[i].movesX && enemyArray[i].dirX === 1) {
+                    sprite = enemyArray[i].lzardAnimWalk;
                 }
 
                 animateSprite(
