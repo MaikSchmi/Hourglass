@@ -5,6 +5,12 @@ let animateId;
 let counterAnimateId;
 let globalCollision = "";
 
+// Levels
+let level = 0;
+let hasLevel0Init = false;
+let hasLevel1Init = false;
+let hasLevel2Init = false;
+
 // Physics
 const grv = 3;
 let grvAcc = 5;
@@ -124,7 +130,10 @@ class Player {
             if (this.left < environmentTileArray[i].right &&
                 this.right > environmentTileArray[i].left &&
                 this.top < environmentTileArray[i].bottom &&
-                this.bottom > environmentTileArray[i].top) { 
+                (this.bottom >= environmentTileArray[i].top || this.bottom > environmentTileArray[i].top + 1)) { 
+                    if (this.bottom > environmentTileArray[i].top) {
+                        this.y--;
+                    }
                     return true;
                 }
         }
@@ -193,7 +202,26 @@ class Environment {
     }
 
     movePiece() {
+        this.y = yPos;
+    }
 
+    updateCollision() {
+        // Collision
+        this.left = this.x;
+        this.right = this.x + this.width;
+        this.top = this.y;
+        this.bottom = this.y + this.height;
+
+        this.collArr = [
+            {x: this.x, y: this.y}, // Top left
+            {x: this.x + this.width / 2, y: this.y}, // Top center
+            {x: this.x + this.width, y: this.y}, // Top right
+            {x: this.x + this.width, y: this.y + this.height / 2}, // Center Right
+            {x: this.x + this.width, y: this.y + this.height}, // Bottom Right
+            {x: this.x + this.width / 2, y: this.y + this.height}, // Bottom Center
+            {x: this.x, y: this.y + this.height}, // Bottom Left
+            {x: this.x, y: this.y + this.height / 2}, // Center Left
+        ];
     }
 }
 
@@ -210,35 +238,18 @@ window.onload = () => {
     startGame();
 
     function startGame() {
-        // Movement
-        xPos = 76;
-        yPos = canvas.height - 128;
-        xDir = 1;
-        yDir = 1;
-
         state = "NORMAL";
         player.initialize();
-
-        // Create environment
-        environmentTileArray.push(new Environment(0, canvas.height - 64, canvas.width, canvas.height, "darkgreen", false)); // Bottom Floor
-        environmentTileArray.push(new Environment(0, 0, 64, canvas.height - 64, "brown", false)); // Left Wall
-        environmentTileArray.push(new Environment(canvas.width - 64, canvas.height / 2 - 176, canvas.width - 256, 256, "brown", false)); // Right Wall
-        environmentTileArray.push(new Environment(256, canvas.height / 2 - 64, canvas.width - 512, 64, "green", false)); // Middle Floor
-        environmentTileArray.push(new Environment(xPos - 5, yPos - 5, 168 + 10, 64 + 10, "black", true)); // Elevator Piece 1
-        environmentTileArray.push(new Environment(xPos, yPos, 168, 64, "orange", true)); // Elevator Piece 2
-        checkState();
+        gameHandler();
     }
 
-/*             // Draw
-            ctx.beginPath();
-            ctx.fillStyle = "black"
-            ctx.fillRect(xPos - 5, yPos - 5, 168 + 10, 64 + 10);
-            ctx.closePath();
-    
-            ctx.beginPath();
-            ctx.fillStyle = "orange"
-            ctx.fillRect(xPos, yPos, 168, 64);
-            ctx.closePath(); */
+    function gameHandler() {
+        drawBackground();
+        checkLevel();
+        drawPlayer();
+        drawArrow();
+        checkState();
+    }
 
     // CHANGE STATE
     document.addEventListener("keydown", e => {
@@ -283,32 +294,22 @@ window.onload = () => {
     // STATE NORMAL
     function stateNormal() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawBackground();
+        gameHandler();
 
         // Collision / Movement
         if (yPos > 100) {
             yPos--;
             recordState();
         }
-        drawElevator();
-        drawPlayer();
-        drawArrow();
-        
-        checkState();
     }
     // STATE STOP
     function stateStop() {
-        drawBackground();
-        //drawObject();
+        gameHandler();
         
-        drawElevator();
-        drawPlayer();
-        checkState();
     }
     // STATE REWIND
     function stateRewind() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawBackground();
+        gameHandler();
 
         const lastFrame = gameRec[gameRec.length - 1];
         xPos = lastFrame.xPos;
@@ -320,15 +321,67 @@ window.onload = () => {
             state = "STOP";
         }
 
-        //drawObject();
-        drawElevator()
-        drawPlayer();
-        checkState();
     }
     // RECORD
     function recordState() {
         gameRec.push({xPos, yPos})
     }
+
+    // LEVELS
+
+    // Level switcher
+    function checkLevel() {
+        switch (level) {
+            case 0:
+                if (!hasLevel0Init) level0Init();
+                level0();
+                break;
+            case 1:
+                level1();
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                break;
+        }
+    }
+    function level0Init() {
+        // Movement
+        xPos = 76;
+        yPos = canvas.height - 128;
+        xDir = 1;
+        yDir = 1;
+
+        // Create environment
+        environmentTileArray.push(new Environment(0, canvas.height - 64, canvas.width, canvas.height, "darkgreen", false)); // Bottom Floor
+        environmentTileArray.push(new Environment(0, 0, 64, canvas.height - 64, "brown", false)); // Left Wall
+        environmentTileArray.push(new Environment(canvas.width - 64, canvas.height / 2 - 176, canvas.width - 256, 256, "brown", false)); // Right Wall
+        environmentTileArray.push(new Environment(256, canvas.height / 2 - 64, canvas.width - 512, 64, "green", false)); // Middle Floor
+        
+        environmentTileArray.push(new Environment(xPos - 5, yPos - 5, 168 + 10, 64 + 10, "black", true)); // Elevator Piece 1
+        environmentTileArray.push(new Environment(xPos, yPos, 168, 64, "orange", true)); // Elevator Piece 2
+
+        hasLevel0Init = true;
+    }
+    // Level Framework
+    function level0() {
+        // Move movable environment and re-draw
+        for (let i = 0; i < environmentTileArray.length; i++) {
+            if (environmentTileArray[i].moves) {
+                environmentTileArray[i].movePiece();
+                environmentTileArray[i].updateCollision();
+            }
+            ctx.fillStyle = environmentTileArray[i].color;
+            ctx.fillRect(environmentTileArray[i].x, environmentTileArray[i].y, environmentTileArray[i].width, environmentTileArray[i].height)
+        }
+    }
+
+    function level1() {
+
+    }
+
 
 
 
@@ -454,13 +507,6 @@ window.onload = () => {
         ctx.fillStyle = "rgb(0, 195, 255)"
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.closePath();
-        
-        // Floor Tiles
-        for (let i = 0; i < environmentTileArray.length; i++) {
-            ctx.fillStyle = environmentTileArray[i].color
-            ctx.fillRect(environmentTileArray[i].x, environmentTileArray[i].y, environmentTileArray[i].width, environmentTileArray[i].height);
-        }
-
     }
 
     function drawElevator() {
