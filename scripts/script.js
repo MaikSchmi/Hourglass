@@ -1,5 +1,4 @@
 // Game Variables
-const globalArray = [];
 const gameRec = [];
 let state;
 let animateId;
@@ -104,22 +103,12 @@ class Player {
     }
 
     updateCollision() {
-        this.collArr = [
-            {x: this.x, y: this.y}, // Top left
-            {x: this.x + this.width / 2, y: this.y}, // Top center
-            {x: this.x + this.width, y: this.y}, // Top right
-            {x: this.x + this.width, y: this.y + this.height / 2}, // Center Right
-            {x: this.x + this.width, y: this.y + this.height}, // Bottom Right
-            {x: this.x + this.width / 2, y: this.y + this.height}, // Bottom Center
-            {x: this.x, y: this.y + this.height}, // Bottom Left
-            {x: this.x, y: this.y + this.height / 2}, // Center Left
-        ];
 
         // Collision
-        this.left = this.collArr[0].x;
-        this.right = this.collArr[2].x
-        this.top = this.collArr[0].y;
-        this.bottom = this.collArr[6].y;
+        this.left = this.x;
+        this.right = this.x + this.width;
+        this.top = this.y;
+        this.bottom = this.y + this.height;
     }
 
     checkCollision(arr, ot, or, ob, ol) {
@@ -244,10 +233,7 @@ class Enemy {
             }
         }
 
-        //const dummyLzard = new Enemy(-1, "Lzard", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        for (let i = 0; i < this.lzardAnimIdleLeft.length; i++) {
-            this.img.src = this.lzardAnimIdleLeft[i];
-        }
+        this.img.src = "../img/Lzard/lzard.png"
     }
 
     updateCollision() {
@@ -256,17 +242,6 @@ class Enemy {
         this.right = this.x + this.width;
         this.top = this.y;
         this.bottom = this.y + this.height;
-
-        this.collArr = [
-            {x: this.x, y: this.y}, // Top left
-            {x: this.x + this.width / 2, y: this.y}, // Top center
-            {x: this.x + this.width, y: this.y}, // Top right
-            {x: this.x + this.width, y: this.y + this.height / 2}, // Center Right
-            {x: this.x + this.width, y: this.y + this.height}, // Bottom Right
-            {x: this.x + this.width / 2, y: this.y + this.height}, // Bottom Center
-            {x: this.x, y: this.y + this.height}, // Bottom Left
-            {x: this.x, y: this.y + this.height / 2}, // Center Left
-        ];
     }
 
     move() {
@@ -330,17 +305,6 @@ class Environment {
         this.right = this.x + this.width;
         this.top = this.y;
         this.bottom = this.y + this.height;
-
-        this.collArr = [
-            {x: this.x, y: this.y}, // Top left
-            {x: this.x + this.width / 2, y: this.y}, // Top center
-            {x: this.x + this.width, y: this.y}, // Top right
-            {x: this.x + this.width, y: this.y + this.height / 2}, // Center Right
-            {x: this.x + this.width, y: this.y + this.height}, // Bottom Right
-            {x: this.x + this.width / 2, y: this.y + this.height}, // Bottom Center
-            {x: this.x, y: this.y + this.height}, // Bottom Left
-            {x: this.x, y: this.y + this.height / 2}, // Center Left
-        ];
     }
 
     movePiece(movesX, movesY, speed, dir) {
@@ -364,31 +328,12 @@ class Environment {
         this.right = this.x + this.width;
         this.top = this.y;
         this.bottom = this.y + this.height;
-
-        this.collArr = [
-            {x: this.x, y: this.y}, // Top left
-            {x: this.x + this.width / 2, y: this.y}, // Top center
-            {x: this.x + this.width, y: this.y}, // Top right
-            {x: this.x + this.width, y: this.y + this.height / 2}, // Center Right
-            {x: this.x + this.width, y: this.y + this.height}, // Bottom Right
-            {x: this.x + this.width / 2, y: this.y + this.height}, // Bottom Center
-            {x: this.x, y: this.y + this.height}, // Bottom Left
-            {x: this.x, y: this.y + this.height / 2}, // Center Left
-        ];
     }
 
-    hit() {
-        return null;
-    }
+    hit() {}
 }
 
 // Movement
-const xSpeed = 2;
-const ySpeed = 2;
-let xPos
-let yPos
-let xDir
-let yDir
 
 window.onload = () => {
     const player = new Player(canvas.width - 100, canvas.height - 140, 64, 64, 3, 2, 10, -1);
@@ -397,7 +342,6 @@ window.onload = () => {
     function startGame() {
         state = "NORMAL";
         player.initialize();
-        
         gameHandler();
     }
 
@@ -457,7 +401,6 @@ window.onload = () => {
     }     
     // STATE NORMAL
     function stateNormal() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBackgroundAndEnvironment()
         drawPlayer();
         enableEnemies();
@@ -467,22 +410,16 @@ window.onload = () => {
 
     // STATE STOP
     function stateStop() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBackgroundAndEnvironment()
         drawPlayer();
         enableEnemies();
-
-        
-
         gameHandler();
         
     }
     // STATE REWIND
     function stateRewind() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBackgroundAndEnvironment()
         drawPlayer();
-
         enableEnemies();
         rewindGame();
         gameHandler();
@@ -513,15 +450,14 @@ window.onload = () => {
                     dirY: enemyArray[i].dirY,
                     facing: enemyArray[i].facing,
                     anim: enemyArray[i].img.src,
+                    spriteCount: enemyArray[i].spriteCount,
                     alive: enemyArray[i].alive,
                 }
             );
+            
         }
 
-        gameRec.push([
-            environment, 
-            enemies
-        ]);
+        gameRec.push([environment, enemies]);
     }
 
     function rewindGame() {
@@ -539,6 +475,7 @@ window.onload = () => {
             enemyArray[i].dirX = gameRec[index][1][i].dirX;
             enemyArray[i].dirY = gameRec[index][1][i].dirY;
             enemyArray[i].img.src = gameRec[index][1][i].anim;
+            enemyArray[i].spriteCount = gameRec[index][1][i].spriteCount;
             enemyArray[i].alive = gameRec[index][1][i].alive;
         }
         // Delete Last Frame
@@ -547,11 +484,11 @@ window.onload = () => {
         } else {
             state = "STOP";
         }
-        
     }
 
-    // LEVELS FRAMEWORK
 
+
+    // LEVELS FRAMEWORK
     // --- Level switcher
     function checkLevel() {
         switch (level) {
@@ -579,40 +516,32 @@ window.onload = () => {
         environmentTileArray.push(new Environment(2, canvas.width - 64, canvas.height / 2 - 176, canvas.width - 256, 256, "brown", false)); // Right Wall
         environmentTileArray.push(new Environment(3, 256, canvas.height / 2 - 64, canvas.width - 512, 64, "green", false)); // Middle Floor
         
-        // Elevator
+        // -- Elevator
         environmentTileArray.push(new Environment(4, 76 - 5, canvas.height - 128 - 5, 168 + 10, 64 + 10, "black", true)); // Elevator Piece 1
         environmentTileArray.push(new Environment(5, 76, canvas.height - 128, 168, 64, "orange", true)); // Elevator Piece 2
         
+        // Enemies
         enemyArray.push(new Enemy(0, "Lzard", 1000, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
         enemyArray.push(new Enemy(1, "Lzard", 500, 600, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
         
+        // -- Initialize all enemies
         for (let i = 0; i < enemyArray.length; i++) {
             enemyArray[i].initialize();
         }
 
-        globalArray.push(
-            {
-                level: level, 
-                environment: environmentTileArray, 
-                enemies: enemyArray, 
-                player: player
-            }
-        );
+        // Initialize Level
         hasLevel0Init = true;
     }
     // --- Loop
     function level0() {
 
     }
-
     // LEVEL 1
     // --- Init
     function level1Init() {
-
     }
     // --- Loop
     function level1() {
-
     }
 
 
@@ -622,7 +551,7 @@ window.onload = () => {
     function drawPlayer() {
         // PHYSICS
         player.updateCollision();
-        // --- Gravity
+        // --- Ground contact, enable jump
         if (player.checkCollision(environmentTileArray, 0, 0, 1, 0)) {
             player.canJump = true;
             grvAcc = 1;
@@ -632,6 +561,7 @@ window.onload = () => {
             player.y += grv + grvAcc;
         }        
 
+        // --- Jump
         if (player.jump) {
             if (!player.checkCollision(environmentTileArray, 10, 0, -3, 0)){
                 if (grvAcc < player.ySpeed) grvAcc += .25;
@@ -645,19 +575,20 @@ window.onload = () => {
         }
 
         // ENEMY
-
         if (player.checkCollision(enemyArray, 0, -16, 0, -32)) {
             player.die();
         }
         
+        // Update Arrow Use
         enableArrow();
+
         // MOVEMENT
         // --- Move Left
-        if (player.moveLeft && player.x > 0 && !player.checkCollision(environmentTileArray, 0, 0, -1, 5)) {
+        if (player.moveLeft && player.x > 0 && !player.checkCollision(environmentTileArray, 0, 0, -1, 5) && !player.shoot) {
             player.x -= player.xSpeed;
             animateSprite(player, player.img, player.animWalkLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
         // --- Move Right
-        } else if (player.moveRight && player.x < canvas.width - player.width && !player.checkCollision(environmentTileArray, 0, 5, -1, 0)) {
+        } else if (player.moveRight && player.x < canvas.width - player.width && !player.checkCollision(environmentTileArray, 0, 5, -1, 0) && !player.shoot) {
             player.x += player.xSpeed;
             animateSprite(player, player.img, player.animWalk, player.spriteSpeed, player.x, player.y, player.width, player.height);
         // --- Shoot / Idle
@@ -678,6 +609,7 @@ window.onload = () => {
         }
     }
 
+    // Arrow
     function enableArrow() {
         // Shoot arrow
         if (player.shoot) {
@@ -702,27 +634,28 @@ window.onload = () => {
             }
         }
     }
-
     function drawArrow() {
         ctx.drawImage(player.arrowImg, player.arrowX, player.arrowY, player.arrowWidth, player.arrowHeight);
     }
 
+    // Enemy Control
     function enableEnemies() {
         for (let i = 0; i < enemyArray.length; i++) {
             const enemy = enemyArray[i].name;
             if (enemy === "Lzard") {
+                // Collision update
                 enemyArray[i].updateCollision();
 
+                // Movement
                 if (state === "NORMAL") enemyArray[i].move();
             
-                
+                // Animation
                 let sprite = enemyArray[i].lzardAnimIdleLeft;
                 if (enemyArray[i].movesX && enemyArray[i].dirX === -1) {
                     sprite = enemyArray[i].lzardAnimWalkLeft;
                 } else if (enemyArray[i].movesX && enemyArray[i].dirX === 1) {
                     sprite = enemyArray[i].lzardAnimWalk;
                 }
-
                 animateSprite(
                     enemyArray[i], 
                     enemyArray[i].img, 
@@ -756,7 +689,10 @@ window.onload = () => {
                 if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
             break;
             case "p": // DEBUG
-                console.log(gameRec);
+                console.log(gameRec[0]);
+                console.log(gameRec[1]);
+                console.log(gameRec[2]);
+                console.log(gameRec[3]);
             break;
         }
     });
@@ -773,29 +709,33 @@ window.onload = () => {
         }
     });
 
-    // Animate Sprite Function
+    // Animate Sprite
     function animateSprite(obj, imgContainer, sprite, speed, x, y, w, h) {
+        // Reset sprite count
         if (obj.spriteCount > sprite.length - 2) {
             obj.spriteCount = 0;
         }
+        // Animate all in NORMAL
         if (state === "NORMAL") {
             if (animateId % speed === 0) {
                 obj.spriteCount++;  
                 imgContainer.src = sprite[obj.spriteCount];      
             }
+        // Animate only Player in all except normal
         } else if (state !== "NORMAL" && obj === player) {
             if (animateId % speed === 0) {
                 obj.spriteCount++;  
                 imgContainer.src = sprite[obj.spriteCount];      
             }
         }
+        // Draw
         ctx.drawImage(imgContainer, x, y, w, h); 
     }
 
 
 
 
-    // Draw Background
+    // Draw Background + Environment Tiles
     function drawBackgroundAndEnvironment() {
         ctx.beginPath();
         ctx.fillStyle = "rgb(0, 195, 255)"
@@ -805,13 +745,15 @@ window.onload = () => {
         // Move movable environment and re-draw
         for (let i = 0; i < environmentTileArray.length; i++) {
             const speedY = 2;
+            // Move movable pieces only if in NORMAL
             if (environmentTileArray[i].moves && state === "NORMAL") {
                     environmentTileArray[i].movePiece(false, true, 1, -1)
             }
+            // Draw
             ctx.fillStyle = environmentTileArray[i].color;
             ctx.fillRect(environmentTileArray[i].x, environmentTileArray[i].y, environmentTileArray[i].width, environmentTileArray[i].height)
         }
-
+        // Update environment tile collision
         for (let i = 0; i < environmentTileArray.length; i++) {
             environmentTileArray[i].updateCollision();
         }
