@@ -108,8 +108,7 @@ class Player {
         playerFacing = this.facing;
     }
 
-    checkCollision() {
-
+    updateCollision() {
         this.collArr = [
             {x: this.x, y: this.y}, // Top left
             {x: this.x + this.width / 2, y: this.y}, // Top center
@@ -126,42 +125,18 @@ class Player {
         this.right = this.collArr[2].x
         this.top = this.collArr[0].y;
         this.bottom = this.collArr[6].y;
-        for (let i = 0; i < environmentTileArray.length; i++) {
-            if (this.left < environmentTileArray[i].right &&
-                this.right > environmentTileArray[i].left &&
-                this.top < environmentTileArray[i].bottom &&
-                (this.bottom >= environmentTileArray[i].top || this.bottom > environmentTileArray[i].top + 1)) { 
-                    if (this.bottom > environmentTileArray[i].top) {
-                        this.y--;
-                    }
-                    return true;
-                }
-        }
     }
 
-    checkEnemyCollision() {
+    checkCollision(arr, ot, or, ob, ol) {
 
-        this.collArr = [
-            {x: this.x, y: this.y}, // Top left
-            {x: this.x + this.width / 2, y: this.y}, // Top center
-            {x: this.x + this.width, y: this.y}, // Top right
-            {x: this.x + this.width, y: this.y + this.height / 2}, // Center Right
-            {x: this.x + this.width, y: this.y + this.height}, // Bottom Right
-            {x: this.x + this.width / 2, y: this.y + this.height}, // Bottom Center
-            {x: this.x, y: this.y + this.height}, // Bottom Left
-            {x: this.x, y: this.y + this.height / 2}, // Center Left
-        ];
-
-        // Collision
-        this.left = this.collArr[0].x;
-        this.right = this.collArr[2].x
-        this.top = this.collArr[0].y;
-        this.bottom = this.collArr[6].y;
-        for (let i = 0; i < enemyArray.length; i++) {
-            if (this.left < enemyArray[i].right &&
-                this.right > enemyArray[i].left &&
-                this.top < enemyArray[i].bottom &&
-                (this.bottom >= enemyArray[i].top || this.bottom > enemyArray[i].top + 1)) { 
+        for (let i = 0; i < arr.length; i++) {
+            if (this.left - ol < arr[i].right &&
+                this.right + or > arr[i].left &&
+                this.top - ot < arr[i].bottom &&
+                this.bottom + ob >= arr[i].top) { 
+                    if (this.bottom > arr[i].top) {
+                        this.y--;
+                    }
                     return true;
                 }
         }
@@ -179,9 +154,18 @@ class Player {
                 this.arrowRight > environmentTileArray[i].left &&
                 this.arrowTop < environmentTileArray[i].bottom &&
                 this.arrowBottom > environmentTileArray[i].top) {
-                    return true;
+                    return "environment";
             }
         }
+        for (let i = 0; i < enemyArray.length; i++) {
+            // Arrow
+                if (this.arrowLeft < enemyArray[i].right &&
+                    this.arrowRight > enemyArray[i].left &&
+                    this.arrowTop < enemyArray[i].bottom &&
+                    this.arrowBottom > enemyArray[i].top) {
+                        return "enemy";
+                }
+            }
     }
 
     spawnArrow() {
@@ -196,10 +180,12 @@ class Player {
 
         this.arrowX = this.x + 32 * this.arrowDir;
         this.arrowY = this.y + 32;
-        this.arrowFlying = true;
+    }
+
+    destroyArrow() {
+        this.arrowFlying = false;
     }
 }
-
 
 // Enemies
 const enemyArray = [];
@@ -353,7 +339,6 @@ window.onload = () => {
         drawBackground();
         checkLevel();
         drawPlayer();
-        drawArrow();
         checkState();
     }
 
@@ -532,17 +517,16 @@ window.onload = () => {
     // Update Player
     function drawPlayer() {
         // PHYSICS
+        player.updateCollision();
         // --- Gravity
-        if (!player.checkCollision()) {
+        if (player.checkCollision(environmentTileArray, 0, 0, 1, 0)) {
+            player.canJump = true;
+            grvAcc = 1;
+        } else {
             player.canJump = false;
             if (grvAcc < player.ySpeed) grvAcc += .25;
             player.y += grv + grvAcc;
-        } else {
-            player.canJump = true;
-            grvAcc = 1;
         }        
-
-        player.checkEnemyCollision()
 
         if (player.jump) {
             if (grvAcc < player.ySpeed) grvAcc += .25;
@@ -552,22 +536,16 @@ window.onload = () => {
                 player.jump = false;
             }, 150);
         }
-
-        if (player.shoot) {
-            player.spawnArrow();
-            setTimeout(() => {
-                player.arrowFlying = true;
-                player.shoot = false;
-            }, 700);
-        }
+        
+        enableArrow();
 
         // MOVEMENT
         // --- Move Left
-        if (player.moveLeft && player.x > 0 && !player.checkEnemyCollision()) {
+        if (player.moveLeft && player.x > 0 && !player.checkCollision(environmentTileArray, 0, 0, -1, 5)) {
             player.x -= player.xSpeed;
             animateSprite(player, player.img, player.animWalkLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
         // --- Move Right
-        } else if (player.moveRight && player.x < canvas.width - player.width) {
+        } else if (player.moveRight && player.x < canvas.width - player.width && !player.checkCollision(environmentTileArray, 0, 5, -1, 0)) {
             player.x += player.xSpeed;
             animateSprite(player, player.img, player.animWalk, player.spriteSpeed, player.x, player.y, player.width, player.height);
         // --- Shoot / Idle
@@ -588,13 +566,34 @@ window.onload = () => {
         }
     }
 
-    function drawArrow() {
+    function enableArrow() {
+        // Shoot arrow
+        if (player.shoot) {
+            player.spawnArrow();
+            drawArrow();
+            setTimeout(() => {
+                player.shoot = false;
+                player.arrowFlying = true;
+            }, 100);
+        }
+        // Arrow Interactions
         if (player.arrowFlying) {
-            ctx.drawImage(player.arrowImg, player.arrowX, player.arrowY, player.arrowWidth, player.arrowHeight)
-            if (!player.checkArrowCollision()) {
+            drawArrow();
+            if (player.checkArrowCollision() === "environment") {
+                player.destroyArrow();
+            } else if (player.checkArrowCollision() === "enemy") {
+                enemyArray.pop()
+                player.destroyArrow();
+            } else if (player.arrowX > canvas.width + player.arrowWidth || player.arrowY < 0) {
+                player.destroyArrow();
+            } else {
                 player.arrowX += player.arrowSpeed * player.arrowDir;
             }
         }
+    }
+
+    function drawArrow() {
+        ctx.drawImage(player.arrowImg, player.arrowX, player.arrowY, player.arrowWidth, player.arrowHeight);
     }
 
     // Player Controls
