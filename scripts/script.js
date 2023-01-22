@@ -20,8 +20,6 @@ const canvas = document.querySelector(".screen");
 const ctx = canvas.getContext("2d");
 
 // Player
-
-let playerSpriteCount = 0;
 let playerFacing;
 
 class Player {
@@ -57,6 +55,8 @@ class Player {
         // Images
         // -- Player Image
         this.img; 
+        this.spriteCount = 0;
+        this.spriteSpeed = 12;
         // -- Player Sprites
         this.animIdle = [];
         this.animIdleLeft = [];
@@ -139,6 +139,34 @@ class Player {
         }
     }
 
+    checkEnemyCollision() {
+
+        this.collArr = [
+            {x: this.x, y: this.y}, // Top left
+            {x: this.x + this.width / 2, y: this.y}, // Top center
+            {x: this.x + this.width, y: this.y}, // Top right
+            {x: this.x + this.width, y: this.y + this.height / 2}, // Center Right
+            {x: this.x + this.width, y: this.y + this.height}, // Bottom Right
+            {x: this.x + this.width / 2, y: this.y + this.height}, // Bottom Center
+            {x: this.x, y: this.y + this.height}, // Bottom Left
+            {x: this.x, y: this.y + this.height / 2}, // Center Left
+        ];
+
+        // Collision
+        this.left = this.collArr[0].x;
+        this.right = this.collArr[2].x
+        this.top = this.collArr[0].y;
+        this.bottom = this.collArr[6].y;
+        for (let i = 0; i < enemyArray.length; i++) {
+            if (this.left < enemyArray[i].right &&
+                this.right > enemyArray[i].left &&
+                this.top < enemyArray[i].bottom &&
+                (this.bottom >= enemyArray[i].top || this.bottom > enemyArray[i].top + 1)) { 
+                    return true;
+                }
+        }
+    }
+
     checkArrowCollision() {
         // Collision Arrow
         this.arrowLeft = this.arrowX;
@@ -172,6 +200,83 @@ class Player {
     }
 }
 
+
+// Enemies
+const enemyArray = [];
+class Enemy {
+    constructor(name, x, y, width, height, xSpeed, ySpeed, facing, movesX, movesY) {
+        // Main
+        this.id = name;
+
+        // Pass in vars
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.xSpeed = xSpeed;
+        this.ySpeed = ySpeed;
+        this.facing = facing;
+        this.movesX = movesX;
+        this.movesY = movesY;
+
+        // Images
+        // -- Enemy Image
+        this.img;
+        this.spriteCount = 0;
+        // -- Lzard Enemy Sprites
+        this.lzardSpriteSpeed = 2;
+        this.lzardAnimIdle = [];
+        this.lzardAnimIdleLeft = [];
+        this.lzardAnimWalk = [];
+        this.lzardAnimWalkLeft = [];
+    }
+
+    initialize() {
+        // Load Images
+        this.img = new Image();
+
+        // --- Idle
+        for (let i = 0; i < 62; i++) {
+            if (i < 10) {
+                this.lzardAnimIdleLeft.push(`../img/Lzard/lzard_idle_left/lzard_idle_00_00${i}.png`);
+            } else {
+                this.lzardAnimIdleLeft.push(`../img/Lzard/lzard_idle_left/lzard_idle_00_0${i}.png`);
+            }
+        }
+        // --- Walking
+        for (let i = 0; i < 60; i++) {
+            if (i < 10) {
+                this.lzardAnimWalkLeft.push(`../img/Lzard/lzard_idle_left/Lzard_Animation_Walking_00${i}.png`);
+            } else {
+                this.lzardAnimWalkLeft.push(`../img/Lzard/lzard_idle_left/Lzard_Animation_Walking_0${i}.png`);
+            }
+        }
+    }
+
+    updateCollision() {
+        // Collision
+        this.left = this.x;
+        this.right = this.x + this.width;
+        this.top = this.y;
+        this.bottom = this.y + this.height;
+
+        this.collArr = [
+            {x: this.x, y: this.y}, // Top left
+            {x: this.x + this.width / 2, y: this.y}, // Top center
+            {x: this.x + this.width, y: this.y}, // Top right
+            {x: this.x + this.width, y: this.y + this.height / 2}, // Center Right
+            {x: this.x + this.width, y: this.y + this.height}, // Bottom Right
+            {x: this.x + this.width / 2, y: this.y + this.height}, // Bottom Center
+            {x: this.x, y: this.y + this.height}, // Bottom Left
+            {x: this.x, y: this.y + this.height / 2}, // Center Left
+        ];
+    }
+
+    
+}
+
+// Environment
 const environmentTileArray = [];
 class Environment {
     constructor(x, y, width, height, color, moves) {
@@ -201,7 +306,7 @@ class Environment {
         ];
     }
 
-    movePiece() {
+    movePiece(xPos, yPos) {
         this.y = yPos;
     }
 
@@ -240,6 +345,7 @@ window.onload = () => {
     function startGame() {
         state = "NORMAL";
         player.initialize();
+        
         gameHandler();
     }
 
@@ -294,13 +400,13 @@ window.onload = () => {
     // STATE NORMAL
     function stateNormal() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        gameHandler();
 
         // Collision / Movement
         if (yPos > 100) {
             yPos--;
             recordState();
         }
+        gameHandler();
     }
     // STATE STOP
     function stateStop() {
@@ -309,7 +415,6 @@ window.onload = () => {
     }
     // STATE REWIND
     function stateRewind() {
-        gameHandler();
 
         const lastFrame = gameRec[gameRec.length - 1];
         xPos = lastFrame.xPos;
@@ -320,6 +425,8 @@ window.onload = () => {
         } else {
             state = "STOP";
         }
+        
+        gameHandler();
 
     }
     // RECORD
@@ -327,9 +434,9 @@ window.onload = () => {
         gameRec.push({xPos, yPos})
     }
 
-    // LEVELS
+    // LEVELS FRAMEWORK
 
-    // Level switcher
+    // --- Level switcher
     function checkLevel() {
         switch (level) {
             case 0:
@@ -347,6 +454,8 @@ window.onload = () => {
                 break;
         }
     }
+    // LEVEL 0
+    // --- Init
     function level0Init() {
         // Movement
         xPos = 76;
@@ -354,30 +463,65 @@ window.onload = () => {
         xDir = 1;
         yDir = 1;
 
-        // Create environment
+        // Environment
         environmentTileArray.push(new Environment(0, canvas.height - 64, canvas.width, canvas.height, "darkgreen", false)); // Bottom Floor
         environmentTileArray.push(new Environment(0, 0, 64, canvas.height - 64, "brown", false)); // Left Wall
         environmentTileArray.push(new Environment(canvas.width - 64, canvas.height / 2 - 176, canvas.width - 256, 256, "brown", false)); // Right Wall
         environmentTileArray.push(new Environment(256, canvas.height / 2 - 64, canvas.width - 512, 64, "green", false)); // Middle Floor
         
+        // Elevator
         environmentTileArray.push(new Environment(xPos - 5, yPos - 5, 168 + 10, 64 + 10, "black", true)); // Elevator Piece 1
         environmentTileArray.push(new Environment(xPos, yPos, 168, 64, "orange", true)); // Elevator Piece 2
+        
+        enemyArray.push(new Enemy("Lzard", 1000, 600, 128, 128, 2, 2, 1, false, false));
+
+        for (let i = 0; i < enemyArray.length; i++) {
+            enemyArray[i].initialize();
+        }
 
         hasLevel0Init = true;
     }
-    // Level Framework
+    // --- Loop
     function level0() {
         // Move movable environment and re-draw
         for (let i = 0; i < environmentTileArray.length; i++) {
             if (environmentTileArray[i].moves) {
-                environmentTileArray[i].movePiece();
+                if (i === 4) {
+                    environmentTileArray[i].movePiece(xPos-5, yPos-5);
+                } else {
+                    environmentTileArray[i].movePiece(xPos, yPos);
+                }
                 environmentTileArray[i].updateCollision();
             }
             ctx.fillStyle = environmentTileArray[i].color;
             ctx.fillRect(environmentTileArray[i].x, environmentTileArray[i].y, environmentTileArray[i].width, environmentTileArray[i].height)
         }
+
+        // Enemies
+        for (let i = 0; i < enemyArray.length; i++) {
+            enemyArray[i].updateCollision();
+            animateSprite(
+                enemyArray[i], 
+                enemyArray[i].img, 
+                enemyArray[i].lzardAnimIdleLeft, 
+                enemyArray[i].lzardSpriteSpeed,
+                enemyArray[i].x, 
+                enemyArray[i].y, 
+                enemyArray[i].width, 
+                enemyArray[i].height
+            )
+        }
+
+
+
     }
 
+    // LEVEL 1
+    // --- Init
+    function level1Init() {
+
+    }
+    // --- Loop
     function level1() {
 
     }
@@ -398,6 +542,8 @@ window.onload = () => {
             grvAcc = 1;
         }        
 
+        player.checkEnemyCollision()
+
         if (player.jump) {
             if (grvAcc < player.ySpeed) grvAcc += .25;
             player.y -= player.jumpSpeed + grvAcc;
@@ -417,26 +563,26 @@ window.onload = () => {
 
         // MOVEMENT
         // --- Move Left
-        if (player.moveLeft && player.x > 0) {
+        if (player.moveLeft && player.x > 0 && !player.checkEnemyCollision()) {
             player.x -= player.xSpeed;
-            animateSprite(player.img, player.animWalkLeft, player.x, player.y, player.width, player.height);
+            animateSprite(player, player.img, player.animWalkLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
         // --- Move Right
         } else if (player.moveRight && player.x < canvas.width - player.width) {
             player.x += player.xSpeed;
-            animateSprite(player.img, player.animWalk, player.x, player.y, player.width, player.height);
+            animateSprite(player, player.img, player.animWalk, player.spriteSpeed, player.x, player.y, player.width, player.height);
         // --- Shoot / Idle
         } else {
             if (playerFacing === 1) {
                 if (player.shoot) {
-                    animateSprite(player.img, player.animShoot, player.x, player.y, player.width, player.height);
+                    animateSprite(player, player.img, player.animShoot, player.spriteSpeed, player.x, player.y, player.width, player.height);
                 } else {
-                    animateSprite(player.img, player.animIdle, player.x, player.y, player.width, player.height);
+                    animateSprite(player, player.img, player.animIdle, player.spriteSpeed, player.x, player.y, player.width, player.height);
                 }
             } else if (playerFacing === -1) {
                 if (player.shoot) {
-                    animateSprite(player.img, player.animShootLeft, player.x, player.y, player.width, player.height);
+                    animateSprite(player, player.img, player.animShootLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
                 } else {
-                    animateSprite(player.img, player.animIdleLeft, player.x, player.y, player.width, player.height);
+                    animateSprite(player, player.img, player.animIdleLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
                 }
             }
         }
@@ -469,7 +615,8 @@ window.onload = () => {
                 if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
             break;
             case "p": // DEBUG
-                player.y--;
+                const newEnemy = new Enemy("Lzard", 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                newEnemy.initialize();
             break;
         }
     });
@@ -487,13 +634,13 @@ window.onload = () => {
     });
 
     // Animate Sprite Function
-    function animateSprite(imgContainer, sprite, x, y, w, h) {
-        if (playerSpriteCount > sprite.length - 2) {
-            playerSpriteCount = 0;
+    function animateSprite(obj, imgContainer, sprite, speed, x, y, w, h) {
+        if (obj.spriteCount > sprite.length - 2) {
+            obj.spriteCount = 0;
         }
-        if (animateId % 12 === 0) {
-            playerSpriteCount++;  
-            imgContainer.src = sprite[playerSpriteCount];         
+        if (animateId % speed === 0) {
+            obj.spriteCount++;  
+            imgContainer.src = sprite[obj.spriteCount];      
         }
         ctx.drawImage(imgContainer, x, y, w, h); 
     }
