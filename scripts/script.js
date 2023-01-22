@@ -1,4 +1,5 @@
 // Game Variables
+const globalArray = [];
 const gameRec = [];
 let state;
 let animateId;
@@ -182,6 +183,7 @@ class Enemy {
     constructor(id, name, x, y, width, height, xSpeed, ySpeed, facing, movesX, movesY, distX, distY, dirX, dirY) {
         // Main
         this.id = id;
+        this.alive = true;
 
         // Pass in vars
         this.name = name;
@@ -241,6 +243,11 @@ class Enemy {
                 this.lzardAnimWalkLeft.push(`../img/Lzard/lzard_walking_left/Lzard_Animation_Walking_0${i}.png`);
             }
         }
+
+        //const dummyLzard = new Enemy(-1, "Lzard", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        for (let i = 0; i < this.lzardAnimIdleLeft.length; i++) {
+            this.img.src = this.lzardAnimIdleLeft[i];
+        }
     }
 
     updateCollision() {
@@ -290,7 +297,8 @@ class Enemy {
     hit() {
         for (let i = 0; i < enemyArray.length; i++) {
             if (enemyArray[i].getId() === this.getId()) {
-                enemyArray.splice(i, 1);
+                enemyArray[i].x = -5000;
+                enemyArray[i].alive = false;
             }
         }
     }
@@ -303,7 +311,8 @@ class Enemy {
 // Environment
 const environmentTileArray = [];
 class Environment {
-    constructor(x, y, width, height, color, moves) {
+    constructor(id, x, y, width, height, color, moves) {
+        this.id = id;
         // Pass in vars
         this.x = x;
         this.y = y;
@@ -311,6 +320,10 @@ class Environment {
         this.height = height;
         this.color = color;
         this.moves = moves;
+
+        // Position
+        this.startX = this.x;
+        this.startY = this.y;
 
         // Collision
         this.left = this.x;
@@ -330,9 +343,19 @@ class Environment {
         ];
     }
 
-    movePiece(xPos, yPos) {
-        this.x = xPos;
-        this.y = yPos;
+    movePiece(movesX, movesY, speed, dir) {
+        if (this.x > 0 && this.y > 0 && this.x + this.width < canvas.width && this.y + this.height < canvas.height) {
+            // Horizontal movement
+            if (movesX) {
+                // Move
+                this.x += speed * dir;
+            }
+            // Vertical movement
+            if (movesY) {
+                // Move
+                this.y += speed * dir;
+            }
+        }
     }
 
     updateCollision() {
@@ -379,10 +402,7 @@ window.onload = () => {
     }
 
     function gameHandler() {
-        drawBackground();
         checkLevel();
-        drawPlayer();
-        enableEnemies();
         checkState();
     }
 
@@ -438,38 +458,96 @@ window.onload = () => {
     // STATE NORMAL
     function stateNormal() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Collision / Movement
-        if (yPos > 100) {
-            yPos--;
-            recordState();
-        }
+        drawBackgroundAndEnvironment()
+        drawPlayer();
+        enableEnemies();
+        recordGame();
         gameHandler();
     }
+
     // STATE STOP
     function stateStop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBackgroundAndEnvironment()
+        drawPlayer();
+        enableEnemies();
+
+        
+
         gameHandler();
         
     }
     // STATE REWIND
     function stateRewind() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBackgroundAndEnvironment()
+        drawPlayer();
 
-        const lastFrame = gameRec[gameRec.length - 1];
-        xPos = lastFrame.xPos;
-        yPos = lastFrame.yPos;
+        enableEnemies();
+        rewindGame();
+        gameHandler();
+
+    }
+    // RECORD
+    function recordGame() {
+        let environment = [];
+        let enemies = [];
+
+        for (let i = 0; i < environmentTileArray.length; i++) {
+            environment.push(
+                {
+                    id: `Environment ${i}`,
+                    x: environmentTileArray[i].x,
+                    y: environmentTileArray[i].y
+                }
+            );
+        }
+
+        for (let i = 0; i < enemyArray.length; i++) {
+            enemies.push(
+                {
+                    id: `Enemy ${i}`, 
+                    x: enemyArray[i].x, 
+                    y: enemyArray[i].y,
+                    dirX: enemyArray[i].dirX,
+                    dirY: enemyArray[i].dirY,
+                    facing: enemyArray[i].facing,
+                    anim: enemyArray[i].img.src,
+                    alive: enemyArray[i].alive,
+                }
+            );
+        }
+
+        gameRec.push([
+            environment, 
+            enemies
+        ]);
+    }
+
+    function rewindGame() {
+        const index = gameRec.length - 1;
         
+        // Restore Environment
+        for (let i = 0; i < environmentTileArray.length; i++) {
+            environmentTileArray[i].x = gameRec[index][0][i].x;
+            environmentTileArray[i].y = gameRec[index][0][i].y;
+        }
+        // Restore Enemies
+        for (let i = 0; i < enemyArray.length; i++) {
+            enemyArray[i].x = gameRec[index][1][i].x;
+            enemyArray[i].y = gameRec[index][1][i].y;
+            enemyArray[i].dirX = gameRec[index][1][i].dirX;
+            enemyArray[i].dirY = gameRec[index][1][i].dirY;
+            enemyArray[i].img.src = gameRec[index][1][i].anim;
+            enemyArray[i].alive = gameRec[index][1][i].alive;
+        }
+        // Delete Last Frame
         if (gameRec.length > 1) {
             gameRec.pop();
         } else {
             state = "STOP";
         }
         
-        gameHandler();
-
-    }
-    // RECORD
-    function recordState() {
-        gameRec.push({xPos, yPos})
     }
 
     // LEVELS FRAMEWORK
@@ -495,21 +573,15 @@ window.onload = () => {
     // LEVEL 0
     // --- Init
     function level0Init() {
-        // Movement
-        xPos = 76;
-        yPos = canvas.height - 128;
-        xDir = 1;
-        yDir = 1;
-
         // Environment
-        environmentTileArray.push(new Environment(0, canvas.height - 64, canvas.width, canvas.height, "darkgreen", false)); // Bottom Floor
-        environmentTileArray.push(new Environment(0, 0, 64, canvas.height - 64, "brown", false)); // Left Wall
-        environmentTileArray.push(new Environment(canvas.width - 64, canvas.height / 2 - 176, canvas.width - 256, 256, "brown", false)); // Right Wall
-        environmentTileArray.push(new Environment(256, canvas.height / 2 - 64, canvas.width - 512, 64, "green", false)); // Middle Floor
+        environmentTileArray.push(new Environment(0, 0, canvas.height - 64, canvas.width, canvas.height, "darkgreen", false)); // Bottom Floor
+        environmentTileArray.push(new Environment(1, 0, 0, 64, canvas.height - 64, "brown", false)); // Left Wall
+        environmentTileArray.push(new Environment(2, canvas.width - 64, canvas.height / 2 - 176, canvas.width - 256, 256, "brown", false)); // Right Wall
+        environmentTileArray.push(new Environment(3, 256, canvas.height / 2 - 64, canvas.width - 512, 64, "green", false)); // Middle Floor
         
         // Elevator
-        environmentTileArray.push(new Environment(xPos - 5, yPos - 5, 168 + 10, 64 + 10, "black", true)); // Elevator Piece 1
-        environmentTileArray.push(new Environment(xPos, yPos, 168, 64, "orange", true)); // Elevator Piece 2
+        environmentTileArray.push(new Environment(4, 76 - 5, canvas.height - 128 - 5, 168 + 10, 64 + 10, "black", true)); // Elevator Piece 1
+        environmentTileArray.push(new Environment(5, 76, canvas.height - 128, 168, 64, "orange", true)); // Elevator Piece 2
         
         enemyArray.push(new Enemy(0, "Lzard", 1000, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
         enemyArray.push(new Enemy(1, "Lzard", 500, 600, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
@@ -518,23 +590,19 @@ window.onload = () => {
             enemyArray[i].initialize();
         }
 
+        globalArray.push(
+            {
+                level: level, 
+                environment: environmentTileArray, 
+                enemies: enemyArray, 
+                player: player
+            }
+        );
         hasLevel0Init = true;
     }
     // --- Loop
     function level0() {
-        // Move movable environment and re-draw
-        for (let i = 0; i < environmentTileArray.length; i++) {
-            if (environmentTileArray[i].moves) {
-                if (i === 4) {
-                    environmentTileArray[i].movePiece(xPos-5, yPos-5);
-                } else {
-                    environmentTileArray[i].movePiece(xPos, yPos);
-                }
-                environmentTileArray[i].updateCollision();
-            }
-            ctx.fillStyle = environmentTileArray[i].color;
-            ctx.fillRect(environmentTileArray[i].x, environmentTileArray[i].y, environmentTileArray[i].width, environmentTileArray[i].height)
-        }
+
     }
 
     // LEVEL 1
@@ -643,8 +711,10 @@ window.onload = () => {
         for (let i = 0; i < enemyArray.length; i++) {
             const enemy = enemyArray[i].name;
             if (enemy === "Lzard") {
-                enemyArray[i].move();
                 enemyArray[i].updateCollision();
+
+                if (state === "NORMAL") enemyArray[i].move();
+            
                 
                 let sprite = enemyArray[i].lzardAnimIdleLeft;
                 if (enemyArray[i].movesX && enemyArray[i].dirX === -1) {
@@ -663,6 +733,7 @@ window.onload = () => {
                     enemyArray[i].width, 
                     enemyArray[i].height
                 )
+                
             }
         }
     }
@@ -685,7 +756,7 @@ window.onload = () => {
                 if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
             break;
             case "p": // DEBUG
-            
+                console.log(gameRec);
             break;
         }
     });
@@ -707,9 +778,16 @@ window.onload = () => {
         if (obj.spriteCount > sprite.length - 2) {
             obj.spriteCount = 0;
         }
-        if (animateId % speed === 0) {
-            obj.spriteCount++;  
-            imgContainer.src = sprite[obj.spriteCount];      
+        if (state === "NORMAL") {
+            if (animateId % speed === 0) {
+                obj.spriteCount++;  
+                imgContainer.src = sprite[obj.spriteCount];      
+            }
+        } else if (state !== "NORMAL" && obj === player) {
+            if (animateId % speed === 0) {
+                obj.spriteCount++;  
+                imgContainer.src = sprite[obj.spriteCount];      
+            }
         }
         ctx.drawImage(imgContainer, x, y, w, h); 
     }
@@ -718,24 +796,24 @@ window.onload = () => {
 
 
     // Draw Background
-    function drawBackground() {
+    function drawBackgroundAndEnvironment() {
         ctx.beginPath();
         ctx.fillStyle = "rgb(0, 195, 255)"
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.closePath();
-    }
 
-    function drawElevator() {
-        // Draw
-        ctx.beginPath();
-        ctx.fillStyle = "black"
-        ctx.fillRect(xPos - 5, yPos - 5, 168 + 10, 64 + 10);
-        ctx.closePath();
+        // Move movable environment and re-draw
+        for (let i = 0; i < environmentTileArray.length; i++) {
+            const speedY = 2;
+            if (environmentTileArray[i].moves && state === "NORMAL") {
+                    environmentTileArray[i].movePiece(false, true, 1, -1)
+            }
+            ctx.fillStyle = environmentTileArray[i].color;
+            ctx.fillRect(environmentTileArray[i].x, environmentTileArray[i].y, environmentTileArray[i].width, environmentTileArray[i].height)
+        }
 
-        ctx.beginPath();
-        ctx.fillStyle = "orange"
-        ctx.fillRect(xPos, yPos, 168, 64);
-        ctx.closePath();
-    }
-        
+        for (let i = 0; i < environmentTileArray.length; i++) {
+            environmentTileArray[i].updateCollision();
+        }
+    }   
 };
