@@ -142,30 +142,21 @@ class Player {
         }
     }
 
-    checkArrowCollision() {
+    checkArrowCollision(arr) {
         // Collision Arrow
         this.arrowLeft = this.arrowX;
         this.arrowRight = this.arrowX + this.arrowWidth;
         this.arrowTop = this.arrowY;
         this.arrowBottom = this.arrowY + this.arrowHeight;
-        for (let i = 0; i < environmentTileArray.length; i++) {
+        for (let i = 0; i < arr.length; i++) {
         // Arrow
-            if (this.arrowLeft < environmentTileArray[i].right &&
-                this.arrowRight > environmentTileArray[i].left &&
-                this.arrowTop < environmentTileArray[i].bottom &&
-                this.arrowBottom > environmentTileArray[i].top) {
-                    return "environment";
+            if (this.arrowLeft < arr[i].right &&
+                this.arrowRight > arr[i].left &&
+                this.arrowTop < arr[i].bottom &&
+                this.arrowBottom > arr[i].top) {
+                    return true;
             }
         }
-        for (let i = 0; i < enemyArray.length; i++) {
-            // Arrow
-                if (this.arrowLeft < enemyArray[i].right &&
-                    this.arrowRight > enemyArray[i].left &&
-                    this.arrowTop < enemyArray[i].bottom &&
-                    this.arrowBottom > enemyArray[i].top) {
-                        return "enemy";
-                }
-            }
     }
 
     spawnArrow() {
@@ -184,6 +175,10 @@ class Player {
 
     destroyArrow() {
         this.arrowFlying = false;
+    }
+
+    die() {
+        state = "DEAD";
     }
 }
 
@@ -378,6 +373,15 @@ window.onload = () => {
             case "REWIND":
                 animateId = requestAnimationFrame(stateRewind);
                 break;
+            case "DEAD":
+                cancelAnimationFrame(animateId);
+                ctx.beginPath();
+                ctx.fillStyle = "black";
+                ctx.fillRect(100, 100, canvas.width - 200, canvas.height - 200);
+                ctx.fillStyle = "red";
+                ctx.fillText("DEAD!", 200, 200, 1200);
+                ctx.closePath();
+                break;
             default:
                 break;
         }
@@ -529,16 +533,24 @@ window.onload = () => {
         }        
 
         if (player.jump) {
-            if (grvAcc < player.ySpeed) grvAcc += .25;
-            player.y -= player.jumpSpeed + grvAcc;
-
+            if (!player.checkCollision(environmentTileArray, 10, 0, -3, 0)){
+                if (grvAcc < player.ySpeed) grvAcc += .25;
+                player.y -= player.jumpSpeed + grvAcc;
+            } else {
+                player.jump = false;
+            }
             setTimeout(() => {
                 player.jump = false;
             }, 150);
         }
+
+        // ENEMY
+
+        if (player.checkCollision(enemyArray, 0, -16, 0, -32)) {
+            player.die();
+        }
         
         enableArrow();
-
         // MOVEMENT
         // --- Move Left
         if (player.moveLeft && player.x > 0 && !player.checkCollision(environmentTileArray, 0, 0, -1, 5)) {
@@ -579,9 +591,9 @@ window.onload = () => {
         // Arrow Interactions
         if (player.arrowFlying) {
             drawArrow();
-            if (player.checkArrowCollision() === "environment") {
+            if (player.checkArrowCollision(environmentTileArray)) {
                 player.destroyArrow();
-            } else if (player.checkArrowCollision() === "enemy") {
+            } else if (player.checkArrowCollision(enemyArray)) {
                 enemyArray.pop()
                 player.destroyArrow();
             } else if (player.arrowX > canvas.width + player.arrowWidth || player.arrowY < 0) {
