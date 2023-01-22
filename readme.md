@@ -7,6 +7,7 @@ Game Structure
 Classes:
 - Player
 - Enemies (static + moving)
+- Items
 - Environment (static + moving)
 
 Precise Collision Array Backup

@@ -37,6 +37,7 @@ class Player {
         this.canJump = false;
         this.shoot = false;
         this.canShoot = true;
+        this.inventory = [];
 
         // Arrow
         this.arrowImgDir = [];
@@ -103,7 +104,6 @@ class Player {
     }
 
     updateCollision() {
-
         // Collision
         this.left = this.x;
         this.right = this.x + this.width;
@@ -143,6 +143,18 @@ class Player {
         }
     }
 
+    checkInteractableCollision(arr) {
+        for (let i = 0; i < arr.length; i++) {
+            if (this.left < arr[i].right &&
+                this.right > arr[i].left &&
+                this.top < arr[i].bottom &&
+                this.bottom > arr[i].top) {
+                    this.interact(arr[i]);
+                    return true;
+            }
+        }
+    }
+
     spawnArrow() {
         // Set arrow values
         this.arrowDir = this.facing;
@@ -155,6 +167,13 @@ class Player {
 
         this.arrowX = this.x + 32 * this.arrowDir;
         this.arrowY = this.y + 32;
+    }
+
+    interact(obj) {
+        if (obj.getName() === "key" && obj.itemState !== "PICKED") {
+            this.inventory.push(obj)
+            obj.deactivate();
+        }
     }
 
     destroyArrow() {
@@ -270,17 +289,101 @@ class Enemy {
     }
 
     hit() {
-        for (let i = 0; i < enemyArray.length; i++) {
-            if (enemyArray[i].getId() === this.getId()) {
-                enemyArray[i].x = -5000;
-                enemyArray[i].alive = false;
-            }
+       this.x = -5000;
+       this.alive = false;
+    }
+}
+
+const itemArray = [];
+class Item {
+    constructor(id, itemState, name, x, y, width, height) {
+        this.id = id;
+        this.itemState = itemState;
+
+        // Pass in vars
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+
+        // Movement
+        this.moveX = false;
+        this.moveY = false;
+
+        // Image
+        this.img;
+        this.keySprite = [];
+    }
+
+    initialize() {
+        this.img = new Image();
+        this.keySprite.push("../img/Items/key_hanging.png", "../img/Items/key.png")
+
+        switch(this.name) {
+            case "key":
+                this.itemState = "HANGING";
+                this.img.src = this.keySprite[0];
+                break;
         }
     }
 
-    getId() {
-        return this.id;
+    updateCollision() {
+        // Collision
+        this.left = this.x;
+        this.right = this.x + this.width;
+        this.top = this.y;
+        this.bottom = this.y + this.height;
     }
+
+    checkCollision(arr, ot, or, ob, ol) {
+        for (let i = 0; i < arr.length; i++) {
+            if (this.left - ol < arr[i].right &&
+                this.right + or > arr[i].left &&
+                this.top - ot < arr[i].bottom &&
+                this.bottom + ob >= arr[i].top) { 
+                    if (this.bottom > arr[i].top) {
+                        this.y--;
+                    }
+                    return true;
+                }
+        }
+    }
+
+    hit() {
+        switch(this.name) {
+            case "key":
+                if (this.itemState === "HANGING") {
+                    this.itemState = "FALLING";
+                    this.moveY = true;
+                    this.move();
+                }
+                break;
+        }
+    }
+
+    move() {
+        switch(this.name) {
+            case "key":
+                if (this.moveY && !this.checkCollision(environmentTileArray, 0, 0, 3, 0)) {
+                    this.y += 2;
+                } else if (this.checkCollision(environmentTileArray, 0, 0, 3, 0)) {
+                    this.img.src = this.keySprite[1];
+                    this.width = 64;
+                    this.height = 32;
+                }
+        }
+    }
+
+    deactivate() {
+        this.itemState = "PICKED";
+        this.x = -5000;
+    }
+
+    getName() {
+        return this.name;
+    }
+
 }
 
 // Environment
@@ -333,8 +436,7 @@ class Environment {
     hit() {}
 }
 
-// Movement
-
+// Main Game Load
 window.onload = () => {
     const player = new Player(canvas.width - 100, canvas.height - 140, 64, 64, 3, 2, 10, -1);
     startGame();
@@ -404,31 +506,32 @@ window.onload = () => {
         drawBackgroundAndEnvironment()
         drawPlayer();
         enableEnemies();
+        drawItems();
         recordGame();
         gameHandler();
     }
-
     // STATE STOP
     function stateStop() {
         drawBackgroundAndEnvironment()
         drawPlayer();
         enableEnemies();
+        drawItems();
         gameHandler();
-        
     }
     // STATE REWIND
     function stateRewind() {
         drawBackgroundAndEnvironment()
         drawPlayer();
         enableEnemies();
+        drawItems();
         rewindGame();
         gameHandler();
-
     }
     // RECORD
     function recordGame() {
-        let environment = [];
-        let enemies = [];
+        const environment = [];
+        const enemies = [];
+        const items = [];
 
         for (let i = 0; i < environmentTileArray.length; i++) {
             environment.push(
@@ -454,10 +557,24 @@ window.onload = () => {
                     alive: enemyArray[i].alive,
                 }
             );
-            
         }
 
-        gameRec.push([environment, enemies]);
+        for (let i = 0; i < itemArray.length; i++) {
+            items.push(
+                {
+                    id: `Item ${i}`,
+                    x: itemArray[i].x,
+                    y: itemArray[i].y,
+                    width: itemArray[i].width,
+                    height: itemArray[i].height,
+                    moveX: itemArray[i].moveX,
+                    moveY: itemArray[i].moveY,
+                    itemState: itemArray[i].itemState,
+                    anim: itemArray[i].img.src,
+                }
+            );
+        }
+        gameRec.push([environment, enemies, items]);
     }
 
     function rewindGame() {
@@ -478,6 +595,18 @@ window.onload = () => {
             enemyArray[i].spriteCount = gameRec[index][1][i].spriteCount;
             enemyArray[i].alive = gameRec[index][1][i].alive;
         }
+        // Restore Items
+        for (let i = 0; i < itemArray.length; i++) {
+            itemArray[i].x = gameRec[index][2][i].x;
+            itemArray[i].y = gameRec[index][2][i].y;
+            itemArray[i].width = gameRec[index][2][i].width;
+            itemArray[i].height = gameRec[index][2][i].height;
+            itemArray[i].moveX = gameRec[index][2][i].moveX;
+            itemArray[i].moveY = gameRec[index][2][i].moveY;
+            itemArray[i].itemState = gameRec[index][2][i].itemState;
+            itemArray[i].img.src = gameRec[index][2][i].anim;
+        }
+
         // Delete Last Frame
         if (gameRec.length > 1) {
             gameRec.pop();
@@ -497,9 +626,12 @@ window.onload = () => {
                 level0();
                 break;
             case 1:
+                if (!hasLevel1Init) level1Init();
                 level1();
                 break;
             case 2:
+                if (!hasLevel2Init) level2Init();
+                level1();
                 break;
             case 3:
                 break;
@@ -523,26 +655,28 @@ window.onload = () => {
         // Enemies
         enemyArray.push(new Enemy(0, "Lzard", 1000, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
         enemyArray.push(new Enemy(1, "Lzard", 500, 600, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
+
+        // Items
+        itemArray.push(new Item(0, "HANGING", "key", canvas.width / 2, canvas.height / 2, 32, 64))
         
         // -- Initialize all enemies
         for (let i = 0; i < enemyArray.length; i++) {
             enemyArray[i].initialize();
+        }
+        for (let i = 0; i < itemArray.length; i++) {
+            itemArray[i].initialize();
         }
 
         // Initialize Level
         hasLevel0Init = true;
     }
     // --- Loop
-    function level0() {
-
-    }
+    function level0() {}
     // LEVEL 1
     // --- Init
-    function level1Init() {
-    }
+    function level1Init() {}
     // --- Loop
-    function level1() {
-    }
+    function level1() {}
 
 
 
@@ -627,6 +761,8 @@ window.onload = () => {
                 player.destroyArrow();
             } else if (player.checkArrowCollision(enemyArray)) {
                 player.destroyArrow();
+            } else if (player.checkArrowCollision(itemArray)) {
+                player.destroyArrow();
             } else if (player.arrowX > canvas.width + player.arrowWidth || player.arrowY < 0) {
                 player.destroyArrow();
             } else {
@@ -671,6 +807,20 @@ window.onload = () => {
         }
     }
 
+    // Draw Items
+    function drawItems() {
+        for (let i = 0; i < itemArray.length; i++) {
+            itemArray[i].updateCollision();
+            if (state === "NORMAL") itemArray[i].move();
+            if (state !== "PICKED") ctx.drawImage(itemArray[i].img, itemArray[i].x, itemArray[i].y, itemArray[i].width, itemArray[i].height)
+        }
+    }
+
+
+
+
+
+
     // Player Controls
     document.addEventListener("keydown", (e) => {
         switch (e.key) {
@@ -685,14 +835,14 @@ window.onload = () => {
             case " ": // Jump
                 if (player.canJump) player.jump = true;
             break;
+            case "e": // Interact
+                player.checkInteractableCollision(itemArray, 0, 0, 0, 0)
+            break;
             case "f": // Shoot
                 if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
             break;
             case "p": // DEBUG
-                console.log(gameRec[0]);
-                console.log(gameRec[1]);
-                console.log(gameRec[2]);
-                console.log(gameRec[3]);
+                console.log(player.inventory);
             break;
         }
     });
