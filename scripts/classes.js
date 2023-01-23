@@ -1,5 +1,4 @@
 // Player
-const playerInventory = [];
 class Player {
     constructor(x, y, width, height, xSpeed, ySpeed, jumpSpeed, facing) {
         // Pass in vars
@@ -19,6 +18,7 @@ class Player {
         this.canJump = false;
         this.shoot = false;
         this.canShoot = true;
+        this.hasKey = false;
 
         // Arrow
         this.arrowImgDir = [];
@@ -151,16 +151,14 @@ class Player {
     }
 
     interact(obj) {
-        if (obj.getName() === "key" && obj.getItemState() !== "PICKED") {
-            playerInventory.push(obj)
+        if (obj.getName() === "key" && state === "NORMAL") {
+            this.hasKey = true;
             obj.deactivate();
         }
         if (obj.getName() === "roomTransit" && obj.getItemState() === "CLOSED") {
-            for (let i = 0; i < playerInventory.length; i++) {
-                if (playerInventory[i].name === "key") {
-                    playerInventory.splice(i, 1);
-                    obj.deactivate();
-                }
+            if (this.hasKey) {
+                this.hasKey = false;
+                obj.deactivate();
             }
         } else if (obj.getName() === "roomTransit" && obj.getItemState() === "OPEN") {
             state = "ROOMTRANSIT";

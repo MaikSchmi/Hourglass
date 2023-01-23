@@ -72,8 +72,8 @@ window.onload = () => {
         environmentTileArray.push(new Environment(3, 256, canvas.height / 2 - 64, canvas.width - 512, 64, "green", false, false, 0, 0, 0, 0, 0)); // Middle Floor
         
         // -- Elevator
-        environmentTileArray.push(new Environment(4, 76 - 5, canvas.height - 128 - 5, 168 + 10, 64 + 10, "black", true, 1, 0, -1)); // Elevator Piece 1
-        environmentTileArray.push(new Environment(5, 76, canvas.height - 128, 168, 64, "orange", true, 1, 0, -1)); // Elevator Piece 2
+        environmentTileArray.push(new Environment(4, 76 - 5, canvas.height - 128 - 15, 168 + 10, 64 + 10, "black", false, true, 0, 396, 0, -1, 1)); // Elevator Piece 1
+        environmentTileArray.push(new Environment(5, 76, canvas.height - 128 - 10, 168, 64, "orange", false, true, 0, 396, 0, -1, 1)); // Elevator Piece 2
         
         // Enemies
         enemyArray.push(new Enemy(0, "Lzard", 1000, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
@@ -479,9 +479,18 @@ window.onload = () => {
 
     // RECORD
     function recordGame() {
+        const playerStats = [];
         const environment = [];
         const enemies = [];
         const items = [];
+
+        playerStats.push(
+            {
+                x: player.x,
+                y: player.y,
+                hasKey: player.hasKey,
+            }
+        );
 
         for (let i = 0; i < environmentTileArray.length; i++) {
             environment.push(
@@ -524,7 +533,7 @@ window.onload = () => {
                 }
             );
         }
-        gameRec.push([level, environment, enemies, items]);
+        gameRec.push([level, playerStats, environment, enemies, items]);
     }
 
     // REWIND
@@ -532,35 +541,36 @@ window.onload = () => {
         const index = gameRec.length - 1;
 
         // Prevent rewinding to previous level
-        if (gameRec[index][0] === level) {
-                
+        if (gameRec[index][0] === level) {    
+            // Restore Player (Only some values for regular Rewind)
+            player.hasKey = gameRec[index][1][0].hasKey;
+            console.log(gameRec[index][1][0].hasKey)
             // Restore Environment
             for (let i = 0; i < environmentTileArray.length; i++) {
-                environmentTileArray[i].x = gameRec[index][1][i].x;
-                environmentTileArray[i].y = gameRec[index][1][i].y;
+                environmentTileArray[i].x = gameRec[index][2][i].x;
+                environmentTileArray[i].y = gameRec[index][2][i].y;
             }
             // Restore Enemies
             for (let i = 0; i < enemyArray.length; i++) {
-                enemyArray[i].x = gameRec[index][2][i].x;
-                enemyArray[i].y = gameRec[index][2][i].y;
-                enemyArray[i].dirX = gameRec[index][2][i].dirX;
-                enemyArray[i].dirY = gameRec[index][2][i].dirY;
-                enemyArray[i].img.src = gameRec[index][2][i].anim;
-                enemyArray[i].spriteCount = gameRec[index][2][i].spriteCount;
-                enemyArray[i].alive = gameRec[index][2][i].alive;
+                enemyArray[i].x = gameRec[index][3][i].x;
+                enemyArray[i].y = gameRec[index][3][i].y;
+                enemyArray[i].dirX = gameRec[index][3][i].dirX;
+                enemyArray[i].dirY = gameRec[index][3][i].dirY;
+                enemyArray[i].img.src = gameRec[index][3][i].anim;
+                enemyArray[i].spriteCount = gameRec[index][3][i].spriteCount;
+                enemyArray[i].alive = gameRec[index][3][i].alive;
             }
             // Restore Items
             for (let i = 0; i < itemArray.length; i++) {
-                itemArray[i].x = gameRec[index][3][i].x;
-                itemArray[i].y = gameRec[index][3][i].y;
-                itemArray[i].width = gameRec[index][3][i].width;
-                itemArray[i].height = gameRec[index][3][i].height;
-                itemArray[i].moveX = gameRec[index][3][i].moveX;
-                itemArray[i].moveY = gameRec[index][3][i].moveY;
-                itemArray[i].itemState = gameRec[index][3][i].itemState;
-                itemArray[i].img.src = gameRec[index][3][i].anim;
+                itemArray[i].x = gameRec[index][4][i].x;
+                itemArray[i].y = gameRec[index][4][i].y;
+                itemArray[i].width = gameRec[index][4][i].width;
+                itemArray[i].height = gameRec[index][4][i].height;
+                itemArray[i].moveX = gameRec[index][4][i].moveX;
+                itemArray[i].moveY = gameRec[index][4][i].moveY;
+                itemArray[i].itemState = gameRec[index][4][i].itemState;
+                itemArray[i].img.src = gameRec[index][4][i].anim;
             }
-
             // Delete Last Frame
             if (gameRec.length > 1) {
                 gameRec.pop();
@@ -602,7 +612,7 @@ window.onload = () => {
                 if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
             break;
             case "p": // DEBUG
-                console.log(environmentTileArray[environmentTileArray.length - 1])
+                console.log(gameRec);
             break;
         }
     });
