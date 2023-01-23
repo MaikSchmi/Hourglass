@@ -1,10 +1,90 @@
 @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap');
 
 body {
+    background-color: rgb(248, 248, 112);
     font-family: "IBM Plex Mono", serif;
+    margin-top: 75px;
+    padding: 0;
 }
 
 .screen {
-    border: 1px solid rgb(0, 0, 0);
+    border: 5px solid rgb(0, 0, 0);
 }
 
+#title-screen-container {
+    display: flex;
+    justify-content: center;
+}
+
+#title-screen {
+    width: 1347px;
+    height: 780px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(109, 212, 246);
+    border: 5px solid black;
+}
+
+#title {
+    text-align: center;
+    font-size: 64px;
+    text-shadow: 5px 5px darkgray;
+}
+
+#title-screen-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#button-container {
+    width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-self: right;
+    list-style: none;
+}
+
+button {
+    font-weight: bold;
+    font-size: 24px;
+    width: 400px;
+    height: 50px;
+    margin: 10px;
+    background-color: rgb(248, 248, 112);
+    border-radius: 8px;
+    border: 7px rgb(211, 211, 13) outset;
+}
+
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+#title-credit {
+    text-align: center;
+}
+
+
+
+#credits {
+
+}
+
+
+
+#game-canvas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+
+#btn-retry {
+    background-color: red;
+}

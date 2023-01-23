@@ -1,3 +1,19 @@
+// Menu Controls
+const btnStart = document.getElementById("btn-start");
+const btnTimeTrial = document.getElementById("btn-time-trial");
+const btnHighscores = document.getElementById("btn-highscores");
+const btnCredits = document.getElementById("btn-credits");
+const btnQuit = document.getElementById("btn-quit");
+const btnRetry = document.getElementById("btn-retry");
+
+// Display
+const mainMenu = document.getElementById("title-screen-container");
+const canvas = document.querySelector(".screen");
+const ctx = canvas.getContext("2d");
+let roomTransitAlpha = 1;
+let fadeOut = false;
+let bgColor = "rgb(0, 195, 255)"
+
 // Game Variables
 const gameRec = [];
 const globalGameRec = [];
@@ -5,7 +21,7 @@ let state;
 let animateId;
 
 // Levels
-let level = 6;
+let level = 1;
 let hasLevel0Init = false;
 let hasLevel1Init = false;
 let hasLevel2Init = false;
@@ -21,15 +37,35 @@ let hasLevel9Init = false;
 const grv = 3;
 let grvAcc = 5;
 
-// Display
-const canvas = document.querySelector(".screen");
-const ctx = canvas.getContext("2d");
-let roomTransitAlpha = 0;
-let fadeOut = true;
-let bgColor = "rgb(0, 195, 255)"
 
 // Main Game Load
 window.onload = () => {
+    canvas.style.visibility = "hidden";
+    btnRetry.style.display = "none";
+    // Menu Controls
+    btnStart.addEventListener("click", e => {
+        state = "ROOMTRANSIT";
+        mainMenu.style.display = "none";
+        canvas.style.visibility = "visible";
+    });
+    btnTimeTrial.addEventListener("click", e => {
+        console.log("clicked")
+    });
+    btnHighscores.addEventListener("click", e => {
+        console.log("clicked")
+    });
+    btnCredits.addEventListener("click", e => {
+        console.log("clicked")
+    });
+    btnQuit.addEventListener("click", e => {
+        alert("Just close the browser tab ...");
+    });
+    btnRetry.addEventListener("click", e => {
+        state = "LEVELREWIND";
+        btnRetry.style.display = "none";
+        checkState();
+    });
+    
     const player = new Player(canvas.width - 100, canvas.height - 140, 64, 64, 3, 2, 10, -1);
     startGame();
     // Start
@@ -82,7 +118,7 @@ window.onload = () => {
         // Items
         itemArray.push(new Item(0, "HANGING", "key", canvas.width / 2, canvas.height / 2, 32, 64))
         itemArray.push(new Item(1, "CLOSED", "roomTransit", canvas.width - 148, canvas.height / 5 - 4, 64, 64))
-        itemArray.push(new Item(2, "NONE", "roomTransit", player.x, player.y + 12, 64, 64))
+        itemArray.push(new Item(2, "NONE", "roomTransit", player.x, player.y, 64, 64))
         
         // Initialize Objects
         initializeAll();
@@ -93,15 +129,15 @@ window.onload = () => {
         moveAllForNextLevel();
         // Move Player
         player.x = 10;
-        player.y = canvas.height - 140;
+        player.y = canvas.height - 128;
         player.facing = 1;
         
         // Environment
         environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width, 64, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
         environmentTileArray.push(new Environment(7, 0, canvas.height - 64, canvas.width, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
         // Items
-        itemArray.push(new Item(4, "FALLING", "key", 900, player.y + 48, 64, 32)); // Key
-        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 78, player.y + 12, 64, 64)); // Level end
+        itemArray.push(new Item(4, "FALLING", "key", 900, player.y + 36, 64, 32)); // Key
+        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 78, player.y, 64, 64)); // Level end
         // Prompts
         promptArray.push(new Prompt(`Use A to move left, D to move right.`, 100, 100, 450, 100, player.x, player.y, 64, 64));
         promptArray.push(new Prompt(`Press E to pick up the key (stand on it).`, 800, 100, 470, 100, 800, player.y, 128, 64));
@@ -118,7 +154,7 @@ window.onload = () => {
         moveAllForNextLevel();
         // Move Player
         player.x = 10;
-        player.y = canvas.height - 140;
+        player.y = canvas.height - 128;
         player.facing = 1;
         // Environment
         environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width, 64, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
@@ -128,9 +164,9 @@ window.onload = () => {
         environmentTileArray.push(new Environment(7, canvas.width / 2 - 37 - 128, canvas.height - 192, 64, 128, "darkred", false, false, 0, 0, 0, 0, 0)); // Jump Block
         environmentTileArray.push(new Environment(7, canvas.width / 2 + 24 - 128, canvas.height - 256, 64, 192, "darkred", false, false, 0, 0, 0, 0, 0)); // Jump Block
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
-        itemArray.push(new Item(4, "FALLING", "key", 900, player.y + 48, 64, 32)); // Key
-        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 78, player.y + 12, 64, 64)); // Level end
+        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
+        itemArray.push(new Item(4, "FALLING", "key", 900, player.y + 36, 64, 32)); // Key
+        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 78, player.y, 64, 64)); // Level end
         // Prompts
         promptArray.push(new Prompt(`Press Spacebar to jump.`, 500, 100, 330, 100, 300, player.y, 64, 64));
         promptArray.push(new Prompt(`Remember: Pick up the key and use it with E !`, 800, 100, 550, 100, 800, player.y, 128, 64));
@@ -145,7 +181,7 @@ window.onload = () => {
         moveAllForNextLevel();
         // Move Player
         player.x = 10;
-        player.y = canvas.height - 140;
+        player.y = canvas.height - 128;
         player.facing = 1;
 
         // Environment
@@ -159,9 +195,9 @@ window.onload = () => {
         enemyArray.push(new Enemy(0, "Lzard", 750, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
 
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
-        itemArray.push(new Item(4, "FALLING", "key", 900, player.y + 48, 64, 32)); // Key
-        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 78, player.y + 12, 64, 64)); // Level end
+        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
+        itemArray.push(new Item(4, "FALLING", "key", 900, player.y + 36, 64, 32)); // Key
+        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 78, player.y, 64, 64)); // Level end
         
         // Prompts
         promptArray.push(new Prompt(`Watch out! A dangerous Lizard!`, 250, 250, 400, 100, 100, player.y, 256, 64));
@@ -177,7 +213,7 @@ window.onload = () => {
         moveAllForNextLevel();
         // Move Player
         player.x = 10;
-        player.y = canvas.height - 140;
+        player.y = canvas.height - 128;
         player.facing = 1;
 
         // Environment
@@ -201,9 +237,9 @@ window.onload = () => {
         enemyArray.push(new Enemy(0, "Lzard", 800, 425, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
 
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
-        itemArray.push(new Item(4, "HANGING", "key", 400, player.y - 170, 32, 64)); // Key
-        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 96, player.y - 164, 64, 64)); // Level end
+        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
+        itemArray.push(new Item(4, "HANGING", "key", 400, player.y - 158, 32, 64)); // Key
+        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 96, player.y - 152, 64, 64)); // Level end
         
         // Prompts
         promptArray.push(new Prompt(`You may have to get creative to reach this key ...`, 400, 250, 560, 100, 300, player.y, 256, 64));
@@ -220,7 +256,7 @@ window.onload = () => {
 
         // Move Player
         player.x = 10;
-        player.y = canvas.height - 140;
+        player.y = canvas.height - 128;
         player.facing = 1;
         
         // Environment
@@ -237,7 +273,7 @@ window.onload = () => {
         environmentTileArray.push(new Environment(5, canvas.width / 2 + 270, canvas.height - 118, 148, 44, "brown", false, true, 0, 396, 0, -1, 1)); // Elevator Piece
 
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
+        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
         itemArray.push(new Item(4, "HANGING", "key", canvas.width / 2 + 324, 96, 32, 64)); // Key
         itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 96, 192, 64, 64)); // Level end
         
@@ -256,7 +292,7 @@ window.onload = () => {
         moveAllForNextLevel();
         // Move Player
         player.x = 10;
-        player.y = canvas.height - 140;
+        player.y = canvas.height - 128;
         player.facing = 1;
         
         // Environment
@@ -278,9 +314,9 @@ window.onload = () => {
         environmentTileArray.push(new Environment(5, canvas.width / 2 + 277, 126, 148, 44, "brown", false, true, 0, 396, 0, 1, 1)); // Elevator 2 Piece
         
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
+        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
         itemArray.push(new Item(4, "HANGING", "key", canvas.width / 2, 64, 32, 64)); // Key
-        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 96, player.y + 12, 64, 64)); // Level end
+        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 96, player.y, 64, 64)); // Level end
 
         // Initialize Objects
         initializeAll();
@@ -376,16 +412,24 @@ window.onload = () => {
             case "REWIND":
                 animateId = requestAnimationFrame(stateRewind);
                 break;
+            case "LEVELREWIND":
+                animateId = requestAnimationFrame(levelRewind);
+                break;
+            case "FULLREWIND":
+                animateId = requestAnimationFrame(fullRewind);
+                break;
             case "ROOMTRANSIT":
                 animateId = requestAnimationFrame(roomTransit);
                 break;
             case "DEAD":
+                btnRetry.style.display = "block";
                 cancelAnimationFrame(animateId);
                 ctx.beginPath();
                 ctx.fillStyle = "black";
                 ctx.fillRect(100, 100, canvas.width - 200, canvas.height - 200);
+                ctx.font = ctx.font.replace(/\d+px/, "40px");
                 ctx.fillStyle = "red";
-                ctx.fillText("DEAD!", 200, 200, 1200);
+                ctx.fillText("YOU ARE DEAD!", canvas.width / 2 - 200, canvas.height / 2 - 50, 1200);
                 ctx.closePath();
                 break;
             default:
@@ -442,6 +486,17 @@ window.onload = () => {
         rewindGame();
         gameHandler();
     }
+    function levelRewind() {
+        drawBackgroundAndEnvironment()
+        drawItems();
+        drawPlayer();
+        enableEnemies();
+        rewindGame();
+        gameHandler();
+    }
+    function fullRewind() {
+
+    }
     function roomTransit() {
         drawBackgroundAndEnvironment()
         drawItems();
@@ -489,6 +544,8 @@ window.onload = () => {
                 x: player.x,
                 y: player.y,
                 hasKey: player.hasKey,
+                anim: player.img.src,
+                spriteCount: player.spriteCount,
             }
         );
 
@@ -538,13 +595,30 @@ window.onload = () => {
 
     // REWIND
     function rewindGame() {
-        const index = gameRec.length - 1;
+        let rewindSpeeder;
+        if (state === "REWIND") {
+            rewindSpeeder = 1;
+        } else if (state === "LEVELREWIND") {
+            rewindSpeeder = 5;
+        } else if (state === "FULLREWIND") {
+            rewindSpeeder = 20;
+        }
+        let index = gameRec.length - rewindSpeeder;
+
+        if (index <= 0) index = 0;
 
         // Prevent rewinding to previous level
-        if (gameRec[index][0] === level) {    
+        if (gameRec[index][0] === level && (state === "REWIND" || state === "LEVELREWIND")) {    
             // Restore Player (Only some values for regular Rewind)
             player.hasKey = gameRec[index][1][0].hasKey;
-            console.log(gameRec[index][1][0].hasKey)
+
+            if (state === "LEVELREWIND" || state === "FULLREWIND") {
+                player.x = gameRec[index][1][0].x;
+                player.y = gameRec[index][1][0].y;
+                player.img.src = gameRec[index][1][0].anim;
+                player.spriteCount = gameRec[index][1][0].spriteCount;
+            }
+
             // Restore Environment
             for (let i = 0; i < environmentTileArray.length; i++) {
                 environmentTileArray[i].x = gameRec[index][2][i].x;
@@ -572,15 +646,14 @@ window.onload = () => {
                 itemArray[i].img.src = gameRec[index][4][i].anim;
             }
             // Delete Last Frame
-            if (gameRec.length > 1) {
-                gameRec.pop();
-            } else {
-                state = "STOP";
-            }
+            gameRec.splice(index, rewindSpeeder);
+            if (index === 0) state = "NORMAL";
+
         } else {
-            state = "STOP";
+            state = "NORMAL";
         }
     }
+    
     // COPY LEVEL RECORD
     function globalRecordGame() {
         globalGameRec.push(gameRec);
@@ -595,10 +668,12 @@ window.onload = () => {
     document.addEventListener("keydown", (e) => {
         switch (e.key) {
             case "d": // Left
+            case "ArrowRight":
                 player.facing = 1;
                 player.moveRight = true;
             break;
             case "a": // Right
+            case "ArrowLeft":
                 player.facing = -1;
                 player.moveLeft = true;
             break;
@@ -619,23 +694,27 @@ window.onload = () => {
     document.addEventListener("keyup", (e) => {
         switch (e.key) {
             case "d":
+            case "ArrowRight":
                 player.facing = 1;
                 player.moveRight = false;
             break;
             case "a":
+            case "ArrowLeft":
                 player.facing = -1;
                 player.moveLeft = false;
             break;
         }
     });
 
+    function blockPlayerStates() {
+        return (state === "ROOMTRANSIT" || state === "LEVELREWIND" || state === "FULLREWIND");
+    }
     // Update Player
     function drawPlayer() {
-        // Stop player if in room transit
-        if (state !== "ROOMTRANSIT") {
-            // PHYSICS
-            player.updateCollision();
-            // --- Ground contact, enable jump
+        // PHYSICS
+        player.updateCollision();
+        // --- Ground contact, enable jump
+        if (!blockPlayerStates()) {
             if (player.checkCollision(environmentTileArray, 0, 0, 1, 0)) {
                 player.canJump = true;
                 grvAcc = 1;
@@ -643,11 +722,11 @@ window.onload = () => {
                 player.canJump = false;
                 if (grvAcc < player.ySpeed) grvAcc += .25;
                 player.y += grv + grvAcc;
-            }        
+            } 
 
             // --- Jump
             if (player.jump) {
-                if (!player.checkCollision(environmentTileArray, 10, 0, -3, 0)){
+                if (!player.checkCollision(environmentTileArray, 10, 0, -3, 0)) {
                     if (grvAcc < player.ySpeed) grvAcc += .25;
                     player.y -= player.jumpSpeed + grvAcc;
                 } else {
@@ -666,32 +745,32 @@ window.onload = () => {
             // Check for prompts
             player.checkInteractableCollision(promptArray, 0, 0, 0, 0)
 
-            // Update Arrow Use
-            enableArrow();
+        }
+        // Update Arrow Use
+        enableArrow();
 
-            // MOVEMENT
-            // --- Move Left
-            if (player.moveLeft && player.x > 0 && !player.checkCollision(environmentTileArray, 0, 0, -1, 5) && !player.shoot) {
-                player.x -= player.xSpeed;
-                animateSprite(player, player.img, player.animWalkLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
-            // --- Move Right
-            } else if (player.moveRight && player.x < canvas.width - player.width && !player.checkCollision(environmentTileArray, 0, 5, -1, 0) && !player.shoot) {
-                player.x += player.xSpeed;
-                animateSprite(player, player.img, player.animWalk, player.spriteSpeed, player.x, player.y, player.width, player.height);
-            // --- Shoot / Idle
-            } else {
-                if (player.facing === 1) {
-                    if (player.shoot) {
-                        animateSprite(player, player.img, player.animShoot, player.spriteSpeed, player.x, player.y, player.width, player.height);
-                    } else {
-                        animateSprite(player, player.img, player.animIdle, player.spriteSpeed, player.x, player.y, player.width, player.height);
-                    }
-                } else if (player.facing === -1) {
-                    if (player.shoot) {
-                        animateSprite(player, player.img, player.animShootLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
-                    } else {
-                        animateSprite(player, player.img, player.animIdleLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
-                    }
+        // MOVEMENT
+        // --- Move Left
+        if (player.moveLeft && player.x > 0 && !player.checkCollision(environmentTileArray, 0, 0, -1, 5) && !player.shoot) {
+            if (!blockPlayerStates()) player.x -= player.xSpeed;
+            animateSprite(player, player.img, player.animWalkLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
+        // --- Move Right
+        } else if (player.moveRight && player.x < canvas.width - player.width && !player.checkCollision(environmentTileArray, 0, 5, -1, 0) && !player.shoot) {
+            if (!blockPlayerStates()) player.x += player.xSpeed;
+            animateSprite(player, player.img, player.animWalk, player.spriteSpeed, player.x, player.y, player.width, player.height);
+        // --- Shoot / Idle
+        } else {
+            if (player.facing === 1) {
+                if (player.shoot) {
+                    animateSprite(player, player.img, player.animShoot, player.spriteSpeed, player.x, player.y, player.width, player.height);
+                } else {
+                    animateSprite(player, player.img, player.animIdle, player.spriteSpeed, player.x, player.y, player.width, player.height);
+                }
+            } else if (player.facing === -1) {
+                if (player.shoot) {
+                    animateSprite(player, player.img, player.animShootLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
+                } else {
+                    animateSprite(player, player.img, player.animIdleLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
                 }
             }
         }
@@ -746,7 +825,7 @@ window.onload = () => {
                 } else if (enemyArray[i].movesX && enemyArray[i].dirX === 1) {
                     sprite = enemyArray[i].lzardAnimWalk;
                 }
-                animateSprite(
+                 animateSprite(
                     enemyArray[i], 
                     enemyArray[i].img, 
                     sprite,

@@ -1,5 +1,13 @@
 ToDo
-- Object Class (for Key)
+- Other controls for Rewind and Resume time
+- Include ArrowLeft and ArrowRight in Tutorial Prompt for controls
+- include visual feedback for time rewind / resume / stop
+- Time Counter
+- Highscore board
+- Player name input
+- Limitation to use of rewind time
+
+- Change CSS #title-screen button border to "inset" when clicked
 
 
 Game Structure

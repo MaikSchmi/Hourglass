@@ -1,15 +1,33 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Hourglass</title>
+        <title>Inside The Hourglass - MS</title>
         <link rel="stylesheet" href="./styles/style.css" />
     </head>
     <body>
-        <div id="title-screen">
-            
+        <div id="title-screen-container">
+            <div id="title-screen">
+                <h1 id="title">- Inside The Hourglass -</h1>
+                <div id="title-screen-content">
+                    <ul id="button-container">
+                        <li><button type="button" id="btn-start">Start Game</button></li>
+                        <li><button type="button" id="btn-time-trial">Time Trial Mode</button></li>
+                        <li><button type="button" id="btn-highscores">Highscores</button></li>
+                        <li><button type="button" id="btn-credits"><a href="https://crosnake.itch.io/">Play My Other Games!</a></button></li>
+                        <li><button type="button" id="btn-quit">Quit Game</button></li>
+                    </ul>
+                    <div id="title-credit">
+                        <h2>A Game by Maik Schmidt</h2>
+                    </div>  
+                </div>
+            </div>
+        </div>
+        <div id="highscores">
+
         </div>
         <div id="game-canvas">
             <canvas class="screen" width="1347" height="780"></canvas>
+            <button type="button" id="btn-retry">Retry</button>
         </div>
         <script src="./scripts/classes.js"></script>
         <script src="./scripts/script.js"></script>
