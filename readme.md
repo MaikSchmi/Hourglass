@@ -4,11 +4,28 @@ ToDo
 
 Game Structure
 
+=== classes.js ===
+Contains the classes that are being defined for the game.
+
 Classes:
 - Player
-- Enemies (static + moving)
-- Items
-- Environment (static + moving)
+- Enemies ("Lzard")
+- Items ("key", "roomtransit", "door")
+- Environment (Walls, Floors, Elevators)
+
+
+=== script.js ===
+
+
+
+
+
+
+
+
+=== OTHER ===
+
+- BACKUP CODE
 
 Precise Collision Array Backup
 

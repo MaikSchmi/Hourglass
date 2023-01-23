@@ -1,5 +1,5 @@
 // Player
-const playerInventory =[];
+const playerInventory = [];
 class Player {
     constructor(x, y, width, height, xSpeed, ySpeed, jumpSpeed, facing) {
         // Pass in vars
@@ -164,6 +164,8 @@ class Player {
             }
         } else if (obj.getName() === "roomTransit" && obj.getItemState() === "OPEN") {
             state = "ROOMTRANSIT";
+        } else if (obj.getName() === "prompt") {
+            obj.showPrompt();
         }
     }
 
@@ -301,6 +303,8 @@ class Item {
         // Movement
         this.moveX = false;
         this.moveY = false;
+        this.startX;
+        this.startY;
 
         // Image
         this.img;
@@ -315,12 +319,18 @@ class Item {
 
         switch(this.name) {
             case "key":
-                this.itemState = "HANGING";
-                this.img.src = this.keySprite[0];
+                if (this.itemState === "HANGING")
+                    this.img.src = this.keySprite[0];
+                else if (this.itemState === "FALLING") {
+                    this.img.src = this.keySprite[1];
+                }
                 break;
             case "roomTransit":
-                this.itemState = "CLOSED";
-                this.img.src = this.roomTransitSprite[0];
+                if (this.itemState === "CLOSED") {
+                    this.img.src = this.roomTransitSprite[0];
+                } else {
+                    this.img.src = this.roomTransitSprite[1];
+                }
                 break;
         }
     }
@@ -442,4 +452,50 @@ class Environment {
     }
 
     hit() {}
+}
+const promptArray = [];
+class Prompt {
+    constructor(text, promptX, promptY, promptWidth, promptHeight, triggerX, triggerY, triggerWidth, triggerHeight) {
+        // Pass in vars
+        this.text = text;
+        this.promptX = promptX;
+        this.promptY = promptY;
+        this.promptWidth = promptWidth;
+        this.promptHeight = promptHeight;
+        this.triggerX = triggerX;
+        this.triggerY = triggerY;
+        this.triggerWidth = triggerWidth;
+        this.triggerHeight = triggerHeight;
+        this.name = "prompt";
+
+        // Collision
+        this.left = this.triggerX;
+        this.right = this.triggerX + this.triggerWidth;
+        this.top = this.triggerY;
+        this.bottom = this.triggerY + this.triggerHeight;
+    }
+
+    updateCollision() {
+        // Collision
+        this.left = this.triggerX;
+        this.right = this.triggerX + this.triggerWidth;
+        this.top = this.triggerY;
+        this.bottom = this.triggerY + this.triggerHeight;
+    }
+
+    showPrompt() {
+        ctx.font = ctx.font.replace(/\d+px/, "20px");
+
+        ctx.beginPath();
+        ctx.fillStyle = "black";
+        ctx.fillRect(this.promptX, this.promptY, this.promptWidth, this.promptHeight);
+        ctx.fillStyle = "white";
+        ctx.fillText(this.text, this.promptX + 50, this.promptY + 50)
+        ctx.closePath();
+    }
+
+    getName() {
+        return this.name;
+    }
+
 }

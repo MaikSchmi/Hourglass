@@ -5,10 +5,17 @@ let state;
 let animateId;
 
 // Levels
-let level = 0;
+let level = 1;
 let hasLevel0Init = false;
 let hasLevel1Init = false;
 let hasLevel2Init = false;
+let hasLevel3Init = false;
+let hasLevel4Init = false;
+let hasLevel5Init = false;
+let hasLevel6Init = false;
+let hasLevel7Init = false;
+let hasLevel8Init = false;
+let hasLevel9Init = false;
 
 // Physics
 const grv = 3;
@@ -47,11 +54,9 @@ window.onload = () => {
                 break;
             case 1:
                 if (!hasLevel1Init) level1Init();
-                level1();
                 break;
             case 2:
                 if (!hasLevel2Init) level2Init();
-                level2();
                 break;
             case 3:
                 break;
@@ -60,8 +65,8 @@ window.onload = () => {
         }
     }
     // LEVEL 0
-    // --- Init
     function level0Init() {
+        moveAllForNextLevel();
         // Environment
         environmentTileArray.push(new Environment(0, 0, canvas.height - 64, canvas.width, canvas.height, "darkgreen", false)); // Bottom Floor
         environmentTileArray.push(new Environment(1, 0, 0, 64, canvas.height - 64, "brown", false)); // Left Wall
@@ -78,7 +83,8 @@ window.onload = () => {
 
         // Items
         itemArray.push(new Item(0, "HANGING", "key", canvas.width / 2, canvas.height / 2, 32, 64))
-        itemArray.push(new Item(0, "CLOSED", "roomTransit", canvas.width - 148, canvas.height / 5 - 4, 64, 64))
+        itemArray.push(new Item(1, "CLOSED", "roomTransit", canvas.width - 148, canvas.height / 5 - 4, 64, 64))
+        itemArray.push(new Item(2, "NONE", "roomTransit", player.x, player.y + 12, 64, 64))
         
         // -- Initialize all enemies
         for (let i = 0; i < enemyArray.length; i++) {
@@ -91,31 +97,66 @@ window.onload = () => {
         // Initialize Level
         hasLevel0Init = true;
     }
-    // --- Loop
-    function level0() {}
     // LEVEL 1
-    // --- Init
     function level1Init() {
         moveAllForNextLevel();
+        // Move Player
+        player.x = 10;
+        player.y = canvas.height - 140;
+        player.facing = 1;
+        
+        // Environment
+        environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width, canvas.height, "darkgreen", false)); // Bottom Floor
+        // Items
+        itemArray.push(new Item(4, "FALLING", "key", 900, player.y + 48, 64, 32)); // Key
+        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 78, player.y + 12, 64, 64)); // Level end
+        // Prompts
+        promptArray.push(new Prompt(`Use A to move left, D to move right.`, 100, 100, 430, 200, player.x, player.y, 64, 64));
+        promptArray.push(new Prompt(`Press E to pick up the key (stand on it).`, 800, 100, 470, 200, 800, player.y, 128, 64));
+        promptArray.push(new Prompt(`Press E next to the door to open it.`, 800, 100, 470, 200, canvas.width - 256, player.y, 128, 64));
+        promptArray.push(new Prompt(`Press E again to advance to the next level.`, 800, 100, 470, 200, canvas.width - 78, player.y, 128, 64));
 
 
-    }
-    // --- Loop
-    function level1() {
-        //console.log("level1 loop")
+        // -- Initialize all enemies
+        for (let i = 0; i < enemyArray.length; i++) {
+            enemyArray[i].initialize();
+        }
+        for (let i = 0; i < itemArray.length; i++) {
+            itemArray[i].initialize();
+        }
+
         hasLevel1Init = true;
     }
-        // LEVEL 2
-    // --- Init
+    // LEVEL 2
     function level2Init() {
-        //console.log("level2 initialized")
-    }
-    // --- Loop
-    function level2() {
-        //console.log("level2 loop")
+        moveAllForNextLevel();
+        // Move Player
+        player.x = 10;
+        player.y = canvas.height - 140;
+        player.facing = 1;
+        // Environment
+        environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width, canvas.height, "darkgreen", false)); // Bottom Floor
+        environmentTileArray.push(new Environment(7, canvas.width / 2 - 100 - 128, canvas.height - 128, 64, 64, "darkred", false)); // Jump Block
+        environmentTileArray.push(new Environment(7, canvas.width / 2 - 37 - 128, canvas.height - 192, 64, 128, "darkred", false)); // Jump Block
+        environmentTileArray.push(new Environment(7, canvas.width / 2 + 24 - 128, canvas.height - 256, 64, 192, "darkred", false)); // Jump Block
+        // Items
+        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
+        itemArray.push(new Item(4, "FALLING", "key", 900, player.y + 48, 64, 32)); // Key
+        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 78, player.y + 12, 64, 64)); // Level end
+        // Prompts
+        promptArray.push(new Prompt(`Press Spacebar to jump.`, 500, 100, 330, 200, 300, player.y, 64, 64));
+
+        // -- Initialize all enemies
+        for (let i = 0; i < enemyArray.length; i++) {
+            enemyArray[i].initialize();
+        }
+        for (let i = 0; i < itemArray.length; i++) {
+            itemArray[i].initialize();
+        }
+
         hasLevel2Init = true;
     }
-
+    
     // Function to move all objects away and make space for next room
     function moveAllForNextLevel() {
         for (let i = 0; i < environmentTileArray.length; i++) {
@@ -126,6 +167,10 @@ window.onload = () => {
         }
         for (let i = 0; i < itemArray.length; i++) {
             itemArray[i].x = -5000;
+        }
+        for (let i = 0; i < promptArray.length; i++) {
+            promptArray[i].triggerX = -5000;
+            promptArray[i].updateCollision();
         }
     }
 
@@ -364,7 +409,7 @@ window.onload = () => {
                 if (player.canJump) player.jump = true;
             break;
             case "e": // Interact
-                player.checkInteractableCollision(itemArray, 0, 0, 0, 0)
+                player.checkInteractableCollision(itemArray, 0, 0, 0, 0);
             break;
             case "f": // Shoot
                 if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
@@ -421,6 +466,9 @@ window.onload = () => {
                 player.die();
             }
             
+            // Check for prompts
+            player.checkInteractableCollision(promptArray, 0, 0, 0, 0)
+
             // Update Arrow Use
             enableArrow();
 
@@ -521,7 +569,7 @@ window.onload = () => {
         for (let i = 0; i < itemArray.length; i++) {
             itemArray[i].updateCollision();
             if (state === "NORMAL") itemArray[i].move();
-            if (state !== "PICKED") ctx.drawImage(itemArray[i].img, itemArray[i].x, itemArray[i].y, itemArray[i].width, itemArray[i].height)
+            if (state !== "PICKED") ctx.drawImage(itemArray[i].img, itemArray[i].x, itemArray[i].y, itemArray[i].width, itemArray[i].height);
         }
     }
 
@@ -535,10 +583,9 @@ window.onload = () => {
 
         // Move movable environment and re-draw
         for (let i = 0; i < environmentTileArray.length; i++) {
-            const speedY = 2;
             // Move movable pieces only if in NORMAL
             if (environmentTileArray[i].moves && state === "NORMAL") {
-                    environmentTileArray[i].movePiece(false, true, 1, -1)
+                    environmentTileArray[i].movePiece(false, true, 1, -1);
             }
             // Draw
             ctx.fillStyle = environmentTileArray[i].color;
@@ -549,7 +596,7 @@ window.onload = () => {
             environmentTileArray[i].updateCollision();
         }
     }
-    
+
     // Animate Sprite
     function animateSprite(obj, imgContainer, sprite, speed, x, y, w, h) {
         // Reset sprite count
