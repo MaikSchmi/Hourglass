@@ -6,6 +6,7 @@ ToDo
 - Highscore board
 - Player name input
 - Limitation to use of rewind time
+- Remove arrow collision from items except hanging keys
 
 - Change CSS #title-screen button border to "inset" when clicked
 

@@ -62,6 +62,7 @@ window.onload = () => {
     });
     btnRetry.addEventListener("click", e => {
         state = "LEVELREWIND";
+        level = 1;
         btnRetry.style.display = "none";
         checkState();
     });
@@ -102,23 +103,23 @@ window.onload = () => {
         moveAllForNextLevel();
         bgColor = "rgb(0, 195, 255)"
         // Environment
-        environmentTileArray.push(new Environment(0, 0, canvas.height - 64, canvas.width, canvas.height, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(1, 0, 0, 64, canvas.height - 64, "brown", false)); // Left Wall
-        environmentTileArray.push(new Environment(2, canvas.width - 256, canvas.height / 2 - 176, canvas.width - 256, 256, "brown", false, false, 0, 0, 0, 0, 0)); // Right Wall
-        environmentTileArray.push(new Environment(3, 256, canvas.height / 2 - 64, canvas.width - 512, 64, "green", false, false, 0, 0, 0, 0, 0)); // Middle Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width, canvas.height, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, 0, 0, 64, canvas.height - 64, "brown", false)); // Left Wall
+        environmentTileArray.push(new Environment(level, canvas.width - 256, canvas.height / 2 - 176, canvas.width - 256, 256, "brown", false, false, 0, 0, 0, 0, 0)); // Right Wall
+        environmentTileArray.push(new Environment(level, 256, canvas.height / 2 - 64, canvas.width - 512, 64, "green", false, false, 0, 0, 0, 0, 0)); // Middle Floor
         
         // -- Elevator
-        environmentTileArray.push(new Environment(4, 76 - 5, canvas.height - 128 - 15, 168 + 10, 64 + 10, "black", false, true, 0, 396, 0, -1, 1)); // Elevator Piece 1
-        environmentTileArray.push(new Environment(5, 76, canvas.height - 128 - 10, 168, 64, "orange", false, true, 0, 396, 0, -1, 1)); // Elevator Piece 2
+        environmentTileArray.push(new Environment(level, 76 - 5, canvas.height - 128 - 15, 168 + 10, 64 + 10, "black", false, true, 0, 396, 0, -1, 1)); // Elevator Piece 1
+        environmentTileArray.push(new Environment(level, 76, canvas.height - 128 - 10, 168, 64, "orange", false, true, 0, 396, 0, -1, 1)); // Elevator Piece 2
         
         // Enemies
-        enemyArray.push(new Enemy(0, "Lzard", 1000, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
-        enemyArray.push(new Enemy(1, "Lzard", 500, 600, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
+        enemyArray.push(new Enemy(level, "Lzard", 1000, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Lzard", 500, 600, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
 
         // Items
-        itemArray.push(new Item(0, "HANGING", "key", canvas.width / 2, canvas.height / 2, 32, 64))
-        itemArray.push(new Item(1, "CLOSED", "roomTransit", canvas.width - 148, canvas.height / 5 - 4, 64, 64))
-        itemArray.push(new Item(2, "NONE", "roomTransit", player.x, player.y, 64, 64))
+        itemArray.push(new Item(level, "HANGING", "key", canvas.width / 2, canvas.height / 2, 32, 64))
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 148, canvas.height / 5 - 4, 64, 64))
+        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y, 64, 64))
         
         // Initialize Objects
         initializeAll();
@@ -133,11 +134,11 @@ window.onload = () => {
         player.facing = 1;
         
         // Environment
-        environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width, 64, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(7, 0, canvas.height - 64, canvas.width, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width, 64, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
         // Items
-        itemArray.push(new Item(4, "FALLING", "key", 900, player.y + 36, 64, 32)); // Key
-        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 78, player.y, 64, 64)); // Level end
+        itemArray.push(new Item(level, "FALLING", "key", 900, player.y + 36, 64, 32)); // Key
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 78, player.y, 64, 64)); // Level end
         // Prompts
         promptArray.push(new Prompt(`Use A to move left, D to move right.`, 100, 100, 450, 100, player.x, player.y, 64, 64));
         promptArray.push(new Prompt(`Press E to pick up the key (stand on it).`, 800, 100, 470, 100, 800, player.y, 128, 64));
@@ -157,16 +158,16 @@ window.onload = () => {
         player.y = canvas.height - 128;
         player.facing = 1;
         // Environment
-        environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width, 64, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width, 64, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
 
-        environmentTileArray.push(new Environment(7, canvas.width / 2 - 100 - 128, canvas.height - 128, 64, 64, "darkred", false, false, 0, 0, 0, 0, 0)); // Jump Block
-        environmentTileArray.push(new Environment(7, canvas.width / 2 - 37 - 128, canvas.height - 192, 64, 128, "darkred", false, false, 0, 0, 0, 0, 0)); // Jump Block
-        environmentTileArray.push(new Environment(7, canvas.width / 2 + 24 - 128, canvas.height - 256, 64, 192, "darkred", false, false, 0, 0, 0, 0, 0)); // Jump Block
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 100 - 128, canvas.height - 128, 64, 64, "darkred", false, false, 0, 0, 0, 0, 0)); // Jump Block
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 37 - 128, canvas.height - 192, 64, 128, "darkred", false, false, 0, 0, 0, 0, 0)); // Jump Block
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 24 - 128, canvas.height - 256, 64, 192, "darkred", false, false, 0, 0, 0, 0, 0)); // Jump Block
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
-        itemArray.push(new Item(4, "FALLING", "key", 900, player.y + 36, 64, 32)); // Key
-        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 78, player.y, 64, 64)); // Level end
+        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
+        itemArray.push(new Item(level, "FALLING", "key", 900, player.y + 36, 64, 32)); // Key
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 78, player.y, 64, 64)); // Level end
         // Prompts
         promptArray.push(new Prompt(`Press Spacebar to jump.`, 500, 100, 330, 100, 300, player.y, 64, 64));
         promptArray.push(new Prompt(`Remember: Pick up the key and use it with E !`, 800, 100, 550, 100, 800, player.y, 128, 64));
@@ -185,19 +186,19 @@ window.onload = () => {
         player.facing = 1;
 
         // Environment
-        environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width, 64, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width, 64, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
 
-        environmentTileArray.push(new Environment(6, canvas.width / 2 + 140, 0, canvas.width / 2 - 140, canvas.height / 2 + 80, "green", false, false, 0, 0, 0, 0, 0)); // Ceiling
-        environmentTileArray.push(new Environment(6, canvas.width / 2 + 150, 0, canvas.width / 2 - 140, canvas.height / 2 + 70, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Ceiling
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 140, 0, canvas.width / 2 - 140, canvas.height / 2 + 80, "green", false, false, 0, 0, 0, 0, 0)); // Ceiling
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 150, 0, canvas.width / 2 - 140, canvas.height / 2 + 70, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Ceiling
         
         // Enemies
-        enemyArray.push(new Enemy(0, "Lzard", 750, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Lzard", 750, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
 
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
-        itemArray.push(new Item(4, "FALLING", "key", 900, player.y + 36, 64, 32)); // Key
-        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 78, player.y, 64, 64)); // Level end
+        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
+        itemArray.push(new Item(level, "FALLING", "key", 900, player.y + 36, 64, 32)); // Key
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 78, player.y, 64, 64)); // Level end
         
         // Prompts
         promptArray.push(new Prompt(`Watch out! A dangerous Lizard!`, 250, 250, 400, 100, 100, player.y, 256, 64));
@@ -217,29 +218,29 @@ window.onload = () => {
         player.facing = 1;
 
         // Environment
-        environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width / 2, 64, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(6, canvas.width / 2 - 1, canvas.height - 128, canvas.width / 2, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(6, canvas.width / 2 - 1, canvas.height - 128, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(6, canvas.width / 2 + 64 - 1, canvas.height - 240, canvas.width / 2, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(6, canvas.width / 2 + 64 - 1, canvas.height - 240, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width / 2, 64, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 1, canvas.height - 128, canvas.width / 2, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 1, canvas.height - 128, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 64 - 1, canvas.height - 240, canvas.width / 2, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 64 - 1, canvas.height - 240, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
         
-        environmentTileArray.push(new Environment(6, 0, 0, canvas.width / 2 - 140, canvas.height / 2 + 80, "green", false, false, 0, 0, 0, 0, 0)); // Ceiling
-        environmentTileArray.push(new Environment(6, 0, 0, canvas.width / 2 - 150, canvas.height / 2 + 70, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Ceiling
-        environmentTileArray.push(new Environment(6, canvas.width / 2 - 150, 0, canvas.width, 138, "green", false, false, 0, 0, 0, 0, 0)); // Ceiling
-        environmentTileArray.push(new Environment(6, 0, 0, canvas.width, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Ceiling
+        environmentTileArray.push(new Environment(level, 0, 0, canvas.width / 2 - 140, canvas.height / 2 + 80, "green", false, false, 0, 0, 0, 0, 0)); // Ceiling
+        environmentTileArray.push(new Environment(level, 0, 0, canvas.width / 2 - 150, canvas.height / 2 + 70, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Ceiling
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 150, 0, canvas.width, 138, "green", false, false, 0, 0, 0, 0, 0)); // Ceiling
+        environmentTileArray.push(new Environment(level, 0, 0, canvas.width, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Ceiling
         
-        environmentTileArray.push(new Environment(6, canvas.width - 128, 0, 128, 138, "orange", false, false, 0, 0, 0, 0, 0)); // Right Wall
-        environmentTileArray.push(new Environment(6, canvas.width - 128, 0, 128, 128, "brown", false, false, 0, 0, 0, 0, 0)); // Right Wall
-        environmentTileArray.push(new Environment(6, canvas.width - 128, 540, 128, 128, "orange", false, false, 0, 0, 0, 0, 0)); // Right Wall
-        environmentTileArray.push(new Environment(6, canvas.width - 128, 556, 128, 230, "brown", false, false, 0, 0, 0, 0, 0)); // Right Wall
+        environmentTileArray.push(new Environment(level, canvas.width - 128, 0, 128, 138, "orange", false, false, 0, 0, 0, 0, 0)); // Right Wall
+        environmentTileArray.push(new Environment(level, canvas.width - 128, 0, 128, 128, "brown", false, false, 0, 0, 0, 0, 0)); // Right Wall
+        environmentTileArray.push(new Environment(level, canvas.width - 128, 540, 128, 128, "orange", false, false, 0, 0, 0, 0, 0)); // Right Wall
+        environmentTileArray.push(new Environment(level, canvas.width - 128, 556, 128, 230, "brown", false, false, 0, 0, 0, 0, 0)); // Right Wall
         // Enemies
-        enemyArray.push(new Enemy(0, "Lzard", 800, 425, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
+        enemyArray.push(new Enemy(level, "Lzard", 800, 425, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
 
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
-        itemArray.push(new Item(4, "HANGING", "key", 400, player.y - 158, 32, 64)); // Key
-        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 96, player.y - 152, 64, 64)); // Level end
+        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
+        itemArray.push(new Item(level, "HANGING", "key", 400, player.y - 158, 32, 64)); // Key
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 96, player.y - 152, 64, 64)); // Level end
         
         // Prompts
         promptArray.push(new Prompt(`You may have to get creative to reach this key ...`, 400, 250, 560, 100, 300, player.y, 256, 64));
@@ -260,22 +261,22 @@ window.onload = () => {
         player.facing = 1;
         
         // Environment
-        environmentTileArray.push(new Environment(6, 0, 0, canvas.width / 1.5, canvas.height / 2, "orange", false, false, 0, 0, 0, 0, 0)); // Ceiling
-        environmentTileArray.push(new Environment(6, 0, 0, canvas.width / 1.5 - 10, canvas.height / 2 - 10, "brown", false, false, 0, 0, 0, 0, 0)); // Ceiling
-        environmentTileArray.push(new Environment(6, canvas.width / 1.5 - 10, 0, canvas.width, 96, "orange", false, false, 0, 0, 0, 0, 0)); // Ceiling Right
-        environmentTileArray.push(new Environment(6, canvas.width / 1.5 - 10, 0, canvas.width, 86, "brown", false, false, 0, 0, 0, 0, 0)); // Ceiling Right
-        environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width, 128, "orange", false, false, 0, 0, 0, 0, 0)); // Floor
-        environmentTileArray.push(new Environment(6, 0, canvas.height - 54, canvas.width, 230, "brown", false, false, 0, 0, 0, 0, 0)); // Floor 
-        environmentTileArray.push(new Environment(6, canvas.width - 206, 256, canvas.width, 465, "orange", false, false, 0, 0, 0, 0, 0)); // Right Wall
-        environmentTileArray.push(new Environment(6, canvas.width - 196, 266, canvas.width, 480, "brown", false, false, 0, 0, 0, 0, 0)); // Right Wall
+        environmentTileArray.push(new Environment(level, 0, 0, canvas.width / 1.5, canvas.height / 2, "orange", false, false, 0, 0, 0, 0, 0)); // Ceiling
+        environmentTileArray.push(new Environment(level, 0, 0, canvas.width / 1.5 - 10, canvas.height / 2 - 10, "brown", false, false, 0, 0, 0, 0, 0)); // Ceiling
+        environmentTileArray.push(new Environment(level, canvas.width / 1.5 - 10, 0, canvas.width, 96, "orange", false, false, 0, 0, 0, 0, 0)); // Ceiling Right
+        environmentTileArray.push(new Environment(level, canvas.width / 1.5 - 10, 0, canvas.width, 86, "brown", false, false, 0, 0, 0, 0, 0)); // Ceiling Right
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width, 128, "orange", false, false, 0, 0, 0, 0, 0)); // Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 54, canvas.width, 230, "brown", false, false, 0, 0, 0, 0, 0)); // Floor 
+        environmentTileArray.push(new Environment(level, canvas.width - 206, 256, canvas.width, 465, "orange", false, false, 0, 0, 0, 0, 0)); // Right Wall
+        environmentTileArray.push(new Environment(level, canvas.width - 196, 266, canvas.width, 480, "brown", false, false, 0, 0, 0, 0, 0)); // Right Wall
 
-        environmentTileArray.push(new Environment(5, canvas.width / 2 + 260, canvas.height - 128, 168, 64, "orange", false, true, 0, 396, 0, -1, 1)); // Elevator Piece
-        environmentTileArray.push(new Environment(5, canvas.width / 2 + 270, canvas.height - 118, 148, 44, "brown", false, true, 0, 396, 0, -1, 1)); // Elevator Piece
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 260, canvas.height - 128, 168, 64, "orange", false, true, 0, 396, 0, -1, 1)); // Elevator Piece
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 270, canvas.height - 118, 148, 44, "brown", false, true, 0, 396, 0, -1, 1)); // Elevator Piece
 
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
-        itemArray.push(new Item(4, "HANGING", "key", canvas.width / 2 + 324, 96, 32, 64)); // Key
-        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 96, 192, 64, 64)); // Level end
+        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
+        itemArray.push(new Item(level, "HANGING", "key", canvas.width / 2 + 324, 96, 32, 64)); // Key
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 96, 192, 64, 64)); // Level end
         
         // Prompts
         promptArray.push(new Prompt(`Hurry! The lift is leaving without you!`, 400, 250, 460, 100, player.x, player.y, 256, 64));
@@ -296,27 +297,27 @@ window.onload = () => {
         player.facing = 1;
         
         // Environment
-        environmentTileArray.push(new Environment(6, 0, canvas.height - 64, canvas.width, 128, "orange", false, false, 0, 0, 0, 0, 0)); // Floor
-        environmentTileArray.push(new Environment(6, 0, canvas.height - 54, canvas.width, 230, "brown", false, false, 0, 0, 0, 0, 0)); // Floor 
-        environmentTileArray.push(new Environment(6, canvas.width / 2 - 256, canvas.height / 1.5 - 10, 512, 128, "orange", false, false, 0, 0, 0, 0, 0)); // Middle Block Bottom
-        environmentTileArray.push(new Environment(6, canvas.width / 2 - 256, canvas.height / 1.5, 512, 230, "brown", false, false, 0, 0, 0, 0, 0)); // Middle Block Bottom 
-        environmentTileArray.push(new Environment(6, canvas.width / 2 - 256, canvas.height / 4 - 10, 512, 220, "orange", false, false, 0, 0, 0, 0, 0)); // Middle Block Top
-        environmentTileArray.push(new Environment(6, canvas.width / 2 - 246, canvas.height / 4, 492, 200, "brown", false, false, 0, 0, 0, 0, 0)); // Middle Block Top
-        environmentTileArray.push(new Environment(6, 0, 0, canvas.width / 6, 512, "orange", false, false, 0, 0, 0, 0, 0)); // Wall Left
-        environmentTileArray.push(new Environment(6, 0, 0, canvas.width / 6 - 10, 502, "brown", false, false, 0, 0, 0, 0, 0)); // Wall Left
-        environmentTileArray.push(new Environment(6, canvas.width - 224, 0, 224, 512, "orange", false, false, 0, 0, 0, 0, 0)); // Wall Right
-        environmentTileArray.push(new Environment(6, canvas.width - 214, 0, 224, 502, "brown", false, false, 0, 0, 0, 0, 0)); // Wall Right
-        environmentTileArray.push(new Environment(6, 220, 0, canvas.width - 440, 64, "orange", false, false, 0, 0, 0, 0, 0)); // Ceiling
-        environmentTileArray.push(new Environment(6, 0, 0, canvas.width, 54, "brown", false, false, 0, 0, 0, 0, 0)); // Ceiling
-        environmentTileArray.push(new Environment(5, 235, canvas.height - 128, 168, 64, "orange", false, true, 0, 396, 0, -1, 1)); // Elevator 1 Piece
-        environmentTileArray.push(new Environment(5, 245, canvas.height - 118, 148, 44, "brown", false, true, 0, 396, 0, -1, 1)); // Elevator 1 Piece
-        environmentTileArray.push(new Environment(5, canvas.width / 2 + 267, 116, 168, 64, "orange", false, true, 0, 396, 0, 1, 1)); // Elevator 2 Piece
-        environmentTileArray.push(new Environment(5, canvas.width / 2 + 277, 126, 148, 44, "brown", false, true, 0, 396, 0, 1, 1)); // Elevator 2 Piece
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width, 128, "orange", false, false, 0, 0, 0, 0, 0)); // Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 54, canvas.width, 230, "brown", false, false, 0, 0, 0, 0, 0)); // Floor 
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 256, canvas.height / 1.5 - 10, 512, 128, "orange", false, false, 0, 0, 0, 0, 0)); // Middle Block Bottom
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 256, canvas.height / 1.5, 512, 230, "brown", false, false, 0, 0, 0, 0, 0)); // Middle Block Bottom 
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 256, canvas.height / 4 - 10, 512, 220, "orange", false, false, 0, 0, 0, 0, 0)); // Middle Block Top
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 246, canvas.height / 4, 492, 200, "brown", false, false, 0, 0, 0, 0, 0)); // Middle Block Top
+        environmentTileArray.push(new Environment(level, 0, 0, canvas.width / 6, 512, "orange", false, false, 0, 0, 0, 0, 0)); // Wall Left
+        environmentTileArray.push(new Environment(level, 0, 0, canvas.width / 6 - 10, 502, "brown", false, false, 0, 0, 0, 0, 0)); // Wall Left
+        environmentTileArray.push(new Environment(level, canvas.width - 224, 0, 224, 512, "orange", false, false, 0, 0, 0, 0, 0)); // Wall Right
+        environmentTileArray.push(new Environment(level, canvas.width - 214, 0, 224, 502, "brown", false, false, 0, 0, 0, 0, 0)); // Wall Right
+        environmentTileArray.push(new Environment(level, 220, 0, canvas.width - 440, 64, "orange", false, false, 0, 0, 0, 0, 0)); // Ceiling
+        environmentTileArray.push(new Environment(level, 0, 0, canvas.width, 54, "brown", false, false, 0, 0, 0, 0, 0)); // Ceiling
+        environmentTileArray.push(new Environment(level, 235, canvas.height - 128, 168, 64, "orange", false, true, 0, 396, 0, -1, 1)); // Elevator 1 Piece
+        environmentTileArray.push(new Environment(level, 245, canvas.height - 118, 148, 44, "brown", false, true, 0, 396, 0, -1, 1)); // Elevator 1 Piece
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 267, 116, 168, 64, "orange", false, true, 0, 396, 0, 1, 1)); // Elevator 2 Piece
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 277, 126, 148, 44, "brown", false, true, 0, 396, 0, 1, 1)); // Elevator 2 Piece
         
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
-        itemArray.push(new Item(4, "HANGING", "key", canvas.width / 2, 64, 32, 64)); // Key
-        itemArray.push(new Item(5, "CLOSED", "roomTransit", canvas.width - 96, player.y, 64, 64)); // Level end
+        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
+        itemArray.push(new Item(level, "HANGING", "key", canvas.width / 2, 64, 32, 64)); // Key
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 96, player.y, 64, 64)); // Level end
 
         // Initialize Objects
         initializeAll();
@@ -495,7 +496,12 @@ window.onload = () => {
         gameHandler();
     }
     function fullRewind() {
-
+        drawBackgroundAndEnvironment()
+        drawItems();
+        drawPlayer();
+        enableEnemies();
+        rewindGame();
+        gameHandler();
     }
     function roomTransit() {
         drawBackgroundAndEnvironment()
@@ -601,54 +607,22 @@ window.onload = () => {
         } else if (state === "LEVELREWIND") {
             rewindSpeeder = 5;
         } else if (state === "FULLREWIND") {
-            rewindSpeeder = 20;
+            rewindSpeeder = 5;
         }
         let index = gameRec.length - rewindSpeeder;
-
         if (index <= 0) index = 0;
-
         // Prevent rewinding to previous level
         if (gameRec[index][0] === level && (state === "REWIND" || state === "LEVELREWIND")) {    
-            // Restore Player (Only some values for regular Rewind)
-            player.hasKey = gameRec[index][1][0].hasKey;
+            restoreFromGameRec(rewindSpeeder);
 
-            if (state === "LEVELREWIND" || state === "FULLREWIND") {
-                player.x = gameRec[index][1][0].x;
-                player.y = gameRec[index][1][0].y;
-                player.img.src = gameRec[index][1][0].anim;
-                player.spriteCount = gameRec[index][1][0].spriteCount;
-            }
-
-            // Restore Environment
-            for (let i = 0; i < environmentTileArray.length; i++) {
-                environmentTileArray[i].x = gameRec[index][2][i].x;
-                environmentTileArray[i].y = gameRec[index][2][i].y;
-            }
-            // Restore Enemies
-            for (let i = 0; i < enemyArray.length; i++) {
-                enemyArray[i].x = gameRec[index][3][i].x;
-                enemyArray[i].y = gameRec[index][3][i].y;
-                enemyArray[i].dirX = gameRec[index][3][i].dirX;
-                enemyArray[i].dirY = gameRec[index][3][i].dirY;
-                enemyArray[i].img.src = gameRec[index][3][i].anim;
-                enemyArray[i].spriteCount = gameRec[index][3][i].spriteCount;
-                enemyArray[i].alive = gameRec[index][3][i].alive;
-            }
-            // Restore Items
-            for (let i = 0; i < itemArray.length; i++) {
-                itemArray[i].x = gameRec[index][4][i].x;
-                itemArray[i].y = gameRec[index][4][i].y;
-                itemArray[i].width = gameRec[index][4][i].width;
-                itemArray[i].height = gameRec[index][4][i].height;
-                itemArray[i].moveX = gameRec[index][4][i].moveX;
-                itemArray[i].moveY = gameRec[index][4][i].moveY;
-                itemArray[i].itemState = gameRec[index][4][i].itemState;
-                itemArray[i].img.src = gameRec[index][4][i].anim;
-            }
             // Delete Last Frame
             gameRec.splice(index, rewindSpeeder);
             if (index === 0) state = "NORMAL";
-
+            
+        } else if (state === "FULLREWIND") {
+            restoreFromGameRec(rewindSpeeder);
+            gameRec.splice(index, rewindSpeeder);
+            if (index === 0) state = "NORMAL";
         } else {
             state = "NORMAL";
         }
@@ -659,7 +633,60 @@ window.onload = () => {
         globalGameRec.push(gameRec);
     }
 
+    function restoreFromGameRec(rewindSpeeder) {
+        let index = gameRec.length - rewindSpeeder;
 
+        if (index <= 0) index = 0;
+        // Restore Player (Only some values for regular Rewind)
+        player.hasKey = gameRec[index][1][0].hasKey;
+
+        if (state === "LEVELREWIND" || state === "FULLREWIND") {
+            player.x = gameRec[index][1][0].x;
+            player.y = gameRec[index][1][0].y;
+            player.img.src = gameRec[index][1][0].anim;
+            player.spriteCount = gameRec[index][1][0].spriteCount;
+        }
+
+        // Restore Environment
+        for (let i = 0; i < environmentTileArray.length; i++) {
+            if (state === "FULLREWIND" && environmentTileArray[i].id > gameRec[index][0]) {
+                environmentTileArray.splice(i, 1);
+                continue;
+            }
+            environmentTileArray[i].x = gameRec[index][2][i].x;
+            environmentTileArray[i].y = gameRec[index][2][i].y;
+        }
+        // Restore Enemies
+        for (let i = 0; i < enemyArray.length; i++) {
+            if (state === "FULLREWIND" && enemyArray[i].id > gameRec[index][0]) {
+                enemyArray.splice(i, 1);
+                continue;
+            }
+            console.log(enemyArray[i].id, gameRec[index][0])
+            enemyArray[i].x = gameRec[index][3][i].x;
+            enemyArray[i].y = gameRec[index][3][i].y;
+            enemyArray[i].dirX = gameRec[index][3][i].dirX;
+            enemyArray[i].dirY = gameRec[index][3][i].dirY;
+            enemyArray[i].img.src = gameRec[index][3][i].anim;
+            enemyArray[i].spriteCount = gameRec[index][3][i].spriteCount;
+            enemyArray[i].alive = gameRec[index][3][i].alive;
+        }
+        // Restore Items
+        for (let i = 0; i < itemArray.length; i++) {
+            if (state === "FULLREWIND" && itemArray[i].id > gameRec[index][0]) {
+                itemArray.splice(i, 1);
+                continue;
+            }
+            itemArray[i].x = gameRec[index][4][i].x;
+            itemArray[i].y = gameRec[index][4][i].y;
+            itemArray[i].width = gameRec[index][4][i].width;
+            itemArray[i].height = gameRec[index][4][i].height;
+            itemArray[i].moveX = gameRec[index][4][i].moveX;
+            itemArray[i].moveY = gameRec[index][4][i].moveY;
+            itemArray[i].itemState = gameRec[index][4][i].itemState;
+            itemArray[i].img.src = gameRec[index][4][i].anim;
+        }
+    }
 
 
     
