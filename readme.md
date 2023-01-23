@@ -12,6 +12,7 @@ Classes:
 - Enemies ("Lzard")
 - Items ("key", "roomtransit", "door")
 - Environment (Walls, Floors, Elevators)
+- Prompts (Tutorial Boxes, Story Texts)
 
 
 === script.js ===

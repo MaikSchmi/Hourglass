@@ -407,7 +407,7 @@ class Item {
 // Environment
 const environmentTileArray = [];
 class Environment {
-    constructor(id, x, y, width, height, color, moves) {
+    constructor(id, x, y, width, height, color, movesX, movesY, maxDistX, maxDistY, dirX, dirY, speed) {
         this.id = id;
         // Pass in vars
         this.x = x;
@@ -415,7 +415,13 @@ class Environment {
         this.width = width;
         this.height = height;
         this.color = color;
-        this.moves = moves;
+        this.movesX = movesX;
+        this.movesY = movesY;
+        this.maxDistX = maxDistX;
+        this.maxDistY = maxDistY;
+        this.dirX = dirX;
+        this.dirY = dirY;
+        this.speed = speed;
 
         // Position
         this.startX = this.x;
@@ -428,17 +434,15 @@ class Environment {
         this.bottom = this.y + this.height;
     }
 
-    movePiece(movesX, movesY, speed, dir) {
+    movePiece() {
         if (this.x > 0 && this.y > 0 && this.x + this.width < canvas.width && this.y + this.height < canvas.height) {
             // Horizontal movement
-            if (movesX) {
-                // Move
-                this.x += speed * dir;
+            if ((this.movesX && this.dirX === 1 && this.x < this.startX + this.maxDistX) || (this.movesX && this.dirX === -1 && this.x > this.startX - this.maxDistX)) {
+                this.x += this.speed * this.dirX;
             }
             // Vertical movement
-            if (movesY) {
-                // Move
-                this.y += speed * dir;
+            if ((this.movesY && this.dirY === 1 && this.y < this.startY + this.maxDistY) || (this.movesY && this.dirY === -1 && this.y > this.startY - this.maxDistY)) {
+                this.y += this.speed * this.dirY;
             }
         }
     }
@@ -484,12 +488,16 @@ class Prompt {
     }
 
     showPrompt() {
-        ctx.font = ctx.font.replace(/\d+px/, "20px");
+        ctx.font = ctx.font.replace(/\d+px/, "22px");
 
         ctx.beginPath();
         ctx.fillStyle = "black";
+        ctx.fillRect(this.promptX - 20, this.promptY - 20, this.promptWidth + 40, this.promptHeight + 40);
+        ctx.fillStyle = "orange";
+        ctx.fillRect(this.promptX - 10, this.promptY - 10, this.promptWidth + 20, this.promptHeight + 20);
+        ctx.fillStyle = "black";
         ctx.fillRect(this.promptX, this.promptY, this.promptWidth, this.promptHeight);
-        ctx.fillStyle = "white";
+        ctx.fillStyle = "orange";
         ctx.fillText(this.text, this.promptX + 50, this.promptY + 50)
         ctx.closePath();
     }
