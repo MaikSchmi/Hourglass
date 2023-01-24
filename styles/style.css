@@ -23,7 +23,9 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: rgb(109, 212, 246);
+    background-image: url("../img/desert.png");
+    background-repeat: no-repeat;
+    background-size: cover;
     border: 5px solid black;
 }
 
@@ -59,6 +61,10 @@ button {
     border: 7px rgb(211, 211, 13) outset;
 }
 
+.pressed {
+    border: 7px rgb(211, 211, 13) inset;
+}
+
 
 a {
     text-decoration: none;
@@ -84,7 +90,16 @@ a {
     flex-direction: column;
 }
 
+#game-over-button-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 #btn-retry {
+    background-color: green;
+}
+
+#btn-end {
     background-color: red;
 }

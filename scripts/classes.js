@@ -1,5 +1,3 @@
-// 
-
 // Player
 class Player {
     constructor(x, y, width, height, xSpeed, ySpeed, jumpSpeed, facing) {
@@ -120,8 +118,10 @@ class Player {
                 this.arrowRight > arr[i].left &&
                 this.arrowTop < arr[i].bottom &&
                 this.arrowBottom > arr[i].top) {
-                    arr[i].hit();
-                    return true;
+                    if (arr[i].getName() !== "roomTransit") {
+                        arr[i].hit();
+                        return true;
+                    }
             }
         }
     }
@@ -136,6 +136,20 @@ class Player {
                     return true;
             }
         }
+    }
+
+
+    checkProjectileCollision(enemyArr) {
+        for (let i = 0; i < enemyArr.length; i++) {        
+            if (this.xPos < enemyArr[i].xPos + enemyArr[i].width &&
+                this.xPos + this.width > enemyArr[i].xPos &&
+                this.yPos < enemyArr[i].yPos + enemyArr[i].height &&
+                this.height + this.yPos > enemyArr[i].yPos) {
+                    gameOver = true
+          }
+
+        }
+
     }
 
     spawnArrow() {
@@ -423,6 +437,8 @@ class Environment {
         this.dirY = dirY;
         this.speed = speed;
 
+        this.name = "Environment"
+
         // Position
         this.startX = this.x;
         this.startY = this.y;
@@ -453,6 +469,10 @@ class Environment {
         this.right = this.x + this.width;
         this.top = this.y;
         this.bottom = this.y + this.height;
+    }
+
+    getName() {
+        return this.name;
     }
 
     hit() {}

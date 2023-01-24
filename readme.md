@@ -1,12 +1,8 @@
 ToDo
-- Other controls for Rewind and Resume time
-- Include ArrowLeft and ArrowRight in Tutorial Prompt for controls
-- include visual feedback for time rewind / resume / stop
-- Time Counter
 - Highscore board
 - Player name input
 - Limitation to use of rewind time
-- Remove arrow collision from items except hanging keys
+- Check to include controller controls
 
 - Change CSS #title-screen button border to "inset" when clicked
 
@@ -27,6 +23,9 @@ Classes:
 === script.js ===
 
 
+A couple of questions:
+- Include buttons in canvas?
+- Sprite flickering?
 
 
 

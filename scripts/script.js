@@ -5,6 +5,8 @@ const btnHighscores = document.getElementById("btn-highscores");
 const btnCredits = document.getElementById("btn-credits");
 const btnQuit = document.getElementById("btn-quit");
 const btnRetry = document.getElementById("btn-retry");
+const btnEndGame = document.getElementById("btn-end");
+
 
 // Display
 const mainMenu = document.getElementById("title-screen-container");
@@ -19,9 +21,17 @@ const gameRec = [];
 const globalGameRec = [];
 let state;
 let animateId;
+const imgTimeControl = new Image();
+const imgTimeControlArr = ["../img/time_control_normal.png", "../img/time_control_stop.png", "../img/time_control_rewind.png", "../img/time_control_fast_rewind.png"]
+imgTimeControl.src = imgTimeControlArr[0];
+
+let mode = "NORMAL";
+let time = 0;
+let gameTimer; 
 
 // Levels
 let level = 1;
+
 let hasLevel0Init = false;
 let hasLevel1Init = false;
 let hasLevel2Init = false;
@@ -40,19 +50,25 @@ let grvAcc = 5;
 
 // Main Game Load
 window.onload = () => {
-    canvas.style.visibility = "hidden";
+    canvas.style.display = "none";
     btnRetry.style.display = "none";
+    btnEndGame.style.display = "none";
     // Menu Controls
     btnStart.addEventListener("click", e => {
+        startGame();
         state = "ROOMTRANSIT";
         mainMenu.style.display = "none";
-        canvas.style.visibility = "visible";
+        canvas.style.display = "block";
     });
     btnTimeTrial.addEventListener("click", e => {
-        console.log("clicked")
+        startGame();
+        state = "ROOMTRANSIT";
+        mode = "TIMETRIAL";
+        mainMenu.style.display = "none";
+        canvas.style.display = "block";
     });
     btnHighscores.addEventListener("click", e => {
-        console.log("clicked")
+        btnClickEffect(btnHighscores);
     });
     btnCredits.addEventListener("click", e => {
         console.log("clicked")
@@ -62,17 +78,31 @@ window.onload = () => {
     });
     btnRetry.addEventListener("click", e => {
         state = "LEVELREWIND";
-        level = 1;
         btnRetry.style.display = "none";
+        btnEndGame.style.display = "none";
         checkState();
     });
+    btnEndGame.addEventListener("click", e => {
+        state = "FULLREWIND";
+        btnRetry.style.display = "none";
+        btnEndGame.style.display = "none";
+        checkState();
+    });
+
+    function btnClickEffect(btn) {
+        if (btn.classList.contains("pressed")) {
+            btn.classList.remove("pressed");
+        } else {
+            btn.classList.add("pressed");
+        }
+    }
     
     const player = new Player(canvas.width - 100, canvas.height - 140, 64, 64, 3, 2, 10, -1);
-    startGame();
     // Start
     function startGame() {
         state = "NORMAL";
         player.initialize();
+        gameTimer = setInterval(startTimer, 10);
         gameHandler();
     }
     // Handle Loops
@@ -140,7 +170,7 @@ window.onload = () => {
         itemArray.push(new Item(level, "FALLING", "key", 900, player.y + 36, 64, 32)); // Key
         itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 78, player.y, 64, 64)); // Level end
         // Prompts
-        promptArray.push(new Prompt(`Use A to move left, D to move right.`, 100, 100, 450, 100, player.x, player.y, 64, 64));
+        promptArray.push(new Prompt(`Use A and D or the Arrow keys to move.`, 100, 100, 500, 100, player.x, player.y, 64, 64));
         promptArray.push(new Prompt(`Press E to pick up the key (stand on it).`, 800, 100, 470, 100, 800, player.y, 128, 64));
         promptArray.push(new Prompt(`Press E next to the door to open it.`, 800, 100, 460, 100, canvas.width - 256, player.y, 128, 64));
         promptArray.push(new Prompt(`Press E again to advance to the next level.`, 800, 100, 520, 100, canvas.width - 78, player.y, 128, 64));
@@ -239,8 +269,8 @@ window.onload = () => {
 
         // Items
         itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
-        itemArray.push(new Item(level, "HANGING", "key", 400, player.y - 158, 32, 64)); // Key
-        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 96, player.y - 152, 64, 64)); // Level end
+        itemArray.push(new Item(level, "HANGING", "key", 400, player.y - 182, 32, 64)); // Key
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 96, player.y - 176, 64, 64)); // Level end
         
         // Prompts
         promptArray.push(new Prompt(`You may have to get creative to reach this key ...`, 400, 250, 560, 100, 300, player.y, 256, 64));
@@ -280,8 +310,8 @@ window.onload = () => {
         
         // Prompts
         promptArray.push(new Prompt(`Hurry! The lift is leaving without you!`, 400, 250, 460, 100, player.x, player.y, 256, 64));
-        promptArray.push(new Prompt(`Don't worry, hit the Arrow Left key to Stop time and again to Rewind time.`, 400, 250, 800, 100, canvas.width / 2, player.y, 192, 64));
-        promptArray.push(new Prompt(`Now hit the Arrow Right key to Resume time as normal again.`, 400, 250, 700, 100, canvas.width / 2 + 64, player.y - 64, 256, 64));
+        promptArray.push(new Prompt(`Don't worry, hit the "1" key once to Stop time and again to Rewind time.`, 400, 250, 800, 100, canvas.width / 2, player.y, 192, 64));
+        promptArray.push(new Prompt(`Now hit the "3" key to Resume time as normal again.`, 400, 250, 700, 100, canvas.width / 2 + 64, player.y - 64, 256, 64));
 
         // Initialize Objects
         initializeAll();
@@ -333,7 +363,7 @@ window.onload = () => {
         player.facing = 1;
         
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
+        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
 
         // Initialize Objects
         initializeAll();
@@ -424,6 +454,7 @@ window.onload = () => {
                 break;
             case "DEAD":
                 btnRetry.style.display = "block";
+                btnEndGame.style.display = "block";
                 cancelAnimationFrame(animateId);
                 ctx.beginPath();
                 ctx.fillStyle = "black";
@@ -437,37 +468,13 @@ window.onload = () => {
                 break;
         }
     }        
-    // State Controls
-    document.addEventListener("keydown", e => {
-        switch (e.key) {
-            case "ArrowLeft":
-                if (state === "NORMAL") {
-                    state = "STOP";
-                    checkState();
-                } else if (state === "STOP") {
-                    state = "REWIND";
-                    checkState();
-                }
-                break;
-            case "ArrowRight":
-                if (state === "REWIND") {
-                    state = "STOP"
-                    checkState();
-                } else if (state === "STOP") {
-                    state = "NORMAL"
-                    checkState();
-                }
-                break;
-        }
-    });
-
     // STATE NORMAL
     function stateNormal() {
         drawBackgroundAndEnvironment()
         drawItems();
         drawPlayer();
         enableEnemies();
-        recordGame();
+        recordGame("ALL");
         gameHandler();
     }
     // STATE STOP
@@ -476,6 +483,7 @@ window.onload = () => {
         drawItems();
         drawPlayer();
         enableEnemies();
+        globalRecordGame();
         gameHandler();
     }
     // STATE REWIND
@@ -484,6 +492,7 @@ window.onload = () => {
         drawItems();
         drawPlayer();
         enableEnemies();
+        globalRecordGame();
         rewindGame();
         gameHandler();
     }
@@ -492,6 +501,7 @@ window.onload = () => {
         drawItems();
         drawPlayer();
         enableEnemies();
+        globalRecordGame();
         rewindGame();
         gameHandler();
     }
@@ -500,6 +510,7 @@ window.onload = () => {
         drawItems();
         drawPlayer();
         enableEnemies();
+        globalRecordGame();
         rewindGame();
         gameHandler();
     }
@@ -507,6 +518,7 @@ window.onload = () => {
         drawBackgroundAndEnvironment()
         drawItems();
         drawPlayer();
+        globalRecordGame();
         enableEnemies();
 
         // Draw Room Fade
@@ -519,7 +531,6 @@ window.onload = () => {
         if (fadeOut) {
             roomTransitAlpha += 0.01;
             if (roomTransitAlpha >= 1) {
-                globalRecordGame();
                 fadeOut = false;
                 level++;
                 checkLevel();
@@ -539,7 +550,7 @@ window.onload = () => {
 
 
     // RECORD
-    function recordGame() {
+    function recordGame(scope) {
         const playerStats = [];
         const environment = [];
         const enemies = [];
@@ -552,6 +563,7 @@ window.onload = () => {
                 hasKey: player.hasKey,
                 anim: player.img.src,
                 spriteCount: player.spriteCount,
+                time: time,
             }
         );
 
@@ -596,7 +608,13 @@ window.onload = () => {
                 }
             );
         }
-        gameRec.push([level, playerStats, environment, enemies, items]);
+        if (scope === "GLOBAL") {
+            globalGameRec.push([level, playerStats, environment, enemies, items]);
+        } else {
+            gameRec.push([level, playerStats, environment, enemies, items]);    
+            globalGameRec.push([level, playerStats, environment, enemies, items]);
+        }
+
     }
 
     // REWIND
@@ -607,32 +625,37 @@ window.onload = () => {
         } else if (state === "LEVELREWIND") {
             rewindSpeeder = 5;
         } else if (state === "FULLREWIND") {
-            rewindSpeeder = 5;
+            rewindSpeeder = 7;
         }
         let index = gameRec.length - rewindSpeeder;
         if (index <= 0) index = 0;
         // Prevent rewinding to previous level
         if (gameRec[index][0] === level && (state === "REWIND" || state === "LEVELREWIND")) {    
-            restoreFromGameRec(rewindSpeeder);
-
-            // Delete Last Frame
-            gameRec.splice(index, rewindSpeeder);
-            if (index === 0) state = "NORMAL";
             
-        } else if (state === "FULLREWIND") {
             restoreFromGameRec(rewindSpeeder);
             gameRec.splice(index, rewindSpeeder);
-            if (index === 0) state = "NORMAL";
-        } else {
-            state = "NORMAL";
+            if (index <= 0) state = "STOP";
+        } else if (gameRec[index][0] !== level && (state === "REWIND" || state === "LEVELREWIND")) {
+            state = "STOP";
+        }
+        
+        if (state === "FULLREWIND") {
+            
+            restoreFromGameRec(rewindSpeeder);
+            gameRec.splice(index, rewindSpeeder);
+            if (index === 0) {
+                level = 1;
+                state = "STOP";
+            }
         }
     }
     
     // COPY LEVEL RECORD
     function globalRecordGame() {
-        globalGameRec.push(gameRec);
+        recordGame("GLOBAL");
     }
 
+    // REWIND
     function restoreFromGameRec(rewindSpeeder) {
         let index = gameRec.length - rewindSpeeder;
 
@@ -645,6 +668,10 @@ window.onload = () => {
             player.y = gameRec[index][1][0].y;
             player.img.src = gameRec[index][1][0].anim;
             player.spriteCount = gameRec[index][1][0].spriteCount;
+        }
+
+        if (state === "FULLREWIND") {
+            time = gameRec[index][1][0].time;
         }
 
         // Restore Environment
@@ -662,7 +689,6 @@ window.onload = () => {
                 enemyArray.splice(i, 1);
                 continue;
             }
-            console.log(enemyArray[i].id, gameRec[index][0])
             enemyArray[i].x = gameRec[index][3][i].x;
             enemyArray[i].y = gameRec[index][3][i].y;
             enemyArray[i].dirX = gameRec[index][3][i].dirX;
@@ -688,12 +714,26 @@ window.onload = () => {
         }
     }
 
+    // Draw Time Control
+    function drawTimeControl() {
+        if (state === "NORMAL") {
+            imgTimeControl.src = imgTimeControlArr[0];
+        } else if (state === "STOP") {
+            imgTimeControl.src = imgTimeControlArr[1];
+        } else if (state === "REWIND") {
+            imgTimeControl.src = imgTimeControlArr[2];
+        } else if (state === "LEVELREWIND" || state === "FULLREWIND") {
+            imgTimeControl.src = imgTimeControlArr[3];
+        }
+        ctx.drawImage(imgTimeControl, canvas.width / 2 - imgTimeControl.width, 32, 256, 128);
+    }
 
     
 
     // Player Controls
     document.addEventListener("keydown", (e) => {
         switch (e.key) {
+            // PLAYER
             case "d": // Left
             case "ArrowRight":
                 player.facing = 1;
@@ -714,7 +754,26 @@ window.onload = () => {
                 if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
             break;
             case "p": // DEBUG
-                console.log(gameRec);
+                state = "DEAD"
+            break;
+            // TIME
+            case "1":
+                if (state === "NORMAL") {
+                    state = "STOP";
+                    checkState();
+                } else if (state === "STOP") {
+                    state = "REWIND";
+                    checkState();
+                }
+            break;
+            case "3":
+                if (state === "REWIND") {
+                    state = "STOP"
+                    checkState();
+                } else if (state === "STOP") {
+                    state = "NORMAL"
+                    checkState();
+                }
             break;
         }
     });
@@ -740,6 +799,9 @@ window.onload = () => {
     function drawPlayer() {
         // PHYSICS
         player.updateCollision();
+        if (mode === "TIMETRIAL") displayTimer();
+        if (level > 4) drawTimeControl();
+
         // --- Ground contact, enable jump
         if (!blockPlayerStates()) {
             if (player.checkCollision(environmentTileArray, 0, 0, 1, 0)) {
@@ -921,5 +983,27 @@ window.onload = () => {
         }
         // Draw
         ctx.drawImage(imgContainer, x, y, w, h); 
+    }
+
+    // TIMER
+    function startTimer() {
+        time++;
+    }
+    function displayTimer() {
+        ctx.beginPath();
+        ctx.font = ctx.font.replace(/\d+px/, "30px");
+        ctx.fillStyle = "white";
+        ctx.fillText(`Time: ${convertTime()}`, 32, 32)
+        ctx.closePath();
+    }
+    function convertTime() {
+        let mins = Math.floor(time/6000);
+        let secs = Math.floor(time/100) % 60;
+        let csecs = time % 100;
+        
+        if (mins < 10) mins = "0" + mins;
+        if (secs < 10) secs = "0" + secs;
+
+        return `${mins}.${secs}.${csecs}`
     }
 };
