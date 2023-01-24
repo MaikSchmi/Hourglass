@@ -23,7 +23,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-image: url("../img/desert.png");
+    background-image: url("../img/menu/desert.png");
     background-repeat: no-repeat;
     background-size: cover;
     border: 5px solid black;
@@ -43,11 +43,11 @@ body {
 }
 
 #button-container {
-    width: 1000px;
     display: flex;
     flex-direction: column;
     align-self: right;
     list-style: none;
+    width: 800px;
 }
 
 button {
@@ -71,9 +71,57 @@ a {
     color: black;
 }
 
+#title-screen-btn-img-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#title-screen-content img {
+    height: 152px;
+}
+
 #title-credit {
     text-align: center;
 }
+
+#player-name-prompt-popup {
+    display: none;
+    position: absolute;
+    top: 350px;
+    width: 400px;
+    height: 200px;
+    background-color: black;
+    border: 16px double orange
+}
+
+#player-name-prompt-popup h3 {
+    color: orange;
+    text-align: center;
+    font-size: 24px;
+}
+
+#game-start-input-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#input-name {
+    width: 250px;
+    height: 35px;
+    font-size: 26px;
+    font-weight: bold;
+    text-align: center;
+}
+
+#game-start-input-button-container button {
+    width: 150px;
+    height: 50px;
+    background-color: darkorange;
+}
+
 
 #highscore-title {
     font-size: 28px;
@@ -102,8 +150,6 @@ a {
     height: 50px;
     
 }
-
-
 
 #game-canvas {
     display: flex;

@@ -9,16 +9,33 @@
             <div class="screen-orientation">
                 <h1 class="title">- Inside The Hourglass -</h1>
                 <div id="title-screen-content">
-                    <ul id="button-container">
-                        <li><button type="button" id="btn-start">Start Game</button></li>
-                        <li><button type="button" id="btn-time-trial">Time Trial Mode</button></li>
-                        <li><button type="button" id="btn-highscores">Highscores</button></li>
-                        <li><button type="button" id="btn-credits"><a href="https://crosnake.itch.io/">Play My Other Games!</a></button></li>
-                        <li><button type="button" id="btn-quit">Quit Game</button></li>
-                    </ul>
+                    <div id="title-screen-btn-img-box">
+                        <ul id="button-container">
+                            <li><button type="button" id="btn-start">Start Game</button></li>
+                            <li><button type="button" id="btn-time-trial">Time Trial Mode</button></li>
+                            <li><button type="button" id="btn-highscores">Highscores</button></li>
+                            <li><button type="button" id="btn-credits"><a href="https://crosnake.itch.io/">Play My Other Games!</a></button></li>
+                            <li><button type="button" id="btn-quit">Quit Game</button></li>
+                        </ul>
+                        <div>
+                            <img src="./img/hourglass.png">
+                        </div> 
+                    </div>
                     <div id="title-credit">
                         <h2>A Game by Maik Schmidt</h2>
-                    </div>  
+                    </div> 
+                </div>
+            </div>
+            <div id="player-name-prompt-popup">
+                <div id="popup-frame">
+                    <h3>Enter Your Name</h3>
+                    <div id="game-start-input-container">
+                        <input type="text" id="input-name"/>
+                        <div id="game-start-input-button-container">
+                            <button type="button" id="input-name-ok-button"><img src="./img/menu/ok.png"></button>
+                            <button type="button" id="input-name-cancel-button"><img src="./img/menu/cancel.png"></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

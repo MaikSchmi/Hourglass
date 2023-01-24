@@ -10,9 +10,13 @@ const btnRetry = document.getElementById("btn-retry");
 const btnEndGame = document.getElementById("btn-end");
 const btnReturnToMenu = document.getElementById("btn-return-to-menu");
 
+const btnMenuNameOK = document.getElementById("input-name-ok-button");
+const btnMenuNameCancel = document.getElementById("input-name-cancel-button");
+const inputName = document.getElementById("input-name");
 
 // Display
 const mainMenu = document.getElementById("title-screen-container");
+const enterName = document.getElementById("player-name-prompt-popup");
 const highscoreMenu = document.getElementById("highscore-screen-container");
 const canvas = document.querySelector(".screen");
 const ctx = canvas.getContext("2d");
@@ -34,6 +38,7 @@ let mode = "NORMAL";
 let time = 0;
 let score = 0;
 let gameTimer; 
+let gamerName = "";
 
 // Levels
 let level = 1;
@@ -69,22 +74,17 @@ window.onload = () => {
     });
     btnStart.addEventListener("mouseup", e => {
         btnClickEffect(btnStart);
-        startGame();
-        level = 1; //REMINDER
-        state = "ROOMTRANSIT";
-        mainMenu.style.display = "none";
-        canvas.style.display = "flex";
+        mode = "NORMAL";
+        enterName.style.display = "block";
     });
 
     btnTimeTrial.addEventListener("mousedown", e => {
         btnClickEffect(btnTimeTrial);
     });
     btnTimeTrial.addEventListener("mouseup", e => {
-        startGame();
-        state = "ROOMTRANSIT";
+        btnClickEffect(btnTimeTrial);
         mode = "TIMETRIAL";
-        mainMenu.style.display = "none";
-        canvas.style.display = "flex";
+        enterName.style.display = "block";
     });
 
     btnHighscores.addEventListener("mousedown", e => {
@@ -158,6 +158,27 @@ window.onload = () => {
         btnEndGame.style.display = "none";
         btnReturnToMenu.style.display = "none";
         checkState();
+    });
+
+
+    btnMenuNameOK.addEventListener("mousedown", e => {
+        btnClickEffect(btnMenuNameOK);
+    });
+    btnMenuNameOK.addEventListener("mouseup", e => {
+        btnClickEffect(btnMenuNameOK);
+        startGame();
+        level = 1; //REMINDER
+        state = "ROOMTRANSIT";
+        mainMenu.style.display = "none";
+        canvas.style.display = "flex";
+    });
+
+    btnMenuNameCancel.addEventListener("mousedown", e => {
+        btnClickEffect(btnMenuNameCancel);
+    });
+    btnMenuNameCancel.addEventListener("mouseup", e => {
+        btnClickEffect(btnMenuNameCancel);
+        enterName.style.display = "none";
     });
 
     function btnClickEffect(btn) {
