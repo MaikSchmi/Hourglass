@@ -28,6 +28,7 @@ let animateId;
 const imgTimeControl = new Image();
 const imgTimeControlArr = ["../img/time_control_normal.png", "../img/time_control_stop.png", "../img/time_control_rewind.png", "../img/time_control_fast_rewind.png"]
 imgTimeControl.src = imgTimeControlArr[0];
+let gameCompleted = false;
 
 let mode = "NORMAL";
 let time = 0;
@@ -172,7 +173,7 @@ window.onload = () => {
     function startGame() {
         state = "NORMAL";
         player.initialize();
-        gameTimer = setInterval(startTimer, 10);
+        resetGameValues(); 
         gameHandler();
     }
     // Handle Loops
@@ -699,6 +700,10 @@ window.onload = () => {
                 break;
             case "FULLREWIND":
                 animateId = requestAnimationFrame(fullRewind);
+                if (gameCompleted && gameRec.length < 10) {
+                    canvas.style.display = "none";
+                    mainMenu.style.display = "flex";
+                }
                 break;
             case "ROOMTRANSIT":
                 animateId = requestAnimationFrame(roomTransit);
@@ -719,9 +724,12 @@ window.onload = () => {
                 ctx.closePath();
                 break;
             case "GAMEFINISHED":
-                    console.log(score)
-                    state = "FULLREWIND";
-                    checkState()
+                score = time;
+                gameCompleted = true;
+                clearInterval(gameTimer);
+                addHighscore(score, "Maik");
+                state = "FULLREWIND";
+                checkState()
                 break;
             case "ENDGAME":
                 cancelAnimationFrame(animateId);
@@ -1001,11 +1009,13 @@ window.onload = () => {
         switch (e.key) {
             // PLAYER
             case "d": // Left
+            case "D":
             case "ArrowRight":
                 player.facing = 1;
                 player.moveRight = true;
             break;
             case "a": // Right
+            case "A":
             case "ArrowLeft":
                 player.facing = -1;
                 player.moveLeft = true;
@@ -1014,17 +1024,21 @@ window.onload = () => {
                 if (player.canJump) player.jump = true;
             break;
             case "e": // Interact
+            case "E":
                 player.checkInteractableCollision(itemArray, 0, 0, 0, 0);
             break;
             case "f": // Shoot
+            case "F":
                 if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
             break;
             case "p": // DEBUG
-                level++;
-                checkLevel();
+                const score = 120;
+                const name = "Someone Better Than You"
+                addHighscore(score, name);
             break;
             // TIME
             case "1":
+            case "!":
                 if (state === "NORMAL") {
                     state = "STOP";
                     checkState();
@@ -1034,6 +1048,7 @@ window.onload = () => {
                 }
             break;
             case "3":
+            case "§":
                 if (state === "REWIND") {
                     state = "STOP"
                     checkState();
@@ -1047,11 +1062,13 @@ window.onload = () => {
     document.addEventListener("keyup", (e) => {
         switch (e.key) {
             case "d":
+            case "D":
             case "ArrowRight":
                 player.facing = 1;
                 player.moveRight = false;
             break;
             case "a":
+            case "A":
             case "ArrowLeft":
                 player.facing = -1;
                 player.moveLeft = false;
@@ -1296,5 +1313,50 @@ window.onload = () => {
         if (secs < 10) secs = "0" + secs;
 
         return `${mins}.${secs}.${csecs}`
+    }
+
+    function resetGameValues() {
+        gameCompleted = false;
+        score = 0;
+        time = 0;
+
+        hasLevel0Init = false;
+        hasLevel1Init = false;
+        hasLevel2Init = false;
+        hasLevel3Init = false;
+        hasLevel4Init = false;
+        hasLevel5Init = false;
+        hasLevel6Init = false;
+        hasLevel7Init = false;
+        hasLevel8Init = false;
+        hasLevel9Init = false;
+        hasLevel10Init = false;
+
+        gameTimer = setInterval(startTimer, 10);
+    }
+
+    function addHighscore(score, name) {
+        const highscoreList = [...document.querySelectorAll("#highscore-container li")];
+        const scoreArr = [];
+        const playername = name;
+        const newScore = score;
+        
+        scoreArr.push([newScore.toString(), "-", playername]);
+        
+        for (let i = 0; i < highscoreList.length; i++) {
+            scoreArr.push(highscoreList[i].innerHTML.split(" "));
+            scoreArr[i][0] = parseInt(scoreArr[i][0])
+        }
+
+        scoreArr.sort((a, b) => a[0] - b[0]);
+        scoreArr.pop();
+
+        for (let i = 0; i < scoreArr.length; i++) {
+            let modScore = scoreArr[i][0].toString();
+            if (modScore === "NaN") break;
+            while (modScore.length < 7) modScore = "0" + modScore;
+            if (modScore.length > 7) modScore = "99999";
+            highscoreList[i].innerHTML = `${modScore} - ${scoreArr[i][2].split(" ")}`;
+        }
     }
 };
