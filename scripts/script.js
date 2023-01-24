@@ -629,9 +629,11 @@ window.onload = () => {
         // --- Bridges
         environmentTileArray.push(new Environment(level, 0, canvas.height / 2 + 74, 128, 64, "gold", false, false, 0, 0, 0, 0, 0)); // Left
         environmentTileArray.push(new Environment(level, 0, canvas.height / 2 + 84, 118, 44, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // Left
-
         environmentTileArray.push(new Environment(level, canvas.width - 128, canvas.height / 2 + 74, 128, 64, "gold", false, false, 0, 0, 0, 0, 0)); // Right
         environmentTileArray.push(new Environment(level, canvas.width - 118, canvas.height / 2 + 84, 118, 44, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // Right
+
+        // Boss
+        enemyArray.push(new Enemy(level, "Boss", canvas.width / 2, canvas.height / 2, player.height, player.width, player.xSpeed, player.ySpeed, player.facing * -1, false, false, 0, 0, 0, 0));
 
 
         // Items
@@ -1153,10 +1155,8 @@ window.onload = () => {
     function enableEnemies() {
         for (let i = 0; i < enemyArray.length; i++) {
             const enemy = enemyArray[i].name;
+            enemyArray[i].updateCollision();
             if (enemy === "Lzard") {
-                // Collision update
-                enemyArray[i].updateCollision();
-
                 // Movement
                 if (state === "NORMAL") enemyArray[i].move();
             
@@ -1177,11 +1177,31 @@ window.onload = () => {
                     enemyArray[i].width, 
                     enemyArray[i].height
                 )
-                
             } else if (enemy === "Spikes") {
                 ctx.drawImage(enemyArray[i].img, enemyArray[i].x, enemyArray[i].y, enemyArray[i].width, enemyArray[i].height);
-                // Collision update
-                enemyArray[i].updateCollision();
+            } else if (enemy === "Boss") {
+                // Animation
+                let sprite = enemyArray[i].bossIdleLeft;
+
+                enemyArray[i].x = canvas.width - player.x - player.width;
+                enemyArray[i].y = player.y;
+                enemyArray[i].facing = player.facing * -1;
+
+                if (enemyArray[i].facing === -1) {
+                    sprite = enemyArray[i].bossIdleLeft;
+                } else if (enemyArray[i].facing === 1) {
+                    sprite = enemyArray[i].bossIdle
+                }
+                    animateSprite(
+                    enemyArray[i], 
+                    enemyArray[i].img, 
+                    sprite,
+                    player.spriteSpeed,
+                    enemyArray[i].x, 
+                    enemyArray[i].y, 
+                    enemyArray[i].width, 
+                    enemyArray[i].height
+                    )
             }
         }
     }

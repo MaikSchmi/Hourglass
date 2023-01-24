@@ -234,6 +234,11 @@ class Enemy {
         this.lzardAnimWalkLeft = [];
         // -- Spikes
         this.spikeAnim = [];
+        // --- Boss
+        this.bossIdle = [];
+        this.bossIdleLeft = [];
+        this.bossWalk = [];
+        this.bossWalkLeft = [];
     }
 
     initialize() {
@@ -266,6 +271,14 @@ class Enemy {
 
         if (this.name === "Spikes") {
             this.img.src = "../img/spikes.png";
+        }
+
+        if (this.name === "Boss") {
+                    // --- Idle
+            for (let i = 0; i < 4; i++) {
+                this.bossIdle.push(`../img/Shel/shel_idle/shel_idle_00${i}.png`);
+                this.bossIdleLeft.push(`../img/Shel/shel_idle_left/shel_idle_00${i}.png`);
+            }
         }
     }
 
