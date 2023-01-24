@@ -5,6 +5,11 @@ ToDo
 - Check to include controller controls
 - Return To Menu button on death doesn't have intended behavior
 
+===
+- Possible to get player stuck with no recording after pausing on frame 0
+- Restarting after death often does not bring player back to beginning due to gameRec being cut off, have to remember beginning pos
+- globalRec recordings cut off, find fix
+===
 
 Game Structure
 

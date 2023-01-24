@@ -34,7 +34,7 @@ let time = 0;
 let gameTimer; 
 
 // Levels
-let level = 1;
+let level = 10;
 
 let hasLevel0Init = false;
 let hasLevel1Init = false;
@@ -46,6 +46,7 @@ let hasLevel6Init = false;
 let hasLevel7Init = false;
 let hasLevel8Init = false;
 let hasLevel9Init = false;
+let hasLevel10Init = false;
 
 // Physics
 const grv = 3;
@@ -67,7 +68,7 @@ window.onload = () => {
     btnStart.addEventListener("mouseup", e => {
         btnClickEffect(btnStart);
         startGame();
-        level = 1;
+        //level = 1; - REMINDER
         state = "ROOMTRANSIT";
         mainMenu.style.display = "none";
         canvas.style.display = "flex";
@@ -164,8 +165,8 @@ window.onload = () => {
             btn.classList.add("pressed");
         }
     }
-    
-    const player = new Player(canvas.width - 100, canvas.height - 140, 64, 64, 3, 2, 10, -1);
+
+    const player = new Player(10, canvas.height - 128, 64, 64, 3, 2, 10, -1);
     // Start
     function startGame() {
         state = "NORMAL";
@@ -193,6 +194,7 @@ window.onload = () => {
             case 7: if (!hasLevel7Init) level7Init(); break;
             case 8: if (!hasLevel8Init) level8Init(); break;
             case 9: if (!hasLevel9Init) level9Init(); break;
+            case 10: if (!hasLevel10Init) level10Init(); break;
             default: break;
         }
     }
@@ -226,6 +228,7 @@ window.onload = () => {
     // LEVEL 1
     function level1Init() {
         moveAllForNextLevel();
+        bgColor = "rgb(0, 195, 255)"
         // Move Player
         player.x = 10;
         player.y = canvas.height - 128;
@@ -251,6 +254,7 @@ window.onload = () => {
     // LEVEL 2
     function level2Init() {
         moveAllForNextLevel();
+        bgColor = "rgb(0, 175, 255)"
         // Move Player
         player.x = 10;
         player.y = canvas.height - 128;
@@ -259,16 +263,22 @@ window.onload = () => {
         environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width, 64, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
         environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
 
-        environmentTileArray.push(new Environment(level, canvas.width / 2 - 100 - 128, canvas.height - 128, 64, 64, "darkred", false, false, 0, 0, 0, 0, 0)); // Jump Block
-        environmentTileArray.push(new Environment(level, canvas.width / 2 - 37 - 128, canvas.height - 192, 64, 128, "darkred", false, false, 0, 0, 0, 0, 0)); // Jump Block
-        environmentTileArray.push(new Environment(level, canvas.width / 2 + 24 - 128, canvas.height - 256, 64, 192, "darkred", false, false, 0, 0, 0, 0, 0)); // Jump Block
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 110 - 128, canvas.height - 138, 64, 74, "orange", false, false, 0, 0, 0, 0, 0)); // Jump Block
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 47 - 128, canvas.height - 202, 64, 138, "orange", false, false, 0, 0, 0, 0, 0)); // Jump Block
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 14 - 128, canvas.height - 266, 84, 202, "orange", false, false, 0, 0, 0, 0, 0)); // Jump Block
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 78 - 128, canvas.height - 266, 362, 64, "orange", false, false, 0, 0, 0, 0, 0)); // Jump Block
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 100 - 128, canvas.height - 128, 64, 64, "brown", false, false, 0, 0, 0, 0, 0)); // Jump Block
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 37 - 128, canvas.height - 192, 64, 128, "brown", false, false, 0, 0, 0, 0, 0)); // Jump Block
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 24 - 128, canvas.height - 256, 64, 192, "brown", false, false, 0, 0, 0, 0, 0)); // Jump Block
+
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 78 - 128, canvas.height - 256, 352, 44, "brown", false, false, 0, 0, 0, 0, 0)); // Jump Block
         // Items
         itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
-        itemArray.push(new Item(level, "FALLING", "key", 900, player.y + 36, 64, 32)); // Key
+        itemArray.push(new Item(level, "HANGING", "key", 710, player.y - 72, 32, 64)); // Key
         itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 78, player.y, 64, 64)); // Level end
         // Prompts
         promptArray.push(new Prompt(`Press Spacebar to jump.`, 500, 100, 330, 100, 300, player.y, 64, 64));
-        promptArray.push(new Prompt(`Remember: Pick up the key and use it with E !`, 800, 100, 550, 100, 800, player.y, 128, 64));
+        promptArray.push(new Prompt(`Press E while jumping if the key is too high!`, 710, 100, 550, 100, 710, player.y, 128, 64));
 
         // Initialize Objects
         initializeAll();
@@ -278,6 +288,7 @@ window.onload = () => {
     // LEVEL 3
     function level3Init() {
         moveAllForNextLevel();
+        bgColor = "rgb(0, 155, 255)"
         // Move Player
         player.x = 10;
         player.y = canvas.height - 128;
@@ -310,6 +321,7 @@ window.onload = () => {
     // LEVEL 4
     function level4Init() {
         moveAllForNextLevel();
+        bgColor = "rgb(0, 135, 255)"
         // Move Player
         player.x = 10;
         player.y = canvas.height - 128;
@@ -351,7 +363,7 @@ window.onload = () => {
     // LEVEL 5
     function level5Init() {
         moveAllForNextLevel();
-        bgColor = "rgb(0, 135, 255)"
+        bgColor = "rgb(0, 115, 255)"
 
         // Move Player
         player.x = 10;
@@ -389,6 +401,7 @@ window.onload = () => {
     // LEVEL 6
     function level6Init() {
         moveAllForNextLevel();
+        bgColor = "rgb(0, 95, 200)"
         // Move Player
         player.x = 10;
         player.y = canvas.height - 128;
@@ -425,13 +438,56 @@ window.onload = () => {
     // LEVEL 7
     function level7Init() {
         moveAllForNextLevel();
+        bgColor = "rgb(0, 75, 175)"
         // Move Player
-        player.x = 10;
-        player.y = canvas.height - 140;
+        player.x = 32 + player.width;
+        player.y = canvas.height - 128;
         player.facing = 1;
+
+        // Environment
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, 256, 128, "orange", false, false, 0, 0, 0, 0, 0)); // Old Floor Bottom
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 54, 246, 128, "brown", false, false, 0, 0, 0, 0, 0)); // Old Floor Bottom
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 330, 266, 148, "orange", false, false, 0, 0, 0, 0, 0)); // Old Floor 1st Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 320, 256, 128, "brown", false, false, 0, 0, 0, 0, 0)); // Old Floor 1st Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 630, 266, 148, "orange", false, false, 0, 0, 0, 0, 0)); // Old Floor 2nd Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 620, 256, 128, "brown", false, false, 0, 0, 0, 0, 0)); // Old Floor 2nd Floor
+        environmentTileArray.push(new Environment(level, 0, 0, 266, 22, "orange", false, false, 0, 0, 0, 0, 0)); // Old Floor Ceiling
+        environmentTileArray.push(new Environment(level, 0, 0, 256, 12, "brown", false, false, 0, 0, 0, 0, 0)); // Old Floor Ceiling
+        environmentTileArray.push(new Environment(level, 246, canvas.height - 64, canvas.width, 128, "gold", false, false, 0, 0, 0, 0, 0)); // New Floor BOTTOM
+        environmentTileArray.push(new Environment(level, 256, canvas.height - 54, canvas.width, 230, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // New Floor BOTTOM
+        environmentTileArray.push(new Environment(level, 256, canvas.height - 330, 640, 148, "gold", false, false, 0, 0, 0, 0, 0)); // New Floor 1ST FLOOR
+        environmentTileArray.push(new Environment(level, 266, canvas.height - 320, 620, 128, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // New Floor 1ST FLOOR
+        environmentTileArray.push(new Environment(level, canvas.width - 120, canvas.height - 330, 640, 148, "gold", false, false, 0, 0, 0, 0, 0)); // New Floor 1ST FLOOR RIGHT
+        environmentTileArray.push(new Environment(level, canvas.width - 110, canvas.height - 320, 620, 128, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // New Floor 1ST FLOOR RIGHT
+        environmentTileArray.push(new Environment(level, 600, canvas.height - 630, 1200, 148, "gold", false, false, 0, 0, 0, 0, 0)); // New Floor 2ND FLOOR
+        environmentTileArray.push(new Environment(level, 610, canvas.height - 620, 1200, 128, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // New Floor 2ND FLOOR
+        environmentTileArray.push(new Environment(level, 246, 0, 1200, 22, "gold", false, false, 0, 0, 0, 0, 0)); // New Floor CEILING
+        environmentTileArray.push(new Environment(level, 256, 0, 1200, 12, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // New Floor CEILING
+        environmentTileArray.push(new Environment(level, 0, 0, 54, canvas.height, "brown", false, false, 0, 0, 0, 0, 0)); // Old Floor Left Wall
+        environmentTileArray.push(new Environment(level, canvas.width - 54, 0, 54, canvas.height, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // Old Floor Left Wall
+        environmentTileArray.push(new Environment(level, 265, canvas.height / 2, 168, 64, "gold", false, true, 0, 240, 0, -1, 1)); // Elevator LEFT TOP
+        environmentTileArray.push(new Environment(level, 275, canvas.height / 2 + 10, 148, 44, "rgb(159, 159, 1)", false, true, 0, 240, 0, -1, 1)); // Elevator LEFT TOP
+        environmentTileArray.push(new Environment(level, 433, canvas.height / 2 - 240, 168, 64, "gold", false, true, 0, 240, 0, 1, 1)); // Elevator RIGHT TOP
+        environmentTileArray.push(new Environment(level, 443, canvas.height / 2 - 230, 148, 44, "rgb(159, 159, 1)", false, true, 0, 240, 0, 1, 1)); // Elevator RIGHT TOP
+        environmentTileArray.push(new Environment(level, canvas.width / 1.5 - 2, canvas.height / 2 + 60, 168, 64, "gold", false, true, 0, 264, 0, 1, 1)); // Elevator LEFT BOTTOM
+        environmentTileArray.push(new Environment(level, canvas.width / 1.5 + 8, canvas.height / 2 + 70, 148, 44, "rgb(159, 159, 1)", false, true, 0, 264, 0, 1, 1)); // Elevator LEFT BOTTOM
+        environmentTileArray.push(new Environment(level, canvas.width / 1.5 + 166, canvas.height / 2 + 324, 168, 64, "gold", false, true, 0, 264, 0, -1, 1)); // Elevator RIGHT BOTTOM
+        environmentTileArray.push(new Environment(level, canvas.width / 1.5 + 176, canvas.height / 2 + 334, 148, 44, "rgb(159, 159, 1)", false, true, 0, 264, 0, -1, 1)); // Elevator RIGHT BOTTOM
+        
+        // Enemies
+        enemyArray.push(new Enemy(level, "Lzard", 1000, canvas.height - 180, 156, 128, 2, 2, -1, true, false, 90, 0, 1, 0)); // BOTTOM
+        enemyArray.push(new Enemy(level, "Lzard", 690, canvas.height - 180, 156, 128, 2, 2, 1, true, false, 150, 0, 1, 0)); // BOTTOM
+        enemyArray.push(new Enemy(level, "Lzard", 410, canvas.height - 180, 156, 128, 2, 2, -1, true, false, 750, 0, 1, 0)); // BOTTOM
+        enemyArray.push(new Enemy(level, "Lzard", 240, canvas.height - 440, 156, 128, 2, 2, -1, true, false, 180, 0, 1, 0)); // 1ST FLOOR
+        enemyArray.push(new Enemy(level, "Lzard", 430, canvas.height - 440, 156, 128, 2, 2, 1, true, false, 350, 0, 1, 0)); // 1ST FLOOR
+        enemyArray.push(new Enemy(level, "Lzard", 317, canvas.height - 440, 156, 128, 2, 2, -1, true, false, 250, 0, 1, 0)); // 1ST FLOOR
+        enemyArray.push(new Enemy(level, "Lzard", 900, 32, 156, 128, 2, 2, -1, true, false, 250, 0, 1, 0)); // 2ND FLOOR
         
         // Items
-        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
+        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
+        itemArray.push(new Item(level, "HANGING", "key", canvas.width -128, 24, 32, 64)); // Key
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", player.x + 196, player.y, 64, 64)); // Level end
+        
 
         // Initialize Objects
         initializeAll();
@@ -441,13 +497,46 @@ window.onload = () => {
     // LEVEL 8
     function level8Init() {
         moveAllForNextLevel();
+        bgColor = "rgb(0, 55, 125)"
         // Move Player
         player.x = 10;
         player.y = canvas.height - 140;
         player.facing = 1;
 
+        // Environment
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, 202, 128, "gold", false, false, 0, 0, 0, 0, 0)); // New Floor BOTTOM LEFT
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 54, 192, 128, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // New Floor BOTTOM LEFT
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 24, canvas.height - 64, canvas.width, 230, "gold", false, false, 0, 0, 0, 0, 0)); // New Floor BOTTOM RIGHT
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 14, canvas.height - 54, canvas.width, 230, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // New Floor BOTTOM RIGHT
+        environmentTileArray.push(new Environment(level, 202, canvas.height - 64, 168, 63, "gold", true, false, 280, 0, 1, 0, 1)); // Elevator LEFT BOTTOM
+        environmentTileArray.push(new Environment(level, 212, canvas.height - 54, 148, 44, "rgb(159, 159, 1)", true, false, 280, 0, 1, 0, 1)); // Elevator LEFT BOTTOM
+        environmentTileArray.push(new Environment(level, 192, canvas.height / 2 + 54, 128, 64, "gold", false, false, 0, 0, 0, 0, 0)); // New Floor ISLAND LEFT
+        environmentTileArray.push(new Environment(level, 202, canvas.height / 2 + 64, 108, 44, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // New Floor ISLAND LEFT
+        environmentTileArray.push(new Environment(level, 392, canvas.height / 2 + 54, 398, 64, "gold", false, false, 0, 0, 0, 0, 0)); // New Floor ISLAND LEFT
+        environmentTileArray.push(new Environment(level, 402, canvas.height / 2 + 64, 378, 44, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // New Floor ISLAND LEFT
+        
+        environmentTileArray.push(new Environment(level, canvas.width / 1.5, canvas.height / 2 + 54, 128, 64, "gold", false, true, 0, 271, 0, 1, 1)); // New Floor Elevator Right
+        environmentTileArray.push(new Environment(level, canvas.width / 1.5 + 10, canvas.height / 2 + 64, 108, 44, "rgb(159, 159, 1)", false, true, 0, 271, 0, 1, 1)); // New Floor Elevator Right
+        environmentTileArray.push(new Environment(level, canvas.width - 260, canvas.height / 2 + 321, 198, 64, "gold", false, true, 0, 518, 0, -1, 1)); // New Floor Elevator Right
+        environmentTileArray.push(new Environment(level, canvas.width - 260 + 10, canvas.height / 2 + 331, 178, 44, "rgb(159, 159, 1)", false, true, 0, 518, 0, -1, 1)); // New Floor Elevator Right
+
+        
+        // Enemies
+        enemyArray.push(new Enemy(level, "Lzard", 760, canvas.height - 180, 156, 128, 2, 2, 1, true, false, 150, 0, 1, 0)); // BOTTOM
+        enemyArray.push(new Enemy(level, "Lzard", canvas.width / 2 - 130, canvas.height / 2 - 64, 156, 128, 2, 2, 1, true, false, 150, 0, 1, 0)); // Top
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 64, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 128, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 192, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 256, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 320, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 384, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 448, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
+        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
+        itemArray.push(new Item(level, "HANGING", "key", 128, 24, 64, 32)); // Key
+        itemArray[1].hit();
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 196, 128, 64, 64)); // Level end
 
         // Initialize Objects
         initializeAll();
@@ -457,17 +546,106 @@ window.onload = () => {
     // LEVEL 9
     function level9Init() {
         moveAllForNextLevel();
+        bgColor = "rgb(0, 35, 100)" //- REMINDER
         // Move Player
         player.x = 10;
         player.y = canvas.height - 140;
         player.facing = 1;
         
+        // Environment
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, 138, 128, "gold", false, false, 0, 0, 0, 0, 0)); // Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 54, 128, 230, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // Floor 
+        environmentTileArray.push(new Environment(level, canvas.width - 138, 256, 138, canvas.height - 256, "gold", false, false, 0, 0, 0, 0, 0)); // Floor
+        environmentTileArray.push(new Environment(level, canvas.width - 128, 266, 138, canvas.height - 256, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // Floor 
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 158, 0, 316, 106, "gold", false, false, 0, 0, 0, 0, 0)); // Key Hanging Piece
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 148, 0, 296, 96, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // Key Hanging Piece
+        
+        environmentTileArray.push(new Environment(level, 235, canvas.height - 128, 168, 64, "gold", false, true, 0, 396, 0, -1, 1)); // Elevator 1 Piece
+        environmentTileArray.push(new Environment(level, 245, canvas.height - 118, 148, 44, "rgb(159, 159, 1)", false, true, 0, 396, 0, -1, 1)); // Elevator 1 Piece
+
+        environmentTileArray.push(new Environment(level, 340, canvas.height / 2, 198, 64, "gold", true, false, 396, 396, 1, 0, 1)); // Elevator Bridge 
+        environmentTileArray.push(new Environment(level, 350, canvas.height / 2 + 10, 178, 44, "rgb(159, 159, 1)", true, false, 396, 396, 1, 0, 1)); // Elevator Bridge
+
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 267, 116, 168, 64, "gold", false, true, 0, 396, 0, 1, 1)); // Elevator 2 Piece
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 277, 126, 148, 44, "rgb(159, 159, 1)", false, true, 0, 396, 0, 1, 1)); // Elevator 2 Piece
+        // Enemies
+        enemyArray.push(new Enemy(level, "Spikes", 138, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 64, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 128, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 192, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 256, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 320, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 384, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 448, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 512, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 576, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 640, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 704, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 768, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 832, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 896, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 960, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 1024, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
         // Items
-        itemArray.push(new Item(3, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
+        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
+        itemArray.push(new Item(level, "HANGING", "key", canvas.width / 2, 106, 32, 64)); // Key
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 96, 192, 64, 64)); // Level end
 
         // Initialize Objects
         initializeAll();
         hasLevel9Init = true;
+    }
+    // LEVEL 10
+    function level10Init() {
+        moveAllForNextLevel();
+        bgColor = "rgb(0, 0, 0)" //- REMINDER
+        // Move Player
+        player.x = 10;
+        player.y = canvas.height - 140;
+        player.facing = 1;
+        
+        // Environment
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, 138, 128, "gold", false, false, 0, 0, 0, 0, 0)); // Floor
+        environmentTileArray.push(new Environment(level, 0, canvas.height - 54, 128, 230, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // Floor 
+        environmentTileArray.push(new Environment(level, canvas.width - 138, 256, 138, canvas.height - 256, "gold", false, false, 0, 0, 0, 0, 0)); // Floor
+        environmentTileArray.push(new Environment(level, canvas.width - 128, 266, 138, canvas.height - 256, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // Floor 
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 158, 0, 316, 106, "gold", false, false, 0, 0, 0, 0, 0)); // Key Hanging Piece
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 148, 0, 296, 96, "rgb(159, 159, 1)", false, false, 0, 0, 0, 0, 0)); // Key Hanging Piece
+        
+        environmentTileArray.push(new Environment(level, 235, canvas.height - 128, 168, 64, "gold", false, true, 0, 396, 0, -1, 1)); // Elevator 1 Piece
+        environmentTileArray.push(new Environment(level, 245, canvas.height - 118, 148, 44, "rgb(159, 159, 1)", false, true, 0, 396, 0, -1, 1)); // Elevator 1 Piece
+
+        environmentTileArray.push(new Environment(level, 340, canvas.height / 2, 198, 64, "gold", true, false, 396, 396, 1, 0, 1)); // Elevator Bridge 
+        environmentTileArray.push(new Environment(level, 350, canvas.height / 2 + 10, 178, 44, "rgb(159, 159, 1)", true, false, 396, 396, 1, 0, 1)); // Elevator Bridge
+
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 267, 116, 168, 64, "gold", false, true, 0, 396, 0, 1, 1)); // Elevator 2 Piece
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 277, 126, 148, 44, "rgb(159, 159, 1)", false, true, 0, 396, 0, 1, 1)); // Elevator 2 Piece
+        // Enemies
+        enemyArray.push(new Enemy(level, "Spikes", 138, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 64, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 128, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 192, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 256, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 320, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 384, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 448, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 512, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 576, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 640, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 704, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 768, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 832, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 896, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 960, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Spikes", 138 + 1024, canvas.height - 48, 64, 48, 0, 0, 1, false, false, 0, 0, 0, 0));
+        // Items
+        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
+        itemArray.push(new Item(level, "HANGING", "key", canvas.width / 2, 106, 32, 64)); // Key
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 96, 192, 64, 64)); // Level end
+
+        // Initialize Objects
+        initializeAll();
+        hasLevel10Init = true;
     }
     
     // Function to move all objects away and make space for next room
@@ -521,10 +699,12 @@ window.onload = () => {
                 animateId = requestAnimationFrame(roomTransit);
                 break;
             case "DEAD":
+                cancelAnimationFrame(animateId);
+
                 btnRetry.style.display = "block";
                 btnEndGame.style.display = "block";
                 btnReturnToMenu.style.display = "block";
-                cancelAnimationFrame(animateId);
+
                 ctx.beginPath();
                 ctx.fillStyle = "black";
                 ctx.fillRect(100, 100, canvas.width - 200, canvas.height - 200);
@@ -693,6 +873,8 @@ window.onload = () => {
 
     // REWIND
     function rewindGame() {
+        if (state === "DEAD") return;
+
         let rewindSpeeder;
         if (state === "REWIND") {
             rewindSpeeder = 1;
@@ -708,9 +890,9 @@ window.onload = () => {
             
             restoreFromGameRec(rewindSpeeder);
             gameRec.splice(index, rewindSpeeder);
-            if (index <= 0) state = "STOP";
+            if (index <= 0) state = "NORMAL";
         } else if (gameRec[index][0] !== level && (state === "REWIND" || state === "LEVELREWIND")) {
-            state = "STOP";
+            state = "NORMAL";
         }
         
         if (state === "FULLREWIND") {
@@ -799,7 +981,7 @@ window.onload = () => {
         } else if (state === "LEVELREWIND" || state === "FULLREWIND") {
             imgTimeControl.src = imgTimeControlArr[3];
         }
-        ctx.drawImage(imgTimeControl, canvas.width / 2 - imgTimeControl.width, 32, 256, 128);
+        ctx.drawImage(imgTimeControl, canvas.width / 2 - imgTimeControl.width, 0, 256, 128);
     }
 
     
@@ -828,7 +1010,8 @@ window.onload = () => {
                 if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
             break;
             case "p": // DEBUG
-                state = "DEAD"
+                level++;
+                checkLevel();
             break;
             // TIME
             case "1":
@@ -903,6 +1086,8 @@ window.onload = () => {
             // ENEMY
             if (player.checkCollision(enemyArray, 0, -16, 0, -32)) {
                 player.die();
+                console.log(state)
+                checkState();
             }
             
             // Check for prompts
@@ -999,6 +1184,10 @@ window.onload = () => {
                     enemyArray[i].height
                 )
                 
+            } else if (enemy === "Spikes") {
+                ctx.drawImage(enemyArray[i].img, enemyArray[i].x, enemyArray[i].y, enemyArray[i].width, enemyArray[i].height);
+                // Collision update
+                enemyArray[i].updateCollision();
             }
         }
     }

@@ -232,34 +232,41 @@ class Enemy {
         this.lzardAnimIdleLeft = [];
         this.lzardAnimWalk = [];
         this.lzardAnimWalkLeft = [];
+        // -- Spikes
+        this.spikeAnim = [];
     }
 
     initialize() {
         // Load Images
         this.img = new Image();
 
-        // --- Idle
-        for (let i = 0; i < 62; i++) {
-            if (i < 10) {
-                this.lzardAnimIdle.push(`../img/Lzard/lzard_idle_right/lzard_idle_00_00${i}.png`);
-                this.lzardAnimIdleLeft.push(`../img/Lzard/lzard_idle_left/lzard_idle_00_00${i}.png`);
-            } else {
-                this.lzardAnimIdle.push(`../img/Lzard/lzard_idle_right/lzard_idle_00_0${i}.png`);
-                this.lzardAnimIdleLeft.push(`../img/Lzard/lzard_idle_left/lzard_idle_00_0${i}.png`);
+        if (this.name === "Lzard") {
+            // --- Idle
+            for (let i = 0; i < 62; i++) {
+                if (i < 10) {
+                    this.lzardAnimIdle.push(`../img/Lzard/lzard_idle_right/lzard_idle_00_00${i}.png`);
+                    this.lzardAnimIdleLeft.push(`../img/Lzard/lzard_idle_left/lzard_idle_00_00${i}.png`);
+                } else {
+                    this.lzardAnimIdle.push(`../img/Lzard/lzard_idle_right/lzard_idle_00_0${i}.png`);
+                    this.lzardAnimIdleLeft.push(`../img/Lzard/lzard_idle_left/lzard_idle_00_0${i}.png`);
+                }
             }
-        }
-        // --- Walking
-        for (let i = 0; i < 60; i++) {
-            if (i < 10) {
-                this.lzardAnimWalk.push(`../img/Lzard/lzard_walking_right/Lzard_Animation_Walking_00${i}.png`);
-                this.lzardAnimWalkLeft.push(`../img/Lzard/lzard_walking_left/Lzard_Animation_Walking_00${i}.png`);
-            } else {
-                this.lzardAnimWalk.push(`../img/Lzard/lzard_walking_right/Lzard_Animation_Walking_0${i}.png`);
-                this.lzardAnimWalkLeft.push(`../img/Lzard/lzard_walking_left/Lzard_Animation_Walking_0${i}.png`);
+            // --- Walking
+            for (let i = 0; i < 60; i++) {
+                if (i < 10) {
+                    this.lzardAnimWalk.push(`../img/Lzard/lzard_walking_right/Lzard_Animation_Walking_00${i}.png`);
+                    this.lzardAnimWalkLeft.push(`../img/Lzard/lzard_walking_left/Lzard_Animation_Walking_00${i}.png`);
+                } else {
+                    this.lzardAnimWalk.push(`../img/Lzard/lzard_walking_right/Lzard_Animation_Walking_0${i}.png`);
+                    this.lzardAnimWalkLeft.push(`../img/Lzard/lzard_walking_left/Lzard_Animation_Walking_0${i}.png`);
+                }
             }
+            this.img.src = "../img/Lzard/lzard.png"
         }
 
-        this.img.src = "../img/Lzard/lzard.png"
+        if (this.name === "Spikes") {
+            this.img.src = "../img/spikes.png";
+        }
     }
 
     updateCollision() {
@@ -298,6 +305,10 @@ class Enemy {
     hit() {
        this.x = -5000;
        this.alive = false;
+    }
+
+    getName() {
+        return this.name;
     }
 }
 
