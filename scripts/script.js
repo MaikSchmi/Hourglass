@@ -31,10 +31,11 @@ imgTimeControl.src = imgTimeControlArr[0];
 
 let mode = "NORMAL";
 let time = 0;
+let score = 0;
 let gameTimer; 
 
 // Levels
-let level = 10;
+let level = 1;
 
 let hasLevel0Init = false;
 let hasLevel1Init = false;
@@ -68,7 +69,7 @@ window.onload = () => {
     btnStart.addEventListener("mouseup", e => {
         btnClickEffect(btnStart);
         startGame();
-        //level = 1; - REMINDER
+        level = 1; //REMINDER
         state = "ROOMTRANSIT";
         mainMenu.style.display = "none";
         canvas.style.display = "flex";
@@ -534,12 +535,19 @@ window.onload = () => {
         
         // Items
         itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
-        itemArray.push(new Item(level, "HANGING", "key", 128, 24, 64, 32)); // Key
-        itemArray[1].hit();
+        itemArray.push(new Item(level, "HANGING", "key", 128, 24, 32, 64)); // Key
         itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 196, 128, 64, 64)); // Level end
 
         // Initialize Objects
         initializeAll();
+
+        // Let key fall
+        for (let i = 0; i < itemArray.length; i++) {
+            if (itemArray[i].id === level && itemArray[i].name === "key") {
+                itemArray[i].hit();
+                break;
+            }
+        }
         hasLevel8Init = true;
     }
 
@@ -638,6 +646,7 @@ window.onload = () => {
 
         // Items
        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y + 12, 64, 64)); // Player start
+       itemArray.push(new Item(level, "NORMAL", "hourglass", canvas.width - 58, canvas.height / 2, 56, 64)); // Player start
 
         // Initialize Objects
         initializeAll();
@@ -708,6 +717,11 @@ window.onload = () => {
                 ctx.fillStyle = "red";
                 ctx.fillText("YOU ARE DEAD!", canvas.width / 2 - 200, canvas.height / 2 - 50, 1200);
                 ctx.closePath();
+                break;
+            case "GAMEFINISHED":
+                    console.log(score)
+                    state = "FULLREWIND";
+                    checkState()
                 break;
             case "ENDGAME":
                 cancelAnimationFrame(animateId);

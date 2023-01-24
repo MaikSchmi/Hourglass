@@ -348,12 +348,14 @@ class Item {
         this.img;
         this.keySprite = [];
         this.roomTransitSprite = [];
+        this.hourglassSprite = [];
     }
 
     initialize() {
         this.img = new Image();
         this.keySprite.push("../img/Items/key_hanging.png", "../img/Items/key.png")
         this.roomTransitSprite.push("../img/Items/room_transit_closed.png", "../img/Items/room_transit_open.png");
+        this.hourglassSprite.push("../img/hourglass.png");
 
         switch(this.name) {
             case "key":
@@ -369,6 +371,9 @@ class Item {
                 } else {
                     this.img.src = this.roomTransitSprite[1];
                 }
+                break;
+            case "hourglass":
+                this.img.src = this.hourglassSprite[0];
                 break;
         }
     }
@@ -403,6 +408,9 @@ class Item {
                     this.moveY = true;
                     this.move();
                 }
+                break;
+            case "hourglass":
+                state = "GAMEFINISHED";
                 break;
         }
     }
