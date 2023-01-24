@@ -5,9 +5,9 @@
         <link rel="stylesheet" href="./styles/style.css" />
     </head>
     <body>
-        <div id="title-screen-container">
-            <div id="title-screen">
-                <h1 id="title">- Inside The Hourglass -</h1>
+        <div class="screen-container" id="title-screen-container">
+            <div class="screen-orientation">
+                <h1 class="title">- Inside The Hourglass -</h1>
                 <div id="title-screen-content">
                     <ul id="button-container">
                         <li><button type="button" id="btn-start">Start Game</button></li>
@@ -22,14 +22,45 @@
                 </div>
             </div>
         </div>
-        <div id="highscores">
-
+        <div class="screen-container" id="highscore-screen-container">
+            <div class="screen-orientation">
+                <h1 class="title">- Inside The Hourglass -</h1>
+                <h2 id="highscore-title">Highscores</h2>
+                <div id="highscore-content">
+                    <ol id="highscore-container" type="I">
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                        <li>--- ---</li>
+                    </ol>
+                    <div id="highscore-button-container">
+                        <button type="button" id="btn-highscore-return-to-menu">Return to Main Menu</button>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="game-canvas">
             <canvas class="screen" width="1347" height="780"></canvas>
             <div id="game-over-button-container">
                 <button type="button" id="btn-retry">Retry</button>
                 <button type="button" id="btn-end">Start Again</button>
+                <button type="button" id="btn-return-to-menu">Return to Main Menu</button>
             </div>
         </div>
         <script src="./scripts/classes.js"></script>

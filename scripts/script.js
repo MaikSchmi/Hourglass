@@ -2,14 +2,18 @@
 const btnStart = document.getElementById("btn-start");
 const btnTimeTrial = document.getElementById("btn-time-trial");
 const btnHighscores = document.getElementById("btn-highscores");
+const btnHighscoresReturn = document.getElementById("btn-highscore-return-to-menu");
 const btnCredits = document.getElementById("btn-credits");
 const btnQuit = document.getElementById("btn-quit");
+
 const btnRetry = document.getElementById("btn-retry");
 const btnEndGame = document.getElementById("btn-end");
+const btnReturnToMenu = document.getElementById("btn-return-to-menu");
 
 
 // Display
 const mainMenu = document.getElementById("title-screen-container");
+const highscoreMenu = document.getElementById("highscore-screen-container");
 const canvas = document.querySelector(".screen");
 const ctx = canvas.getContext("2d");
 let roomTransitAlpha = 1;
@@ -50,9 +54,11 @@ let grvAcc = 5;
 
 // Main Game Load
 window.onload = () => {
+    highscoreMenu.style.display = "none"
     canvas.style.display = "none";
     btnRetry.style.display = "none";
     btnEndGame.style.display = "none";
+    btnReturnToMenu.style.display = "none";
 
     // Menu Controls
     btnStart.addEventListener("mousedown", e => {
@@ -61,9 +67,10 @@ window.onload = () => {
     btnStart.addEventListener("mouseup", e => {
         btnClickEffect(btnStart);
         startGame();
+        level = 1;
         state = "ROOMTRANSIT";
         mainMenu.style.display = "none";
-        canvas.style.display = "block";
+        canvas.style.display = "flex";
     });
 
     btnTimeTrial.addEventListener("mousedown", e => {
@@ -74,7 +81,7 @@ window.onload = () => {
         state = "ROOMTRANSIT";
         mode = "TIMETRIAL";
         mainMenu.style.display = "none";
-        canvas.style.display = "block";
+        canvas.style.display = "flex";
     });
 
     btnHighscores.addEventListener("mousedown", e => {
@@ -82,8 +89,20 @@ window.onload = () => {
     });
     btnHighscores.addEventListener("mouseup", e => {
         btnClickEffect(btnHighscores);
-        console.log("yay")
+        highscoreMenu.style.display = "flex";
+        mainMenu.style.display = "none";
     });
+
+    btnHighscoresReturn.addEventListener("mousedown", e => {
+        btnClickEffect(btnHighscoresReturn);
+    });
+    btnHighscoresReturn.addEventListener("mouseup", e => {
+        btnClickEffect(btnHighscoresReturn);
+        highscoreMenu.style.display = "none";
+        mainMenu.style.display = "flex";
+
+    });
+
 
     btnCredits.addEventListener("mousedown", e => {
         btnClickEffect(btnCredits);
@@ -109,6 +128,7 @@ window.onload = () => {
         state = "LEVELREWIND";
         btnRetry.style.display = "none";
         btnEndGame.style.display = "none";
+        btnReturnToMenu.style.display = "none";
         checkState();
     });
 
@@ -120,6 +140,20 @@ window.onload = () => {
         state = "FULLREWIND";
         btnRetry.style.display = "none";
         btnEndGame.style.display = "none";
+        btnReturnToMenu.style.display = "none";
+        checkState();
+    });
+
+    
+    btnReturnToMenu.addEventListener("mousedown", e => {
+        btnClickEffect(btnReturnToMenu);
+    });
+    btnReturnToMenu.addEventListener("mouseup", e => {
+        btnClickEffect(btnReturnToMenu);
+        state = "ENDGAME";
+        btnRetry.style.display = "none";
+        btnEndGame.style.display = "none";
+        btnReturnToMenu.style.display = "none";
         checkState();
     });
 
@@ -489,6 +523,7 @@ window.onload = () => {
             case "DEAD":
                 btnRetry.style.display = "block";
                 btnEndGame.style.display = "block";
+                btnReturnToMenu.style.display = "block";
                 cancelAnimationFrame(animateId);
                 ctx.beginPath();
                 ctx.fillStyle = "black";
@@ -497,6 +532,11 @@ window.onload = () => {
                 ctx.fillStyle = "red";
                 ctx.fillText("YOU ARE DEAD!", canvas.width / 2 - 200, canvas.height / 2 - 50, 1200);
                 ctx.closePath();
+                break;
+            case "ENDGAME":
+                cancelAnimationFrame(animateId);
+                mainMenu.style.display = "flex";
+                canvas.style.display = "none";
                 break;
             default:
                 break;
@@ -657,9 +697,9 @@ window.onload = () => {
         if (state === "REWIND") {
             rewindSpeeder = 1;
         } else if (state === "LEVELREWIND") {
-            rewindSpeeder = 5;
-        } else if (state === "FULLREWIND") {
             rewindSpeeder = 7;
+        } else if (state === "FULLREWIND") {
+            rewindSpeeder = 15;
         }
         let index = gameRec.length - rewindSpeeder;
         if (index <= 0) index = 0;

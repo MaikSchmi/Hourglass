@@ -1,10 +1,9 @@
 ToDo
-- Highscore board
+- Highscore functionality
 - Player name input
-- Limitation to use of rewind time
+- Limitation of use of rewind time
 - Check to include controller controls
-
-- Change CSS #title-screen button border to "inset" when clicked
+- Return To Menu button on death doesn't have intended behavior
 
 
 Game Structure
