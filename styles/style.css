@@ -62,7 +62,7 @@ button {
 }
 
 .pressed {
-    border: 7px rgb(211, 211, 13) inset;
+    border-style: inset;
 }
 
 

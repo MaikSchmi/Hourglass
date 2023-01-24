@@ -53,36 +53,70 @@ window.onload = () => {
     canvas.style.display = "none";
     btnRetry.style.display = "none";
     btnEndGame.style.display = "none";
+
     // Menu Controls
-    btnStart.addEventListener("click", e => {
+    btnStart.addEventListener("mousedown", e => {
+        btnClickEffect(btnStart);
+    });
+    btnStart.addEventListener("mouseup", e => {
+        btnClickEffect(btnStart);
         startGame();
         state = "ROOMTRANSIT";
         mainMenu.style.display = "none";
         canvas.style.display = "block";
     });
-    btnTimeTrial.addEventListener("click", e => {
+
+    btnTimeTrial.addEventListener("mousedown", e => {
+        btnClickEffect(btnTimeTrial);
+    });
+    btnTimeTrial.addEventListener("mouseup", e => {
         startGame();
         state = "ROOMTRANSIT";
         mode = "TIMETRIAL";
         mainMenu.style.display = "none";
         canvas.style.display = "block";
     });
-    btnHighscores.addEventListener("click", e => {
+
+    btnHighscores.addEventListener("mousedown", e => {
         btnClickEffect(btnHighscores);
     });
-    btnCredits.addEventListener("click", e => {
+    btnHighscores.addEventListener("mouseup", e => {
+        btnClickEffect(btnHighscores);
+        console.log("yay")
+    });
+
+    btnCredits.addEventListener("mousedown", e => {
+        btnClickEffect(btnCredits);
+    });
+    btnCredits.addEventListener("mouseup", e => {
+        btnClickEffect(btnCredits);
         console.log("clicked")
     });
-    btnQuit.addEventListener("click", e => {
-        alert("Just close the browser tab ...");
+
+    btnQuit.addEventListener("mousedown", e => {
+        btnClickEffect(btnQuit);
     });
-    btnRetry.addEventListener("click", e => {
+    btnQuit.addEventListener("mouseup", e => {
+        btnClickEffect(btnQuit);
+        alert("Just close the browser tab?");
+    });
+
+    btnRetry.addEventListener("mousedown", e => {
+        btnClickEffect(btnRetry);
+    });
+    btnRetry.addEventListener("mouseup", e => {
+        btnClickEffect(btnRetry);
         state = "LEVELREWIND";
         btnRetry.style.display = "none";
         btnEndGame.style.display = "none";
         checkState();
     });
-    btnEndGame.addEventListener("click", e => {
+
+    btnEndGame.addEventListener("mousedown", e => {
+        btnClickEffect(btnEndGame);
+    });
+    btnEndGame.addEventListener("mouseup", e => {
+        btnClickEffect(btnEndGame);
         state = "FULLREWIND";
         btnRetry.style.display = "none";
         btnEndGame.style.display = "none";
