@@ -24,9 +24,9 @@ let fadeOut = false;
 let bgColor = "rgb(0, 195, 255)"
 
 // Music
-const titleAudio = new Audio("../sfx/bg.mp3");
+const titleAudio = new Audio("/stx/bg.mp3");
 titleAudio.volume = 0.1;
-const bgAudio = new Audio("../sfx/song.wav");
+const bgAudio = new Audio("/stx/song.wav");
 bgAudio.volume = 0.01;
 
 // Game Variables
@@ -36,7 +36,7 @@ const globalGameRec = [];
 let state;
 let animateId;
 const imgTimeControl = new Image();
-const imgTimeControlArr = ["../img/time_control_normal.png", "../img/time_control_stop.png", "../img/time_control_rewind.png", "../img/time_control_fast_rewind.png"]
+const imgTimeControlArr = ["/img/time_control_normal.png", "/img/time_control_stop.png", "/img/time_control_rewind.png", "/img/time_control_fast_rewind.png"]
 imgTimeControl.src = imgTimeControlArr[0];
 let gameCompleted = false;
 
