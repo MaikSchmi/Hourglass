@@ -703,6 +703,9 @@ window.onload = () => {
                     cancelAnimationFrame(animateId);
                     canvas.style.display = "none";
                     mainMenu.style.display = "flex";
+                    bgAudio.pause();
+                    titleAudio.play()
+                    titleAudio.loop = true;
                     resetInitGameValues();
                 }
                 break;
@@ -1354,9 +1357,7 @@ window.onload = () => {
         hasLevel9Init = false;
         hasLevel10Init = false;
 
-        console.log(player)
         if (player) player = undefined;
-        console.log(player)
         gameInProgress = false;
     }
 
