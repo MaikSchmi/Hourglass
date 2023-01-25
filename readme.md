@@ -1,13 +1,5 @@
 ToDo
-- Fix level increment issue
-- Stop time when dead
-
-- Include tutorial prompt for time control (enemies die in STOP, items cannot be collected, return, etc)
-- Limitation of use of rewind time (?)
 - Check to include controller controls
-- Return To Menu button on death doesn't have intended behavior
-- Game Recorder to remember BG color
-- Convert "score" and add to highscore board
 - Create "Select Level" Screen (if enough time)
 
 ===
@@ -23,7 +15,7 @@ Contains the classes that are being defined for the game.
 
 Classes:
 - Player
-- Enemies ("Lzard")
+- Enemies ("Lzard", "Spikes", "Boss")
 - Items ("key", "roomtransit", "door")
 - Environment (Walls, Floors, Elevators)
 - Prompts (Tutorial Boxes, Story Texts)

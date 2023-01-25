@@ -23,7 +23,14 @@ let roomTransitAlpha;
 let fadeOut = false;
 let bgColor = "rgb(0, 195, 255)"
 
+// Music
+const titleAudio = new Audio("../sfx/bg.mp3");
+titleAudio.volume = 0.1;
+const bgAudio = new Audio("../sfx/song.wav");
+bgAudio.volume = 0.01;
+
 // Game Variables
+let gameInProgress = false;
 const gameRec = [];
 const globalGameRec = [];
 let state;
@@ -34,15 +41,15 @@ imgTimeControl.src = imgTimeControlArr[0];
 let gameCompleted = false;
 
 let mode;
+let gameTimer;
+let timerIsPaused = true; 
 let time;
 let score;
-let gameTimer; 
 let gamerName = "";
 
 // Levels
 let level;
 
-let hasLevel0Init;
 let hasLevel1Init;
 let hasLevel2Init;
 let hasLevel3Init;
@@ -65,6 +72,8 @@ window.onload = () => {
     canvas.style.display = "none";
     btnRetry.style.display = "none";
     btnReturnToMenu.style.display = "none";
+    titleAudio.play();
+    titleAudio.loop = true;
 
     // Menu Controls
     btnStart.addEventListener("mousedown", e => {
@@ -126,6 +135,7 @@ window.onload = () => {
     btnRetry.addEventListener("mouseup", e => {
         btnClickEffect(btnRetry);
         state = "LEVELREWIND";
+        if (timerIsPaused) timerIsPaused = false;
         btnRetry.style.display = "none";
         btnReturnToMenu.style.display = "none";
         checkState();
@@ -139,6 +149,7 @@ window.onload = () => {
         state = "ENDGAME";
         btnRetry.style.display = "none";
         btnReturnToMenu.style.display = "none";
+        resetInitGameValues();
         checkState();
     });
 
@@ -180,6 +191,10 @@ window.onload = () => {
         resetInitGameValues(); 
         player = new Player(10, canvas.height - 128, 64, 64, 3, 2, 10, -1);
         player.initialize();
+        gameInProgress = true;
+        titleAudio.pause();
+        bgAudio.play()
+        bgAudio.loop = true;
         gameHandler();
     }
     // Handle Loops
@@ -409,6 +424,12 @@ window.onload = () => {
         itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
         itemArray.push(new Item(level, "HANGING", "key", canvas.width / 2, 64, 32, 64)); // Key
         itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 96, player.y, 64, 64)); // Level end
+
+        // Prompts
+        promptArray.push(new Prompt(`Rewinding time resets items.`, canvas.width / 2 - 200, canvas.height / 4 + 32, 400, 100, player.x, player.y, 256, 64));
+        promptArray.push(new Prompt(`Collect items in normal time flow.`, canvas.width / 2 - 200, canvas.height / 4 + 32, 400, 100, 439, 120, 256, 64));
+        promptArray.push(new Prompt(`Kill enemies in normal time flow...`, canvas.width / 2 - 200, canvas.height / 4 + 32, 400, 100, 439, 445, 256, 64));
+        promptArray.push(new Prompt(`...or when time is stopped!`, canvas.width / 2 - 200, canvas.height / 4 + 32, 400, 100, 829, 445, 256, 64));
 
         // Initialize Objects
         initializeAll();
@@ -694,6 +715,8 @@ window.onload = () => {
                 btnRetry.style.display = "block";
                 btnReturnToMenu.style.display = "block";
 
+                timerIsPaused = true;
+
                 ctx.beginPath();
                 ctx.fillStyle = "black";
                 ctx.fillRect(100, 100, canvas.width - 200, canvas.height - 200);
@@ -781,6 +804,7 @@ window.onload = () => {
         // Fade and switch level
         if (fadeOut) {
             roomTransitAlpha += 0.01;
+            timerIsPaused = true;
             if (roomTransitAlpha >= 1) {
                 fadeOut = false;
                 level++;
@@ -791,6 +815,7 @@ window.onload = () => {
             if (roomTransitAlpha <= 0) {
                 state = "NORMAL";
                 fadeOut = true;
+                timerIsPaused = false;
             }
         }
         checkState();
@@ -815,6 +840,7 @@ window.onload = () => {
                 anim: player.img.src,
                 spriteCount: player.spriteCount,
                 time: time,
+                bg: bgColor,
             }
         );
 
@@ -884,10 +910,14 @@ window.onload = () => {
         if (index < 0) index = 0;
 
         // Prevent rewinding to previous level
-        if (gameRec[index][0] === level && (state === "REWIND" || state === "LEVELREWIND")) {    
-            restoreFromGameRec(rewindSpeeder);
-            gameRec.splice(index, rewindSpeeder);
-            if (index <= 0) state = "NORMAL";
+        if (state === "REWIND" || state === "LEVELREWIND") {    
+            if (gameRec[index][0] === level && gameRec[index - 1][0] === level){
+                restoreFromGameRec(rewindSpeeder);
+                gameRec.splice(index, rewindSpeeder);
+                if (index <= 0) state = "NORMAL";
+            } else {
+                state = "NORMAL";
+            } 
         } else if (gameRec[index][0] !== level && (state === "REWIND" || state === "LEVELREWIND")) {
             state = "NORMAL";
         }
@@ -919,6 +949,7 @@ window.onload = () => {
             player.y = gameRec[index][1][0].y;
             player.img.src = gameRec[index][1][0].anim;
             player.spriteCount = gameRec[index][1][0].spriteCount;
+            bgColor = gameRec[index][1][0].bg;
         }
 
         if (state === "FULLREWIND") {
@@ -993,74 +1024,75 @@ window.onload = () => {
 
     // Player Controls
     document.addEventListener("keydown", (e) => {
-        switch (e.key) {
-            // PLAYER
-            case "d": // Left
-            case "D":
-            case "ArrowRight":
-                player.facing = 1;
-                player.moveRight = true;
-            break;
-            case "a": // Right
-            case "A":
-            case "ArrowLeft":
-                player.facing = -1;
-                player.moveLeft = true;
-            break;
-            case " ": // Jump
-                if (player.canJump) player.jump = true;
-            break;
-            case "e": // Interact
-            case "E":
-                player.checkInteractableCollision(itemArray, 0, 0, 0, 0);
-            break;
-            case "f": // Shoot
-            case "F":
-                if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
-            break;
-            case "p": // DEBUG
-                const score = 12000;
-                const name = "Someone Better Than You"
-                addHighscore(score, name);
-                level++;
-            break;
-            // TIME
-            case "1":
-            case "!":
-                if (state === "NORMAL") {
-                    state = "STOP";
-                    checkState();
-                } else if (state === "STOP") {
-                    state = "REWIND";
-                    checkState();
-                }
-            break;
-            case "3":
-            case "§":
-                if (state === "REWIND") {
-                    state = "STOP"
-                    checkState();
-                } else if (state === "STOP") {
-                    state = "NORMAL"
-                    checkState();
-                }
-            break;
+        if (gameInProgress) {
+            switch (e.key) {
+                // PLAYER
+                case "d": // Left
+                case "D":
+                case "ArrowRight":
+                    player.facing = 1;
+                    player.moveRight = true;
+                break;
+                case "a": // Right
+                case "A":
+                case "ArrowLeft":
+                    player.facing = -1;
+                    player.moveLeft = true;
+                break;
+                case " ": // Jump
+                    if (player.canJump) player.jump = true;
+                break;
+                case "e": // Interact
+                case "E":
+                    player.checkInteractableCollision(itemArray, 0, 0, 0, 0);
+                break;
+                case "f": // Shoot
+                case "F":
+                    if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
+                break;
+                case "p": // DEBUG
+                    level++;
+                break;
+                // TIME
+                case "1":
+                case "!":
+                    if (state === "NORMAL") {
+                        state = "STOP";
+                        checkState();
+                    } else if (state === "STOP") {
+                        state = "REWIND";
+                        checkState();
+                    }
+                break;
+                case "3":
+                case "§":
+                    if (state === "REWIND") {
+                        state = "STOP"
+                        checkState();
+                    } else if (state === "STOP") {
+                        state = "NORMAL"
+                        checkState();
+                    }
+                break;
+            }
         }
     });
     document.addEventListener("keyup", (e) => {
-        switch (e.key) {
-            case "d":
-            case "D":
-            case "ArrowRight":
-                player.facing = 1;
-                player.moveRight = false;
-            break;
-            case "a":
-            case "A":
-            case "ArrowLeft":
-                player.facing = -1;
-                player.moveLeft = false;
-            break;
+        if (gameInProgress) {
+            switch (e.key) {
+                case "d":
+                case "D":
+                case "ArrowRight":
+                    player.facing = 1;
+                    player.moveRight = false;
+                break;
+                case "a":
+                case "A":
+                case "ArrowLeft":
+                    player.facing = -1;
+                    player.moveLeft = false;
+                break;
+            }
         }
     });
 
@@ -1280,7 +1312,7 @@ window.onload = () => {
 
     // TIMER
     function startTimer() {
-        time++;
+        if (!timerIsPaused) time++;
     }
     function displayTimer() {
         ctx.beginPath();
@@ -1304,10 +1336,10 @@ window.onload = () => {
         gameCompleted = false;
         score = 0;
         time = 0;
+        timerIsPaused = true;
         level = 1;
         roomTransitAlpha = 1;
         fadeOut = false;
-        mode = "NORMAL";
         gameTimer = setInterval(startTimer, 10);
 
         hasLevel0Init = false;
@@ -1322,7 +1354,10 @@ window.onload = () => {
         hasLevel9Init = false;
         hasLevel10Init = false;
 
-        if (player) delete player;
+        console.log(player)
+        if (player) player = undefined;
+        console.log(player)
+        gameInProgress = false;
     }
 
     function addHighscore(score, name) {
