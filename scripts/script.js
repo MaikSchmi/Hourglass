@@ -7,7 +7,6 @@ const btnCredits = document.getElementById("btn-credits");
 const btnQuit = document.getElementById("btn-quit");
 
 const btnRetry = document.getElementById("btn-retry");
-const btnEndGame = document.getElementById("btn-end");
 const btnReturnToMenu = document.getElementById("btn-return-to-menu");
 
 const btnMenuNameOK = document.getElementById("input-name-ok-button");
@@ -20,7 +19,7 @@ const enterName = document.getElementById("player-name-prompt-popup");
 const highscoreMenu = document.getElementById("highscore-screen-container");
 const canvas = document.querySelector(".screen");
 const ctx = canvas.getContext("2d");
-let roomTransitAlpha = 1;
+let roomTransitAlpha;
 let fadeOut = false;
 let bgColor = "rgb(0, 195, 255)"
 
@@ -34,26 +33,26 @@ const imgTimeControlArr = ["../img/time_control_normal.png", "../img/time_contro
 imgTimeControl.src = imgTimeControlArr[0];
 let gameCompleted = false;
 
-let mode = "NORMAL";
-let time = 0;
-let score = 0;
+let mode;
+let time;
+let score;
 let gameTimer; 
 let gamerName = "";
 
 // Levels
-let level = 1;
+let level;
 
-let hasLevel0Init = false;
-let hasLevel1Init = false;
-let hasLevel2Init = false;
-let hasLevel3Init = false;
-let hasLevel4Init = false;
-let hasLevel5Init = false;
-let hasLevel6Init = false;
-let hasLevel7Init = false;
-let hasLevel8Init = false;
-let hasLevel9Init = false;
-let hasLevel10Init = false;
+let hasLevel0Init;
+let hasLevel1Init;
+let hasLevel2Init;
+let hasLevel3Init;
+let hasLevel4Init;
+let hasLevel5Init;
+let hasLevel6Init;
+let hasLevel7Init;
+let hasLevel8Init;
+let hasLevel9Init;
+let hasLevel10Init;
 
 // Physics
 const grv = 3;
@@ -65,7 +64,6 @@ window.onload = () => {
     highscoreMenu.style.display = "none"
     canvas.style.display = "none";
     btnRetry.style.display = "none";
-    btnEndGame.style.display = "none";
     btnReturnToMenu.style.display = "none";
 
     // Menu Controls
@@ -129,23 +127,9 @@ window.onload = () => {
         btnClickEffect(btnRetry);
         state = "LEVELREWIND";
         btnRetry.style.display = "none";
-        btnEndGame.style.display = "none";
         btnReturnToMenu.style.display = "none";
         checkState();
     });
-
-    btnEndGame.addEventListener("mousedown", e => {
-        btnClickEffect(btnEndGame);
-    });
-    btnEndGame.addEventListener("mouseup", e => {
-        btnClickEffect(btnEndGame);
-        state = "FULLREWIND";
-        btnRetry.style.display = "none";
-        btnEndGame.style.display = "none";
-        btnReturnToMenu.style.display = "none";
-        checkState();
-    });
-
     
     btnReturnToMenu.addEventListener("mousedown", e => {
         btnClickEffect(btnReturnToMenu);
@@ -154,7 +138,6 @@ window.onload = () => {
         btnClickEffect(btnReturnToMenu);
         state = "ENDGAME";
         btnRetry.style.display = "none";
-        btnEndGame.style.display = "none";
         btnReturnToMenu.style.display = "none";
         checkState();
     });
@@ -189,13 +172,14 @@ window.onload = () => {
         }
     }
 
-    const player = new Player(10, canvas.height - 128, 64, 64, 3, 2, 10, -1);
+    let player;
+
     // Start
     function startGame() {
         state = "NORMAL";
-        gameTimer = setInterval(startTimer, 10);
+        resetInitGameValues(); 
+        player = new Player(10, canvas.height - 128, 64, 64, 3, 2, 10, -1);
         player.initialize();
-        resetGameValues(); 
         gameHandler();
     }
     // Handle Loops
@@ -218,7 +202,7 @@ window.onload = () => {
             case 8: if (!hasLevel8Init) level8Init(); break;
             case 9: if (!hasLevel9Init) level9Init(); break;
             case 10: if (!hasLevel10Init) level10Init(); break;
-            default: level++; break;
+            default: level = 1; break;
         }
     }
     // LEVEL 1
@@ -695,8 +679,10 @@ window.onload = () => {
             case "FULLREWIND":
                 animateId = requestAnimationFrame(fullRewind);
                 if (gameCompleted && gameRec.length < 10) {
+                    cancelAnimationFrame(animateId);
                     canvas.style.display = "none";
                     mainMenu.style.display = "flex";
+                    resetInitGameValues();
                 }
                 break;
             case "ROOMTRANSIT":
@@ -706,7 +692,6 @@ window.onload = () => {
                 cancelAnimationFrame(animateId);
 
                 btnRetry.style.display = "block";
-                btnEndGame.style.display = "block";
                 btnReturnToMenu.style.display = "block";
 
                 ctx.beginPath();
@@ -911,8 +896,7 @@ window.onload = () => {
             restoreFromGameRec(rewindSpeeder);
             gameRec.splice(index, rewindSpeeder);
             if (index === 0) {
-                level = 1;
-                state = "STOP";
+                state = "NORMAL";
             }
         }
     }
@@ -948,7 +932,7 @@ window.onload = () => {
                 continue;
             }
 
-            if (i >= gameRec[index][2].length - 1) continue;
+            if (i > gameRec[index][2].length - 1) continue;
 
             environmentTileArray[i].x = gameRec[index][2][i].x;
             environmentTileArray[i].y = gameRec[index][2][i].y;
@@ -961,7 +945,7 @@ window.onload = () => {
                 continue;
             }
             
-            if (i >= gameRec[index][3].length - 1) continue;
+            if (i > gameRec[index][3].length - 1) continue;
 
             enemyArray[i].x = gameRec[index][3][i].x;
             enemyArray[i].y = gameRec[index][3][i].y;
@@ -978,7 +962,7 @@ window.onload = () => {
                 continue;
             }
 
-            if (i >= gameRec[index][4].length - 1) continue;
+            if (i > gameRec[index][4].length - 1) continue;
 
             itemArray[i].x = gameRec[index][4][i].x;
             itemArray[i].y = gameRec[index][4][i].y;
@@ -1038,7 +1022,7 @@ window.onload = () => {
                 const score = 12000;
                 const name = "Someone Better Than You"
                 addHighscore(score, name);
-                level ++               
+                level++;
             break;
             // TIME
             case "1":
@@ -1088,7 +1072,7 @@ window.onload = () => {
         // PHYSICS
         player.updateCollision();
         if (mode === "TIMETRIAL") displayTimer();
-        if (level > 4) drawTimeControl();
+        drawTimeControl();
 
         // --- Ground contact, enable jump
         if (!blockPlayerStates()) {
@@ -1291,7 +1275,7 @@ window.onload = () => {
             }
         }
         // Draw
-        ctx.drawImage(imgContainer, x, y, w, h); 
+        ctx.drawImage(imgContainer, x, y, w, h);
     }
 
     // TIMER
@@ -1316,12 +1300,15 @@ window.onload = () => {
         return `${mins}.${secs}.${csecs}`
     }
 
-    function resetGameValues() {
+    function resetInitGameValues() {
         gameCompleted = false;
         score = 0;
         time = 0;
-        level = 0;
+        level = 1;
         roomTransitAlpha = 1;
+        fadeOut = false;
+        mode = "NORMAL";
+        gameTimer = setInterval(startTimer, 10);
 
         hasLevel0Init = false;
         hasLevel1Init = false;
@@ -1334,6 +1321,8 @@ window.onload = () => {
         hasLevel8Init = false;
         hasLevel9Init = false;
         hasLevel10Init = false;
+
+        if (player) delete player;
     }
 
     function addHighscore(score, name) {
