@@ -47,6 +47,7 @@ class Player {
     }
 
     initialize() {
+        console.log(level)
         // Load images
         this.img = new Image();
         // --- Idle

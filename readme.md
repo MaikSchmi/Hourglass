@@ -1,13 +1,14 @@
 ToDo
-- Player name input
-- Limitation of use of rewind time
+- Fix level increment issue
+- Stop time when dead
+
+- Include tutorial prompt for time control (enemies die in STOP, items cannot be collected, return, etc)
+- Limitation of use of rewind time (?)
 - Check to include controller controls
 - Return To Menu button on death doesn't have intended behavior
-- Add hourglass OR lastlevel as icon to title screen
 - Game Recorder to remember BG color
 - Convert "score" and add to highscore board
-
-- Last level, player object that mirror's player's inputs
+- Create "Select Level" Screen (if enough time)
 
 ===
 - Possible to get player stuck with no recording after pausing on frame 0

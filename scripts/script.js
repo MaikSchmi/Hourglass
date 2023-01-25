@@ -112,7 +112,6 @@ window.onload = () => {
     });
     btnCredits.addEventListener("mouseup", e => {
         btnClickEffect(btnCredits);
-        console.log("clicked")
     });
 
     btnQuit.addEventListener("mousedown", e => {
@@ -167,9 +166,10 @@ window.onload = () => {
     btnMenuNameOK.addEventListener("mouseup", e => {
         btnClickEffect(btnMenuNameOK);
         startGame();
-        level = 1; //REMINDER
+        gamerName = inputName.value;
         state = "ROOMTRANSIT";
         mainMenu.style.display = "none";
+        enterName.style.display = "none";
         canvas.style.display = "flex";
     });
 
@@ -193,6 +193,7 @@ window.onload = () => {
     // Start
     function startGame() {
         state = "NORMAL";
+        gameTimer = setInterval(startTimer, 10);
         player.initialize();
         resetGameValues(); 
         gameHandler();
@@ -207,7 +208,6 @@ window.onload = () => {
     // --- Level switcher
     function checkLevel() {
         switch (level) {
-            case 0: if (!hasLevel0Init) level0Init(); break;
             case 1: if (!hasLevel1Init) level1Init(); break;
             case 2: if (!hasLevel2Init) level2Init(); break;
             case 3: if (!hasLevel3Init) level3Init(); break;
@@ -218,35 +218,8 @@ window.onload = () => {
             case 8: if (!hasLevel8Init) level8Init(); break;
             case 9: if (!hasLevel9Init) level9Init(); break;
             case 10: if (!hasLevel10Init) level10Init(); break;
-            default: break;
+            default: level++; break;
         }
-    }
-    // LEVEL 0
-    function level0Init() {
-        moveAllForNextLevel();
-        bgColor = "rgb(0, 195, 255)"
-        // Environment
-        environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width, canvas.height, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(level, 0, 0, 64, canvas.height - 64, "brown", false)); // Left Wall
-        environmentTileArray.push(new Environment(level, canvas.width - 256, canvas.height / 2 - 176, canvas.width - 256, 256, "brown", false, false, 0, 0, 0, 0, 0)); // Right Wall
-        environmentTileArray.push(new Environment(level, 256, canvas.height / 2 - 64, canvas.width - 512, 64, "green", false, false, 0, 0, 0, 0, 0)); // Middle Floor
-        
-        // -- Elevator
-        environmentTileArray.push(new Environment(level, 76 - 5, canvas.height - 128 - 15, 168 + 10, 64 + 10, "black", false, true, 0, 396, 0, -1, 1)); // Elevator Piece 1
-        environmentTileArray.push(new Environment(level, 76, canvas.height - 128 - 10, 168, 64, "orange", false, true, 0, 396, 0, -1, 1)); // Elevator Piece 2
-        
-        // Enemies
-        enemyArray.push(new Enemy(level, "Lzard", 1000, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
-        enemyArray.push(new Enemy(level, "Lzard", 500, 600, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
-
-        // Items
-        itemArray.push(new Item(level, "HANGING", "key", canvas.width / 2, canvas.height / 2, 32, 64))
-        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 148, canvas.height / 5 - 4, 64, 64))
-        itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y, 64, 64))
-        
-        // Initialize Objects
-        initializeAll();
-        hasLevel0Init = true;
     }
     // LEVEL 1
     function level1Init() {
@@ -748,7 +721,7 @@ window.onload = () => {
                 score = time;
                 gameCompleted = true;
                 clearInterval(gameTimer);
-                addHighscore(score, "Maik");
+                addHighscore(score, gamerName);
                 state = "FULLREWIND";
                 checkState()
                 break;
@@ -920,13 +893,13 @@ window.onload = () => {
         } else if (state === "LEVELREWIND") {
             rewindSpeeder = 7;
         } else if (state === "FULLREWIND") {
-            rewindSpeeder = 15;
+            rewindSpeeder = 9;
         }
         let index = gameRec.length - rewindSpeeder;
-        if (index <= 0) index = 0;
+        if (index < 0) index = 0;
+
         // Prevent rewinding to previous level
         if (gameRec[index][0] === level && (state === "REWIND" || state === "LEVELREWIND")) {    
-            
             restoreFromGameRec(rewindSpeeder);
             gameRec.splice(index, rewindSpeeder);
             if (index <= 0) state = "NORMAL";
@@ -935,7 +908,6 @@ window.onload = () => {
         }
         
         if (state === "FULLREWIND") {
-            
             restoreFromGameRec(rewindSpeeder);
             gameRec.splice(index, rewindSpeeder);
             if (index === 0) {
@@ -972,18 +944,25 @@ window.onload = () => {
         // Restore Environment
         for (let i = 0; i < environmentTileArray.length; i++) {
             if (state === "FULLREWIND" && environmentTileArray[i].id > gameRec[index][0]) {
-                environmentTileArray.splice(i, 1);
+                environmentTileArray.splice(i, environmentTileArray.length - 1);
                 continue;
             }
+
+            if (i >= gameRec[index][2].length - 1) continue;
+
             environmentTileArray[i].x = gameRec[index][2][i].x;
             environmentTileArray[i].y = gameRec[index][2][i].y;
         }
+
         // Restore Enemies
         for (let i = 0; i < enemyArray.length; i++) {
             if (state === "FULLREWIND" && enemyArray[i].id > gameRec[index][0]) {
-                enemyArray.splice(i, 1);
+                enemyArray.splice(i, enemyArray.length - 1);
                 continue;
             }
+            
+            if (i >= gameRec[index][3].length - 1) continue;
+
             enemyArray[i].x = gameRec[index][3][i].x;
             enemyArray[i].y = gameRec[index][3][i].y;
             enemyArray[i].dirX = gameRec[index][3][i].dirX;
@@ -995,9 +974,12 @@ window.onload = () => {
         // Restore Items
         for (let i = 0; i < itemArray.length; i++) {
             if (state === "FULLREWIND" && itemArray[i].id > gameRec[index][0]) {
-                itemArray.splice(i, 1);
+                itemArray.splice(i, itemArray.length - 1);
                 continue;
             }
+
+            if (i >= gameRec[index][4].length - 1) continue;
+
             itemArray[i].x = gameRec[index][4][i].x;
             itemArray[i].y = gameRec[index][4][i].y;
             itemArray[i].width = gameRec[index][4][i].width;
@@ -1053,9 +1035,10 @@ window.onload = () => {
                 if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
             break;
             case "p": // DEBUG
-                const score = 120;
+                const score = 12000;
                 const name = "Someone Better Than You"
                 addHighscore(score, name);
+                level ++               
             break;
             // TIME
             case "1":
@@ -1126,24 +1109,21 @@ window.onload = () => {
                 } else {
                     player.jump = false;
                 }
-                setTimeout(() => {
-                    player.jump = false;
-                }, 150);
+                setTimeout(() => player.jump = false, 150);
             }
 
             // ENEMY
             if (player.checkCollision(enemyArray, 0, -16, 0, -32)) {
                 player.die();
-                console.log(state)
                 checkState();
             }
             
             // Check for prompts
             player.checkInteractableCollision(promptArray, 0, 0, 0, 0)
 
+            // Update Arrow Use
+            enableArrow();
         }
-        // Update Arrow Use
-        enableArrow();
 
         // MOVEMENT
         // --- Move Left
@@ -1340,6 +1320,8 @@ window.onload = () => {
         gameCompleted = false;
         score = 0;
         time = 0;
+        level = 0;
+        roomTransitAlpha = 1;
 
         hasLevel0Init = false;
         hasLevel1Init = false;
@@ -1352,8 +1334,6 @@ window.onload = () => {
         hasLevel8Init = false;
         hasLevel9Init = false;
         hasLevel10Init = false;
-
-        gameTimer = setInterval(startTimer, 10);
     }
 
     function addHighscore(score, name) {
