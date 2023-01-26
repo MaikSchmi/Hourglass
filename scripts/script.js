@@ -65,6 +65,9 @@ let hasLevel10Init;
 const grv = 3;
 let grvAcc = 5;
 
+// Sprites
+const playerSprites = []; 
+const lzardSprites = [];
 
 // Main Game Load
 window.onload = () => {
@@ -185,6 +188,56 @@ window.onload = () => {
 
     let player;
 
+    const animIdle = [];
+    const animIdleLeft = [];
+    const animWalk = [];
+    const animWalkLeft = [];
+    const animShoot = [];
+    const animShootLeft = [];
+    
+    const lzardAnimIdle = [];
+    const lzardAnimIdleLeft = [];
+    const lzardAnimWalk = [];
+    const lzardAnimWalkLeft = [];
+    
+    // Player Sprites
+    for (let i = 0; i < 12; i++) {
+        if (i < 4) {
+            animIdle.push(`img/Shel/shel_idle/shel_idle_00${i}.png`);
+            animIdleLeft.push(`img/Shel/shel_idle_left/shel_idle_00${i}.png`);
+        }
+        if (i < 8) {
+            animShoot.push(`img/Shel/shel_attackbow/shel_attackbow_00${i}.png`);
+            animShootLeft.push(`img/Shel/shel_attackbow_left/shel_attackbow_00${i}.png`);
+        }
+        if (i < 10) {
+            animWalk.push(`img/Shel/shel_walk/shel_walk_00${i}.png`);
+            animWalkLeft.push(`img/Shel/shel_walk_left/shel_walk_00${i}.png`);
+        } else {
+            animWalk.push(`img/Shel/shel_walk/shel_walk_0${i}.png`);
+            animWalkLeft.push(`img/Shel/shel_walk_left/shel_walk_0${i}.png`);
+
+        }
+    }
+    playerSprites.push(animIdle, animIdleLeft, animWalk, animWalkLeft, animShoot, animShootLeft);
+
+    // Lzard Sprites
+    for (let i = 0; i < 60; i++) {
+        if (i < 10) {
+            lzardAnimIdle.push(`img/Lzard/lzard_idle_right/lzard_idle_00_00${i}.png`);
+            lzardAnimIdleLeft.push(`img/Lzard/lzard_idle_left/lzard_idle_00_00${i}.png`);
+            lzardAnimWalk.push(`img/Lzard/lzard_walking_right/Lzard_Animation_Walking_00${i}.png`);
+            lzardAnimWalkLeft.push(`img/Lzard/lzard_walking_left/Lzard_Animation_Walking_00${i}.png`);
+        } else {
+            lzardAnimIdle.push(`img/Lzard/lzard_idle_right/lzard_idle_00_0${i}.png`);
+            lzardAnimIdleLeft.push(`img/Lzard/lzard_idle_left/lzard_idle_00_0${i}.png`);
+            lzardAnimWalk.push(`img/Lzard/lzard_walking_right/Lzard_Animation_Walking_0${i}.png`);
+            lzardAnimWalkLeft.push(`img/Lzard/lzard_walking_left/Lzard_Animation_Walking_0${i}.png`);
+
+        }
+    }
+    lzardSprites.push(lzardAnimIdle, lzardAnimIdleLeft, lzardAnimWalk, lzardAnimWalkLeft);
+
     // Start
     function startGame() {
         state = "NORMAL";
@@ -193,6 +246,7 @@ window.onload = () => {
         player.initialize();
         gameInProgress = true;
         titleAudio.pause();
+        titleAudio.currentTime = 0;
         bgAudio.play()
         bgAudio.loop = true;
         gameHandler();
@@ -235,6 +289,9 @@ window.onload = () => {
         // Items
         itemArray.push(new Item(level, "FALLING", "key", 900, player.y + 36, 64, 32)); // Key
         itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 78, player.y, 64, 64)); // Level end
+        // Dummy enemies for animations
+        enemyArray.push(new Enemy(level, "Lzard", -4000, 600, 156, 128, 2, 2, 1, false, false, 0, 0, 0, 0));
+        enemyArray.push(new Enemy(level, "Lzard", -4000, 425, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
         // Prompts
         promptArray.push(new Prompt(`Use A and D or the Arrow keys to move.`, 100, 100, 500, 100, player.x, player.y, 64, 64));
         promptArray.push(new Prompt(`Press E to pick up the key (stand on it).`, 800, 100, 470, 100, 800, player.y, 128, 64));
@@ -325,8 +382,10 @@ window.onload = () => {
         // Environment
         environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width / 2, 64, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
         environmentTileArray.push(new Environment(level, 0, canvas.height - 64, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(level, canvas.width / 2 - 1, canvas.height - 128, canvas.width / 2, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(level, canvas.width / 2 - 1, canvas.height - 128, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 64, canvas.height - 128, canvas.width / 2, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 64, canvas.height - 128, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 1, canvas.height - 192, canvas.width / 2, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, canvas.width / 2 - 1, canvas.height - 192, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
         environmentTileArray.push(new Environment(level, canvas.width / 2 + 64 - 1, canvas.height - 240, canvas.width / 2, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
         environmentTileArray.push(new Environment(level, canvas.width / 2 + 64 - 1, canvas.height - 240, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
         
@@ -704,6 +763,7 @@ window.onload = () => {
                     canvas.style.display = "none";
                     mainMenu.style.display = "flex";
                     bgAudio.pause();
+                    bgAudio.currentTime = 0;
                     titleAudio.play()
                     titleAudio.loop = true;
                     resetInitGameValues();
@@ -738,6 +798,8 @@ window.onload = () => {
                 break;
             case "ENDGAME":
                 cancelAnimationFrame(animateId);
+                bgAudio.pause();
+                bgAudio.currentTime = 0;
                 mainMenu.style.display = "flex";
                 canvas.style.display = "none";
                 break;
@@ -1148,24 +1210,24 @@ window.onload = () => {
         // --- Move Left
         if (player.moveLeft && player.x > 0 && !player.checkCollision(environmentTileArray, 0, 0, -1, 5) && !player.shoot) {
             if (!blockPlayerStates()) player.x -= player.xSpeed;
-            animateSprite(player, player.img, player.animWalkLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
+            animateSprite(player, player.img, playerSprites[3], player.spriteSpeed, player.x, player.y, player.width, player.height);
         // --- Move Right
         } else if (player.moveRight && player.x < canvas.width - player.width && !player.checkCollision(environmentTileArray, 0, 5, -1, 0) && !player.shoot) {
             if (!blockPlayerStates()) player.x += player.xSpeed;
-            animateSprite(player, player.img, player.animWalk, player.spriteSpeed, player.x, player.y, player.width, player.height);
+            animateSprite(player, player.img, playerSprites[2], player.spriteSpeed, player.x, player.y, player.width, player.height);
         // --- Shoot / Idle
         } else {
             if (player.facing === 1) {
                 if (player.shoot) {
-                    animateSprite(player, player.img, player.animShoot, player.spriteSpeed, player.x, player.y, player.width, player.height);
+                    animateSprite(player, player.img, playerSprites[4], player.spriteSpeed, player.x, player.y, player.width, player.height);
                 } else {
-                    animateSprite(player, player.img, player.animIdle, player.spriteSpeed, player.x, player.y, player.width, player.height);
+                    animateSprite(player, player.img, playerSprites[0], player.spriteSpeed, player.x, player.y, player.width, player.height);
                 }
             } else if (player.facing === -1) {
                 if (player.shoot) {
-                    animateSprite(player, player.img, player.animShootLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
+                    animateSprite(player, player.img, playerSprites[5], player.spriteSpeed, player.x, player.y, player.width, player.height);
                 } else {
-                    animateSprite(player, player.img, player.animIdleLeft, player.spriteSpeed, player.x, player.y, player.width, player.height);
+                    animateSprite(player, player.img, playerSprites[1], player.spriteSpeed, player.x, player.y, player.width, player.height);
                 }
             }
         }
@@ -1212,11 +1274,11 @@ window.onload = () => {
                 if (state === "NORMAL") enemyArray[i].move();
             
                 // Animation
-                let sprite = enemyArray[i].lzardAnimIdleLeft;
+                let sprite = lzardSprites[1];
                 if (enemyArray[i].movesX && enemyArray[i].dirX === -1) {
-                    sprite = enemyArray[i].lzardAnimWalkLeft;
+                    sprite = lzardSprites[3];
                 } else if (enemyArray[i].movesX && enemyArray[i].dirX === 1) {
-                    sprite = enemyArray[i].lzardAnimWalk;
+                    sprite = lzardSprites[2];
                 }
                  animateSprite(
                     enemyArray[i], 
@@ -1269,6 +1331,8 @@ window.onload = () => {
 
     // Draw Background + Environment Tiles
     function drawBackgroundAndEnvironment() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
         ctx.beginPath();
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1345,7 +1409,6 @@ window.onload = () => {
         fadeOut = false;
         gameTimer = setInterval(startTimer, 10);
 
-        hasLevel0Init = false;
         hasLevel1Init = false;
         hasLevel2Init = false;
         hasLevel3Init = false;
@@ -1385,4 +1448,4 @@ window.onload = () => {
             highscoreList[i].innerHTML = `${modScore} - ${scoreArr[i][2].split(" ")}`;
         }
     }
-};
+}

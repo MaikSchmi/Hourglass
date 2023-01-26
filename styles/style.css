@@ -85,6 +85,11 @@ a {
     text-align: center;
 }
 
+#title-credit img {
+    width: 32px;
+    height: 32px;
+}
+
 #player-name-prompt-popup {
     display: none;
     position: absolute;
