@@ -47,42 +47,41 @@ class Player {
     }
 
     initialize() {
-        console.log(level)
         // Load images
         this.img = new Image();
         // --- Idle
         for (let i = 0; i < 4; i++) {
-            this.animIdle.push(`/img/Shel/shel_idle/shel_idle_00${i}.png`);
-            this.animIdleLeft.push(`/img/Shel/shel_idle_left/shel_idle_00${i}.png`);
+            this.animIdle.push(`img/Shel/shel_idle/shel_idle_00${i}.png`);
+            this.animIdleLeft.push(`img/Shel/shel_idle_left/shel_idle_00${i}.png`);
         }
         // --- Walk
         for (let i = 0; i < 12; i++) {
             if (i < 10) {
-                this.animWalk.push(`/img/Shel/shel_walk/shel_walk_00${i}.png`);
-                this.animWalkLeft.push(`/img/Shel/shel_walk_left/shel_walk_00${i}.png`);
+                this.animWalk.push(`img/Shel/shel_walk/shel_walk_00${i}.png`);
+                this.animWalkLeft.push(`img/Shel/shel_walk_left/shel_walk_00${i}.png`);
             } else {
-                this.animWalk.push(`/img/Shel/shel_walk/shel_walk_0${i}.png`);
-                this.animWalkLeft.push(`/img/Shel/shel_walk_left/shel_walk_0${i}.png`);
+                this.animWalk.push(`img/Shel/shel_walk/shel_walk_0${i}.png`);
+                this.animWalkLeft.push(`img/Shel/shel_walk_left/shel_walk_0${i}.png`);
             }
         }
         // --- Jump
         for (let i = 0; i < 12; i++) {
             if (i < 10) {
-                this.animJump.push(`/img/Shel/shel_jump/shel_jump_00${i}.png`);
-                this.animJumpLeft.push(`/img/Shel/shel_jump_left/shel_jump_00${i}.png`);
+                this.animJump.push(`img/Shel/shel_jump/shel_jump_00${i}.png`);
+                this.animJumpLeft.push(`img/Shel/shel_jump_left/shel_jump_00${i}.png`);
             } else {
-                this.animJump.push(`/img/Shel/shel_jump/shel_jump_0${i}.png`);
-                this.animJumpLeft.push(`/img/Shel/shel_jump_left/shel_jump_0${i}.png`);
+                this.animJump.push(`img/Shel/shel_jump/shel_jump_0${i}.png`);
+                this.animJumpLeft.push(`img/Shel/shel_jump_left/shel_jump_0${i}.png`);
             }
         }
         // --- Shoot
         for (let i = 0; i < 8; i++) {
-            this.animShoot.push(`/img/Shel/shel_attackbow/shel_attackbow_00${i}.png`);
-            this.animShootLeft.push(`/img/Shel/shel_attackbow_left/shel_attackbow_00${i}.png`);
+            this.animShoot.push(`img/Shel/shel_attackbow/shel_attackbow_00${i}.png`);
+            this.animShootLeft.push(`img/Shel/shel_attackbow_left/shel_attackbow_00${i}.png`);
         }
         // --- Arrow
         this.arrowImg = new Image();
-        this.arrowImgDir.push("/img/Shel/arrow_left.png", "/img/Shel/arrow_right.png")
+        this.arrowImgDir.push("img/Shel/arrow_left.png", "img/Shel/arrow_right.png")
     }
 
     updateCollision() {
@@ -250,35 +249,35 @@ class Enemy {
             // --- Idle
             for (let i = 0; i < 62; i++) {
                 if (i < 10) {
-                    this.lzardAnimIdle.push(`/img/Lzard/lzard_idle_right/lzard_idle_00_00${i}.png`);
-                    this.lzardAnimIdleLeft.push(`/img/Lzard/lzard_idle_left/lzard_idle_00_00${i}.png`);
+                    this.lzardAnimIdle.push(`img/Lzard/lzard_idle_right/lzard_idle_00_00${i}.png`);
+                    this.lzardAnimIdleLeft.push(`img/Lzard/lzard_idle_left/lzard_idle_00_00${i}.png`);
                 } else {
-                    this.lzardAnimIdle.push(`/img/Lzard/lzard_idle_right/lzard_idle_00_0${i}.png`);
-                    this.lzardAnimIdleLeft.push(`/img/Lzard/lzard_idle_left/lzard_idle_00_0${i}.png`);
+                    this.lzardAnimIdle.push(`img/Lzard/lzard_idle_right/lzard_idle_00_0${i}.png`);
+                    this.lzardAnimIdleLeft.push(`img/Lzard/lzard_idle_left/lzard_idle_00_0${i}.png`);
                 }
             }
             // --- Walking
             for (let i = 0; i < 60; i++) {
                 if (i < 10) {
-                    this.lzardAnimWalk.push(`/img/Lzard/lzard_walking_right/Lzard_Animation_Walking_00${i}.png`);
-                    this.lzardAnimWalkLeft.push(`/img/Lzard/lzard_walking_left/Lzard_Animation_Walking_00${i}.png`);
+                    this.lzardAnimWalk.push(`img/Lzard/lzard_walking_right/Lzard_Animation_Walking_00${i}.png`);
+                    this.lzardAnimWalkLeft.push(`img/Lzard/lzard_walking_left/Lzard_Animation_Walking_00${i}.png`);
                 } else {
-                    this.lzardAnimWalk.push(`/img/Lzard/lzard_walking_right/Lzard_Animation_Walking_0${i}.png`);
-                    this.lzardAnimWalkLeft.push(`/img/Lzard/lzard_walking_left/Lzard_Animation_Walking_0${i}.png`);
+                    this.lzardAnimWalk.push(`img/Lzard/lzard_walking_right/Lzard_Animation_Walking_0${i}.png`);
+                    this.lzardAnimWalkLeft.push(`img/Lzard/lzard_walking_left/Lzard_Animation_Walking_0${i}.png`);
                 }
             }
-            this.img.src = "/img/Lzard/lzard.png"
+            this.img.src = "img/Lzard/lzard.png"
         }
 
         if (this.name === "Spikes") {
-            this.img.src = "/img/spikes.png";
+            this.img.src = "img/spikes.png";
         }
 
         if (this.name === "Boss") {
                     // --- Idle
             for (let i = 0; i < 4; i++) {
-                this.bossIdle.push(`/img/Shel/shel_idle/shel_idle_00${i}.png`);
-                this.bossIdleLeft.push(`/img/Shel/shel_idle_left/shel_idle_00${i}.png`);
+                this.bossIdle.push(`img/Shel/shel_idle/shel_idle_00${i}.png`);
+                this.bossIdleLeft.push(`img/Shel/shel_idle_left/shel_idle_00${i}.png`);
             }
         }
     }
@@ -354,9 +353,9 @@ class Item {
 
     initialize() {
         this.img = new Image();
-        this.keySprite.push("/img/Items/key_hanging.png", "/img/Items/key.png")
-        this.roomTransitSprite.push("/img/Items/room_transit_closed.png", "/img/Items/room_transit_open.png");
-        this.hourglassSprite.push("/img/hourglass.png");
+        this.keySprite.push("img/Items/key_hanging.png", "img/Items/key.png")
+        this.roomTransitSprite.push("img/Items/room_transit_closed.png", "img/Items/room_transit_open.png");
+        this.hourglassSprite.push("img/hourglass.png");
 
         switch(this.name) {
             case "key":
