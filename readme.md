@@ -1,6 +1,7 @@
 ToDo
 - Check to include controller controls
 - Create "Select Level" Screen (if enough time)
+- Put BG image on HTML body
 
 ===
 - Possible to get player stuck with no recording after pausing on frame 0

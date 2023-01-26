@@ -266,7 +266,6 @@ class Enemy {
                     this.lzardAnimWalkLeft.push(`img/Lzard/lzard_walking_left/Lzard_Animation_Walking_0${i}.png`);
                 }
             }
-            this.img.src = "img/Lzard/lzard.png"
         }
 
         if (this.name === "Spikes") {
