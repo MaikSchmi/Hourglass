@@ -1116,6 +1116,10 @@ window.onload = () => {
                 case "F":
                     if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
                 break;
+                case "R":
+                case "r":
+                    state = "LEVELREWIND";
+                break;
                 // TIME
                 case "1":
                 case "!":
