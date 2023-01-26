@@ -1307,16 +1307,7 @@ window.onload = () => {
                 } else if (enemyArray[i].movesX && enemyArray[i].dirX === 1) {
                     sprite = lzardSprites[2];
                 }
-                 animateSprite(
-                    enemyArray[i], 
-                    enemyArray[i].img, 
-                    sprite,
-                    enemyArray[i].lzardSpriteSpeed,
-                    enemyArray[i].x, 
-                    enemyArray[i].y, 
-                    enemyArray[i].width, 
-                    enemyArray[i].height
-                )
+                 animateSprite(enemyArray[i], enemyArray[i].img, sprite, enemyArray[i].lzardSpriteSpeed, enemyArray[i].x, enemyArray[i].y, enemyArray[i].width, enemyArray[i].height);
             } else if (enemy === "Spikes") {
                 ctx.drawImage(enemyArray[i].img, enemyArray[i].x, enemyArray[i].y, enemyArray[i].width, enemyArray[i].height);
             } else if (enemy === "Boss") {
@@ -1332,16 +1323,7 @@ window.onload = () => {
                 } else if (enemyArray[i].facing === 1) {
                     sprite = enemyArray[i].bossIdle
                 }
-                    animateSprite(
-                    enemyArray[i], 
-                    enemyArray[i].img, 
-                    sprite,
-                    player.spriteSpeed,
-                    enemyArray[i].x, 
-                    enemyArray[i].y, 
-                    enemyArray[i].width, 
-                    enemyArray[i].height
-                    )
+                animateSprite(enemyArray[i], enemyArray[i].img, sprite, player.spriteSpeed, enemyArray[i].x, enemyArray[i].y, enemyArray[i].width, enemyArray[i].height);
             }
         }
     }
