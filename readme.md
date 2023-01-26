@@ -1,7 +1,3 @@
-Sound:
-- When time is changed
-
-
 ~ ~ ~ Inside The Hourglass ~ ~ ~
 
 IMPORTANT INFORMATION: 
@@ -77,15 +73,15 @@ Defines the whole logic for the game inside the "window.onload ()" function, in 
 - "initializeAll()" - loads class sprites
 
 - "checkStates()" - state machine that always defines the overall current setting for the game
->>> Normal: Time moves forward
->>> Stop: Time stops
->>> Rewind: Time moves backwards
->>> Levelrewind: Time moves back to beginning of level
->>> Fullrewind: Time moves back to beginning of game
->>> Roomtransit: When changing levels
->>> Dead: When dead
->>> Gamefinished: When the game has been completed
->>> Endgame: When the game is ended by clicking "Return to Menu" button after dying
+--- Normal: Time moves forward
+--- Stop: Time stops
+--- Rewind: Time moves backwards
+--- Levelrewind: Time moves back to beginning of level
+--- Fullrewind: Time moves back to beginning of game
+--- Roomtransit: When changing levels
+--- Dead: When dead
+--- Gamefinished: When the game has been completed
+--- Endgame: When the game is ended by clicking "Return to Menu" button after dying
 
 - "recordGame()" - ensures that each frame of each object is being stored in an array for the next function
 - "rewindGame()" - moves back through the gameRec array to restore previous positions and states

@@ -250,7 +250,7 @@ window.onload = () => {
     function startGame() {
         state = "NORMAL";
         resetInitGameValues(); 
-        player = new Player(10, canvas.height - 128, 64, 64, 3, 2, 10, -1);
+        player = new Player(10, canvas.height - 128, 64, 64, 3, 2, 12, -1);
         player.initialize();
         gameInProgress = true;
         titleAudio.pause();
@@ -396,25 +396,26 @@ window.onload = () => {
         environmentTileArray.push(new Environment(level, canvas.width / 2 - 64, canvas.height - 128, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
         environmentTileArray.push(new Environment(level, canvas.width / 2 - 1, canvas.height - 192, canvas.width / 2, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
         environmentTileArray.push(new Environment(level, canvas.width / 2 - 1, canvas.height - 192, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(level, canvas.width / 2 + 64 - 1, canvas.height - 240, canvas.width / 2, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
-        environmentTileArray.push(new Environment(level, canvas.width / 2 + 64 - 1, canvas.height - 240, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 64 - 1, canvas.height - 300, canvas.width / 2, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
+        environmentTileArray.push(new Environment(level, canvas.width / 2 + 64 - 1, canvas.height - 300, canvas.width / 2, 16, "green", false, false, 0, 0, 0, 0, 0)); // Bottom Floor
         
-        environmentTileArray.push(new Environment(level, 0, 0, canvas.width / 2 - 140, canvas.height / 2 + 80, "green", false, false, 0, 0, 0, 0, 0)); // Ceiling
-        environmentTileArray.push(new Environment(level, 0, 0, canvas.width / 2 - 150, canvas.height / 2 + 70, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Ceiling
+        environmentTileArray.push(new Environment(level, 0, 0, canvas.width / 2 - 140, canvas.height / 2 + 40, "green", false, false, 0, 0, 0, 0, 0)); // Ceiling
+        environmentTileArray.push(new Environment(level, 0, 0, canvas.width / 2 - 150, canvas.height / 2 + 30, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Ceiling
         environmentTileArray.push(new Environment(level, canvas.width / 2 - 150, 0, canvas.width, 138, "green", false, false, 0, 0, 0, 0, 0)); // Ceiling
         environmentTileArray.push(new Environment(level, 0, 0, canvas.width, 128, "darkgreen", false, false, 0, 0, 0, 0, 0)); // Ceiling
         
         environmentTileArray.push(new Environment(level, canvas.width - 128, 0, 128, 138, "orange", false, false, 0, 0, 0, 0, 0)); // Right Wall
         environmentTileArray.push(new Environment(level, canvas.width - 128, 0, 128, 128, "brown", false, false, 0, 0, 0, 0, 0)); // Right Wall
-        environmentTileArray.push(new Environment(level, canvas.width - 128, 540, 128, 128, "orange", false, false, 0, 0, 0, 0, 0)); // Right Wall
-        environmentTileArray.push(new Environment(level, canvas.width - 128, 556, 128, 230, "brown", false, false, 0, 0, 0, 0, 0)); // Right Wall
+        environmentTileArray.push(new Environment(level, canvas.width - 128, 480, 128, 300, "orange", false, false, 0, 0, 0, 0, 0)); // Right Wall
+        environmentTileArray.push(new Environment(level, canvas.width - 128, 496, 128, 300, "brown", false, false, 0, 0, 0, 0, 0)); // Right Wall
+        
         // Enemies
-        enemyArray.push(new Enemy(level, "Lzard", 800, 425, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
+        enemyArray.push(new Enemy(level, "Lzard", 800, 365, 156, 128, 2, 2, 1, true, false, 100, 0, 1, 0));
 
         // Items
         itemArray.push(new Item(level, "NONE", "roomTransit", player.x, player.y, 64, 64)); // Player start
-        itemArray.push(new Item(level, "HANGING", "key", 400, player.y - 182, 32, 64)); // Key
-        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 96, player.y - 176, 64, 64)); // Level end
+        itemArray.push(new Item(level, "HANGING", "key", 400, player.y - 222, 32, 64)); // Key
+        itemArray.push(new Item(level, "CLOSED", "roomTransit", canvas.width - 96, player.y - 236, 64, 64)); // Level end
         
         // Prompts
         promptArray.push(new Prompt(`You may have to get creative to reach this key ...`, 400, 250, 560, 100, 300, player.y, 256, 64));
@@ -1113,9 +1114,6 @@ window.onload = () => {
                 case "F":
                     if (player.canShoot && !player.shoot && !player.arrowFlying) player.shoot = true;
                 break;
-                case "p": // DEBUG
-                    level++;
-                break;
                 // TIME
                 case "1":
                 case "!":
@@ -1426,7 +1424,7 @@ window.onload = () => {
         score = 0;
         time = 0;
         timerIsPaused = true;
-        level = 1;
+        level = 4;
         roomTransitAlpha = 1;
         fadeOut = false;
 
