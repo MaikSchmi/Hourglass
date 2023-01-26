@@ -44,6 +44,16 @@ class Player {
         this.animJumpLeft = [];
         this.animShoot = [];
         this.animShootLeft = [];
+
+        // SFX
+        this.dieSnd = new Audio("sfx/hitHurt.wav");
+        this.dieSnd.volume = 0.5;
+        this.keySnd = new Audio("sfx/pickupCoin.wav");
+        this.keySnd.volume = 0.5;
+        this.doorSnd = new Audio("sfx/blipSelect.wav");
+        this.doorSnd.volume = 0.5;
+        this.transitSnd = new Audio("sfx/transit.wav");
+        this.transitSnd.volume = 0.5;
     }
 
     initialize() {
@@ -139,15 +149,18 @@ class Player {
     interact(obj) {
         if (obj.getName() === "key" && state === "NORMAL") {
             this.hasKey = true;
+            this.keySnd.play()
             obj.deactivate();
         }
         if (obj.getName() === "roomTransit" && obj.getItemState() === "CLOSED") {
             if (this.hasKey) {
                 this.hasKey = false;
+                this.doorSnd.play();
                 obj.deactivate();
             }
         } else if (obj.getName() === "roomTransit" && obj.getItemState() === "OPEN") {
             state = "ROOMTRANSIT";
+            this.transitSnd.play()
         } else if (obj.getName() === "prompt") {
             obj.showPrompt();
         }
@@ -158,6 +171,7 @@ class Player {
     }
 
     die() {
+        this.dieSnd.play();
         state = "DEAD";
     }
 }
@@ -211,6 +225,8 @@ class Enemy {
         this.bossWalkLeft = [];
         // Load Images
         this.img = new Image();
+        this.snd = new Audio("sfx/explosion.wav");
+        this.snd.volume = .5;
     }
 
     initialize() {
@@ -264,6 +280,7 @@ class Enemy {
     hit() {
        this.x = -5000;
        this.alive = false;
+       this.snd.play();
     }
 
     getName() {
@@ -295,6 +312,10 @@ class Item {
         this.keySprite = [];
         this.roomTransitSprite = [];
         this.hourglassSprite = [];
+
+        this.keyShotSnd = new Audio("sfx/blipSelect.wav");
+        this.keyShotSnd.volume = 0.5;
+
     }
 
     initialize() {
@@ -352,6 +373,7 @@ class Item {
                 if (this.itemState === "HANGING") {
                     this.itemState = "FALLING";
                     this.moveY = true;
+                    this.keyShotSnd.play();
                     this.move();
                 }
                 break;

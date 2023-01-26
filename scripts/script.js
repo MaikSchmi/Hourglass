@@ -23,11 +23,19 @@ let roomTransitAlpha;
 let fadeOut = false;
 let bgColor = "rgb(0, 195, 255)"
 
-// Music
+// Music / SFX
 const titleAudio = new Audio("sfx/bg.mp3");
 titleAudio.volume = 0.1;
 const bgAudio = new Audio("sfx/song.wav");
 bgAudio.volume = 0.01;
+const jmpSnd = new Audio("sfx/jump.wav");
+jmpSnd.volume = 0.5;
+const shootSnd = new Audio("sfx/click.wav");
+shootSnd.volume = 0.5;
+const sndHourglass = new Audio("sfx/synth.wav");
+sndHourglass.volume = 0.5;
+const sndChangeTime = new Audio("sfx/changeTime.wav");
+sndChangeTime.volume = 0.5;
 
 // Game Variables
 let gameInProgress = false;
@@ -249,6 +257,8 @@ window.onload = () => {
         titleAudio.currentTime = 0;
         bgAudio.play()
         bgAudio.loop = true;
+        if (gameTimer) clearInterval(gameTimer);
+        gameTimer = setInterval(startTimer, 10);
         gameHandler();
     }
     // Handle Loops
@@ -764,6 +774,8 @@ window.onload = () => {
                     mainMenu.style.display = "flex";
                     bgAudio.pause();
                     bgAudio.currentTime = 0;
+                    sndHourglass.pause();
+                    sndHourglass.currentTime = 0;
                     titleAudio.play()
                     titleAudio.loop = true;
                     resetInitGameValues();
@@ -789,9 +801,10 @@ window.onload = () => {
                 ctx.closePath();
                 break;
             case "GAMEFINISHED":
+                sndHourglass.play();
+                sndHourglass.loop = true;
                 score = time;
                 gameCompleted = true;
-                clearInterval(gameTimer);
                 addHighscore(score, gamerName);
                 state = "FULLREWIND";
                 checkState()
@@ -1070,21 +1083,6 @@ window.onload = () => {
             itemArray[i].img.src = gameRec[index][4][i].anim;
         }
     }
-
-    // Draw Time Control
-    function drawTimeControl() {
-        if (state === "NORMAL") {
-            imgTimeControl.src = imgTimeControlArr[0];
-        } else if (state === "STOP") {
-            imgTimeControl.src = imgTimeControlArr[1];
-        } else if (state === "REWIND") {
-            imgTimeControl.src = imgTimeControlArr[2];
-        } else if (state === "LEVELREWIND" || state === "FULLREWIND") {
-            imgTimeControl.src = imgTimeControlArr[3];
-        }
-        ctx.drawImage(imgTimeControl, canvas.width / 2 - imgTimeControl.width, 0, 256, 128);
-    }
-
     
 
     // Player Controls
@@ -1123,9 +1121,11 @@ window.onload = () => {
                 case "!":
                     if (state === "NORMAL") {
                         state = "STOP";
+                        sndChangeTime.play();
                         checkState();
                     } else if (state === "STOP") {
                         state = "REWIND";
+                        sndChangeTime.play();
                         checkState();
                     }
                 break;
@@ -1133,9 +1133,11 @@ window.onload = () => {
                 case "§":
                     if (state === "REWIND") {
                         state = "STOP"
+                        sndChangeTime.play();
                         checkState();
                     } else if (state === "STOP") {
                         state = "NORMAL"
+                        sndChangeTime.play();
                         checkState();
                     }
                 break;
@@ -1161,6 +1163,23 @@ window.onload = () => {
         }
     });
 
+    
+
+    // Draw Time Control
+    function drawTimeControl() {
+        if (state === "NORMAL") {
+            imgTimeControl.src = imgTimeControlArr[0];
+        } else if (state === "STOP") {
+            imgTimeControl.src = imgTimeControlArr[1];
+        } else if (state === "REWIND") {
+            imgTimeControl.src = imgTimeControlArr[2];
+        } else if (state === "LEVELREWIND" || state === "FULLREWIND") {
+            imgTimeControl.src = imgTimeControlArr[3];
+        }
+        ctx.drawImage(imgTimeControl, canvas.width / 2 - imgTimeControl.width, 0, 256, 128);
+    }
+
+
     function blockPlayerStates() {
         return (state === "ROOMTRANSIT" || state === "LEVELREWIND" || state === "FULLREWIND");
     }
@@ -1184,6 +1203,7 @@ window.onload = () => {
 
             // --- Jump
             if (player.jump) {
+                jmpSnd.play();
                 if (!player.checkCollision(environmentTileArray, 10, 0, -3, 0)) {
                     if (grvAcc < player.ySpeed) grvAcc += .25;
                     player.y -= player.jumpSpeed + grvAcc;
@@ -1219,12 +1239,14 @@ window.onload = () => {
         } else {
             if (player.facing === 1) {
                 if (player.shoot) {
+                    shootSnd.play()
                     animateSprite(player, player.img, playerSprites[4], player.spriteSpeed, player.x, player.y, player.width, player.height);
                 } else {
                     animateSprite(player, player.img, playerSprites[0], player.spriteSpeed, player.x, player.y, player.width, player.height);
                 }
             } else if (player.facing === -1) {
                 if (player.shoot) {
+                    shootSnd.play()
                     animateSprite(player, player.img, playerSprites[5], player.spriteSpeed, player.x, player.y, player.width, player.height);
                 } else {
                     animateSprite(player, player.img, playerSprites[1], player.spriteSpeed, player.x, player.y, player.width, player.height);
@@ -1407,7 +1429,6 @@ window.onload = () => {
         level = 1;
         roomTransitAlpha = 1;
         fadeOut = false;
-        gameTimer = setInterval(startTimer, 10);
 
         hasLevel1Init = false;
         hasLevel2Init = false;
