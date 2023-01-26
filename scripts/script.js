@@ -1424,7 +1424,7 @@ window.onload = () => {
         score = 0;
         time = 0;
         timerIsPaused = true;
-        level = 4;
+        level = 1;
         roomTransitAlpha = 1;
         fadeOut = false;
 

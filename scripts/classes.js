@@ -527,3 +527,4 @@ class Prompt {
     }
 
 }
+
