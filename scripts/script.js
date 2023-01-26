@@ -5,6 +5,7 @@ const btnHighscores = document.getElementById("btn-highscores");
 const btnHighscoresReturn = document.getElementById("btn-highscore-return-to-menu");
 const btnCredits = document.getElementById("btn-credits");
 const btnQuit = document.getElementById("btn-quit");
+const inputChangeJumpSpeed = document.getElementById("input-control-jump");
 
 const btnRetry = document.getElementById("btn-retry");
 const btnReturnToMenu = document.getElementById("btn-return-to-menu");
@@ -249,8 +250,9 @@ window.onload = () => {
     // Start
     function startGame() {
         state = "NORMAL";
+        inputChangeJumpSpeed.value = 12;
         resetInitGameValues(); 
-        player = new Player(10, canvas.height - 128, 64, 64, 3, 2, 12, -1);
+        player = new Player(10, canvas.height - 128, 64, 64, 3, 2, inputChangeJumpSpeed.value / 1, -1);
         player.initialize();
         gameInProgress = true;
         titleAudio.pause();
@@ -289,7 +291,7 @@ window.onload = () => {
         moveAllForNextLevel();
         bgColor = "rgb(0, 195, 255)"
         // Move Player
-        player.x = 10;
+        player.x = 11;
         player.y = canvas.height - 128;
         player.facing = 1;
         
@@ -1184,6 +1186,7 @@ window.onload = () => {
     // Update Player
     function drawPlayer() {
         // PHYSICS
+        player.jumpSpeed = inputChangeJumpSpeed.value / 1
         player.updateCollision();
         if (mode === "TIMETRIAL") displayTimer();
         drawTimeControl();
