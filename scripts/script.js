@@ -250,7 +250,7 @@ window.onload = () => {
     // Start
     function startGame() {
         state = "NORMAL";
-        inputChangeJumpSpeed.value = 12;
+        inputChangeJumpSpeed.value = 10;
         resetInitGameValues(); 
         player = new Player(10, canvas.height - 128, 64, 64, 3, 2, inputChangeJumpSpeed.value / 1, -1);
         player.initialize();

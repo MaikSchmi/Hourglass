@@ -1,67 +1,85 @@
-~ ~ ~ Inside The Hourglass ~ ~ ~
+<div align="center">
 
-IMPORTANT INFORMATION: 
-- After the game has started and you're in the first level, click anywhere on the game canvas so it functions properly
-- The performance for the game is best when using Firefox
+# ![](img/hourglass.png) ~ ~ ~ Inside The Hourglass ~ ~ ~ ![](img/hourglass.png)
 
-=== Story ===
+![](img/menu/desert.png)
+
+## ! IMPORTANT INFORMATION ! 
+1 - After the game has started and you're in the first level, click anywhere on the game canvas so it functions properly.
+<br>
+2 - The performance on different browsers may differ - all browsers have some level of sprite animation flickering, <br>except for Firefox which always displays the sprite images, but takes sometime to get them to move.
+
+<br><br><br>
+
+</div>
+
+## What is this project?
+This project was created by myself as the 1st Project for the Ironhack Full-Stack Web Development - Remote Bootcamp
+
+<br><br><br>
+
+## === Story ===
 You play as Shel and make your way through a giant hourglass by running, jumping, shooting enemies with your bow and solving puzzles by controlling time. 
 
 Time moves forward, backwards and stops - but what if the hourglass breaks?
 
 
-Main Menu:
+#### Main Menu:
 - "Start Game"           - Will start the game in Normal mode
 - "Time Trial Mode"      - Will start the game and display a Timer on the top left
 - "Highscores"           - Shows the Highscore board (currently session based and no possibility to save them)
 - "Play My Other Games!" - Links to my itch.io page
 - "Quit Game"            - Technically would quit the game, but you can just close the tab
 
+<br><br>
 
-=== Gameplay ===
+## === Gameplay ===
 You can only interact with items while time moves forward - items are influenced by time so you need to ensure you collect them at the right time. Enemies can be defeated while time is moving forward or stopped, so you can use the time to your advantage - but be careful as they respawn when rewinding the time!
 
-Controls:
-A / <- | Move Left
-D / -> | Move Right
-Space  | Jump
-E      | Interact with items / doors
-F      | Shoot bow
-1      | Stop / Rewind Time
-3      | Stop / Resume Time
+#### Controls:
+- A / <- | Move Left
+- D / -> | Move Right
+- Space  | Jump
+- E      | Interact with items / doors
+- F      | Shoot bow
+- 1      | Stop / Rewind Time
+- 3      | Stop / Resume Time
 
+<br><br>
 _________________________________________________________________________________________________
 
-=== Game Structure in VS Project ===
+<br><br>
+
+### === Game Structure in VS Project ===
 
 
 
-=== index.html ===
+#### === index.html ===
 Handles the different screens for:
 - Main Menu
 - Highscore Menu
 - Game Canvas
 
+<br><br>
 
-
-=== styles/styles.css ===
+#### === styles/styles.css ===
 Handles the layout for "index.html" and auto-hides the Highscore Menu and Game Canvas until activated
 
+<br><br>
 
-
-=== scripts/classes.js ===
+#### === scripts/classes.js ===
 Contains the classes that are being defined for the game.
 
-Classes:
+#### Classes:
 - Player
 - Enemies ("Lzard", "Spikes", "Boss")
 - Items ("key", "roomtransit", "door")
 - Environment (Walls, Floors, Elevators)
 - Prompts (Tutorial Boxes, Story Texts)
 
+<br><br>
 
-
-=== scripts/script.js ===
+#### === scripts/script.js ===
 Defines the whole logic for the game inside the "window.onload ()" function, in order:
 
 - Sets the visibility, style and actions for all the different HTML buttons
