@@ -30,13 +30,13 @@ titleAudio.volume = 0.1;
 const bgAudio = new Audio("sfx/song.wav");
 bgAudio.volume = 0.01;
 const jmpSnd = new Audio("sfx/jump.wav");
-jmpSnd.volume = 0.5;
+jmpSnd.volume = 0.1;
 const shootSnd = new Audio("sfx/click.wav");
-shootSnd.volume = 0.5;
+shootSnd.volume = 0.1;
 const sndHourglass = new Audio("sfx/synth.wav");
-sndHourglass.volume = 0.5;
+sndHourglass.volume = 0.1;
 const sndChangeTime = new Audio("sfx/changeTime.wav");
-sndChangeTime.volume = 0.5;
+sndChangeTime.volume = 0.1;
 
 // Game Variables
 let gameInProgress = false;

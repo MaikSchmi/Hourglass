@@ -47,13 +47,13 @@ class Player {
 
         // SFX
         this.dieSnd = new Audio("sfx/hitHurt.wav");
-        this.dieSnd.volume = 0.5;
+        this.dieSnd.volume = 0.1;
         this.keySnd = new Audio("sfx/pickupCoin.wav");
-        this.keySnd.volume = 0.5;
+        this.keySnd.volume = 0.1;
         this.doorSnd = new Audio("sfx/blipSelect.wav");
-        this.doorSnd.volume = 0.5;
+        this.doorSnd.volume = 0.1;
         this.transitSnd = new Audio("sfx/transit.wav");
-        this.transitSnd.volume = 0.5;
+        this.transitSnd.volume = 0.1;
     }
 
     initialize() {
@@ -226,7 +226,7 @@ class Enemy {
         // Load Images
         this.img = new Image();
         this.snd = new Audio("sfx/explosion.wav");
-        this.snd.volume = .5;
+        this.snd.volume = 0.1;
     }
 
     initialize() {
@@ -314,7 +314,7 @@ class Item {
         this.hourglassSprite = [];
 
         this.keyShotSnd = new Audio("sfx/blipSelect.wav");
-        this.keyShotSnd.volume = 0.5;
+        this.keyShotSnd.volume = 0.1;
 
     }
 
